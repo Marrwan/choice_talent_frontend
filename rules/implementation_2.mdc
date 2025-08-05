@@ -1,0 +1,102 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+🧰 Tech Stack
+
+Framework: Next.js (App Router)
+
+Styling: TailwindCSS
+
+UI Components: shadcn/ui
+
+Icons: Lucide Icons
+
+State Management: Zustand or Context API
+
+Routing: Next.js File-based Routing (App Router)
+
+Auth: NextAuth.js (JWT-based, with session management)
+
+API Communication: Axios (for external APIs; use Next.js API routes for backend logic)
+
+Animation: Framer Motion
+
+Form Validation: React Hook Form + Zod
+
+🎨 Design System
+
+Colors
+
+Primary color: #0044CC (Deep Blue)
+
+Secondary color: #FFFFFF (White)
+
+❌ Avoid using any other colors, especially orange.
+
+Use shades of the primary blue for hover and active states.
+
+Typography
+
+Font Family: Inter, Segoe UI, system-ui, sans-serif
+
+Font Sizes:
+
+Headings: text-3xl, text-2xl, text-xl
+
+Body: text-base, text-sm
+
+Buttons: text-sm or text-base
+
+Border Radius & Shadow
+
+Border Radius: rounded-2xl
+
+Shadows: Use soft shadows like shadow-md or shadow-lg
+
+Spacing
+
+Use Tailwind spacing scale: p-4, px-6, py-3, etc.
+
+Maintain generous spacing between elements for clarity.
+
+🧱 Component Structure
+
+Reusability
+
+Extract UI into components like <Input />, <Button />, <Card />, <FormWrapper />.
+
+Atomic Layout
+
+Build from smallest to largest: Button → Form → Section → Page
+
+Loading States
+
+Every page and major action should have a spinner (<Spinner />) or skeleton loader.
+
+Error Handling
+
+Display meaningful error messages inside a <Alert variant="destructive" /> component.
+
+🔐 Authentication Rules
+
+Use NextAuth.js for authentication and session management.
+Always check if the user is logged in (via NextAuth session).
+Redirect to /login if unauthenticated (use middleware or server-side checks).
+After login, redirect to /dashboard.
+Use protected route wrappers (HOC or middleware).
+
+🧭 Navigation & Layout
+
+Responsive navigation: sidebar on desktop, drawer on mobile.
+Header should show app name and user avatar on the right.
+Footer can include support links or contact.
+
+Additional Next.js Notes:
+
+- Use Next.js API routes for backend logic (in /app/api or /pages/api).
+- Prefer Server Components for data fetching and SSR/SSG where appropriate.
+- Use next/image for optimized images.
+- Use next/link for navigation.
+- Place shared logic in utils/, services/, or relevant reusable modules as before.
