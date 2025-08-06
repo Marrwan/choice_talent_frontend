@@ -18,7 +18,7 @@ import { loginSchema, type LoginFormData } from '@/lib/validations'
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, isAuthenticated } = useAuth()
+  const { login, isAuthenticated, isInitialized } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -36,10 +36,11 @@ export default function LoginPage() {
 
   // Redirect if already authenticated
   React.useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard/career')
+    if (isInitialized && isAuthenticated) {
+      console.log('[LoginPage] User is authenticated, redirecting to career dashboard')
+      router.replace('/dashboard/career')
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, isInitialized, router])
 
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true)
@@ -55,7 +56,8 @@ export default function LoginPage() {
       login(response.user, response.token)
       
       // Redirect to career dashboard
-      router.push('/dashboard/career')
+      console.log('[LoginPage] Login successful, redirecting to career dashboard')
+      router.replace('/dashboard/career')
 
     } catch (error: unknown) {
       let errorMessage = 'Login failed. Please check your credentials and try again.'

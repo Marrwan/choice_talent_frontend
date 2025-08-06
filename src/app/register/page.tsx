@@ -19,7 +19,7 @@ import { registerSchema, type RegisterFormData } from '@/lib/validations'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isInitialized } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -41,10 +41,11 @@ export default function RegisterPage() {
 
   // Redirect if already authenticated
   React.useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard/career')
+    if (isInitialized && isAuthenticated) {
+      console.log('[RegisterPage] User is authenticated, redirecting to career dashboard')
+      router.replace('/dashboard/career')
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, isInitialized, router])
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsSubmitting(true)
