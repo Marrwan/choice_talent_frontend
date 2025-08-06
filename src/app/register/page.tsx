@@ -42,7 +42,7 @@ export default function RegisterPage() {
   // Redirect if already authenticated
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard')
+      router.push('/dashboard/career')
     }
   }, [isAuthenticated, router])
 

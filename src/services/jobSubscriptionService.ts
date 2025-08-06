@@ -91,10 +91,67 @@ export const jobSubscriptionService = {
     return response.data;
   },
 
-  // Get subscription packages
+  // Get subscription packages with updated pricing
   async getSubscriptionPackages(): Promise<SubscriptionPackage[]> {
-    const response = await apiClient.get<{ packages: SubscriptionPackage[] }>('/job-subscription/packages', false);
-    return response.data.packages;
+    // Return hardcoded packages with new pricing structure
+    return [
+      {
+        id: '0-2_years',
+        name: '0-2 Years Experience',
+        price: 3000,
+        duration: 6,
+        description: 'For professionals with 0-2 years of work experience',
+        features: [
+          'Profile forwarding to employers',
+          'Career advisory',
+          'Profile screening',
+          'Job application feedback',
+          'Profile assessment feedback'
+        ]
+      },
+      {
+        id: '3-5_years',
+        name: '3-5 Years Experience',
+        price: 5000,
+        duration: 6,
+        description: 'For professionals with 3-5 years of work experience',
+        features: [
+          'Profile forwarding to employers',
+          'Career advisory',
+          'Profile screening',
+          'Job application feedback',
+          'Profile assessment feedback'
+        ]
+      },
+      {
+        id: '6-7_years',
+        name: '6-7 Years Experience',
+        price: 7000,
+        duration: 6,
+        description: 'For professionals with 6-7 years of work experience',
+        features: [
+          'Profile forwarding to employers',
+          'Career advisory',
+          'Profile screening',
+          'Job application feedback',
+          'Profile assessment feedback'
+        ]
+      },
+      {
+        id: '10_plus_years',
+        name: '10+ Years Experience',
+        price: 10000,
+        duration: 6,
+        description: 'For professionals with 10+ years of work experience',
+        features: [
+          'Profile forwarding to employers',
+          'Career advisory',
+          'Profile screening',
+          'Job application feedback',
+          'Profile assessment feedback'
+        ]
+      }
+    ];
   },
 
   // Create subscription

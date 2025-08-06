@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     domains: ['localhost', 'choice-talent-backend.onrender.com'],
+    
   },
   eslint: {
     // Warning: This allows production builds to successfully complete even if

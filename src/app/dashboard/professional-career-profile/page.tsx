@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/lib/useToast';
 import { professionalCareerProfileService } from '@/services/professionalCareerProfileService';
-import { Eye, Edit, Plus, User, Briefcase, GraduationCap, Award, Users, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { Eye, Edit, Plus, User, Briefcase, GraduationCap, Award, Users, FileText, CheckCircle, AlertCircle, Download, Crown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfessionalCareerProfilePage() {
@@ -60,6 +60,25 @@ export default function ProfessionalCareerProfilePage() {
     
     const completedFields = fields.filter(Boolean).length;
     return Math.round((completedFields / fields.length) * 100);
+  };
+
+  const handleDownloadPDF = () => {
+    const completionPercentage = getCompletionPercentage();
+    
+    if (completionPercentage < 100) {
+      toast.showError('Please complete your profile before downloading', 'Profile Incomplete');
+      return;
+    }
+    
+    // Check if user has premium subscription or needs to pay
+    // For now, we'll show a payment prompt
+    toast.showInfo('PDF download requires payment. Redirecting to payment page...', 'Payment Required');
+    
+    // Redirect to payment page for PDF download
+    // This would typically check user's subscription status
+    setTimeout(() => {
+      window.open('/dashboard/job-subscription', '_blank');
+    }, 2000);
   };
 
   if (loading) {
@@ -154,6 +173,20 @@ export default function ProfessionalCareerProfilePage() {
                   Edit Profile
                 </Button>
               </Link>
+              <Button 
+                className="flex-1" 
+                variant="outline"
+                onClick={handleDownloadPDF}
+                disabled={getCompletionPercentage() < 100}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Download PDF
+                {getCompletionPercentage() < 100 && (
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    ₦3,000
+                  </Badge>
+                )}
+              </Button>
             </div>
 
             {/* Profile Sections Status */}

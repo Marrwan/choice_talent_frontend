@@ -37,7 +37,7 @@ export default function LoginPage() {
   // Redirect if already authenticated
   React.useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard')
+      router.push('/dashboard/career')
     }
   }, [isAuthenticated, router])
 
@@ -54,8 +54,8 @@ export default function LoginPage() {
       tokenManager.set(response.token)
       login(response.user, response.token)
       
-      // Redirect to dashboard
-      router.push('/dashboard')
+      // Redirect to career dashboard
+      router.push('/dashboard/career')
 
     } catch (error: unknown) {
       let errorMessage = 'Login failed. Please check your credentials and try again.'

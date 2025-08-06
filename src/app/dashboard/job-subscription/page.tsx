@@ -15,7 +15,7 @@ import jobSubscriptionService, {
 } from '@/services/jobSubscriptionService';
 import { CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
 
-export default function JobSubscriptionPage() {
+export default function ProfileForwardingPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -43,10 +43,10 @@ export default function JobSubscriptionPage() {
       setPackages(packagesData);
       setSubscriptions(subscriptionsData);
     } catch (error) {
-      console.error('Error loading job subscription data:', error);
+      console.error('Error loading profile forwarding data:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load job subscription data',
+        description: 'Failed to load profile forwarding data',
         variant: 'destructive'
       });
     } finally {
@@ -101,10 +101,10 @@ export default function JobSubscriptionPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <XCircle className="h-5 w-5 text-red-500" />
-              Job Subscription Not Available
+              Profile Forwarding Not Available
             </CardTitle>
             <CardDescription>
-              You need to complete certain requirements before accessing job subscription features.
+              You need to complete certain requirements before accessing profile forwarding features.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -112,7 +112,7 @@ export default function JobSubscriptionPage() {
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Requirements to access job subscription:</strong>
+                  <strong>Requirements to access profile forwarding:</strong>
                 </AlertDescription>
               </Alert>
               
@@ -160,10 +160,10 @@ export default function JobSubscriptionPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              Active Job Subscription
+              Active Profile Forwarding
             </CardTitle>
             <CardDescription>
-              You currently have an active job subscription.
+              You currently have an active profile forwarding subscription.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -242,17 +242,17 @@ export default function JobSubscriptionPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Job Application Support</h1>
+          <h1 className="text-3xl font-bold">Profile Forwarding Services</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Get professional support for your job search with our comprehensive subscription packages. 
-            We'll help you stand out to potential employers and advance your career.
+            Get your profile forwarded to top employers with our comprehensive subscription packages. 
+            We'll help you stand out and accelerate your career growth.
           </p>
         </div>
 
         {/* Benefits */}
         <Card>
           <CardHeader>
-            <CardTitle>Subscription Benefits</CardTitle>
+            <CardTitle>Profile Forwarding Benefits</CardTitle>
             <CardDescription>
               All packages include the following professional services:
             </CardDescription>
@@ -351,9 +351,9 @@ export default function JobSubscriptionPage() {
         {subscriptions.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Your Subscription History</CardTitle>
+              <CardTitle>Your Profile Forwarding History</CardTitle>
               <CardDescription>
-                View your previous and current subscriptions
+                View your previous and current profile forwarding subscriptions
               </CardDescription>
             </CardHeader>
             <CardContent>
