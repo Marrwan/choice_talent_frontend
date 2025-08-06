@@ -15,7 +15,7 @@ import jobSubscriptionService, {
 } from '@/services/jobSubscriptionService';
 import { CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
 
-export default function ProfileForwardingPage() {
+export default function JobSubscriptionPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -43,10 +43,10 @@ export default function ProfileForwardingPage() {
       setPackages(packagesData);
       setSubscriptions(subscriptionsData);
     } catch (error) {
-      console.error('Error loading profile forwarding data:', error);
+      console.error('Error loading job subscription data:', error);
       toast({
         title: 'Error',
-        description: 'Failed to load profile forwarding data',
+        description: 'Failed to load job subscription data',
         variant: 'destructive'
       });
     } finally {
@@ -83,6 +83,21 @@ export default function ProfileForwardingPage() {
     }
   };
 
+  const getPackageDisplayName = (pkg: SubscriptionPackage) => {
+    switch (pkg.id) {
+      case '0-2_years':
+        return '0 – 2 years of Work Experience';
+      case '3-5_years':
+        return '3 – 5 years of Work Experience';
+      case '6-7_years':
+        return '6 – 7 years of Work Experience';
+      case '10_plus_years':
+        return '10+ years of Work Experience';
+      default:
+        return pkg.name;
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -101,10 +116,10 @@ export default function ProfileForwardingPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <XCircle className="h-5 w-5 text-red-500" />
-              Profile Forwarding Not Available
+              Job Subscription Not Available
             </CardTitle>
             <CardDescription>
-              You need to complete certain requirements before accessing profile forwarding features.
+              You need to complete certain requirements before accessing job subscription features.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -112,7 +127,7 @@ export default function ProfileForwardingPage() {
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Requirements to access profile forwarding:</strong>
+                  <strong>Requirements to access job subscription:</strong>
                 </AlertDescription>
               </Alert>
               
@@ -160,10 +175,10 @@ export default function ProfileForwardingPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              Active Profile Forwarding
+              Active Job Subscription
             </CardTitle>
             <CardDescription>
-              You currently have an active profile forwarding subscription.
+              You currently have an active job subscription.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -242,17 +257,17 @@ export default function ProfileForwardingPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Profile Forwarding Services</h1>
+          <h1 className="text-3xl font-bold">Job Application Support</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Get your profile forwarded to top employers with our comprehensive subscription packages. 
-            We'll help you stand out and accelerate your career growth.
+            Get professional support for your job search with our comprehensive subscription packages. 
+            We'll help you stand out to potential employers and advance your career.
           </p>
         </div>
 
         {/* Benefits */}
         <Card>
           <CardHeader>
-            <CardTitle>Profile Forwarding Benefits</CardTitle>
+            <CardTitle>Subscription Benefits</CardTitle>
             <CardDescription>
               All packages include the following professional services:
             </CardDescription>
@@ -313,13 +328,13 @@ export default function ProfileForwardingPage() {
                 onClick={() => handleSelectPackage(pkg)}
               >
                 <CardHeader className="text-center">
-                  <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                  <CardDescription>{pkg.description}</CardDescription>
+                  <CardTitle className="text-lg">{getPackageDisplayName(pkg)}</CardTitle>
+                  <CardDescription>Professionals with {getPackageDisplayName(pkg)}</CardDescription>
                   <div className="text-3xl font-bold text-primary">
-                    ₦{pkg.price.toLocaleString()}
+                    ₦{(pkg.price / 100).toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {pkg.duration} months
+                    {pkg.duration / 30} months
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -351,9 +366,9 @@ export default function ProfileForwardingPage() {
         {subscriptions.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Your Profile Forwarding History</CardTitle>
+              <CardTitle>Your Subscription History</CardTitle>
               <CardDescription>
-                View your previous and current profile forwarding subscriptions
+                View your previous and current subscriptions
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -362,10 +377,14 @@ export default function ProfileForwardingPage() {
                   <div key={subscription.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <p className="font-semibold">
-                        {subscription.subscriptionType.replace('_', ' ').replace('-', ' ')}
+                        {subscription.subscriptionType === '0-2_years' ? '0 – 2 years of Work Experience' :
+                         subscription.subscriptionType === '3-5_years' ? '3 – 5 years of Work Experience' :
+                         subscription.subscriptionType === '6-7_years' ? '6 – 7 years of Work Experience' :
+                         subscription.subscriptionType === '10_plus_years' ? '10+ years of Work Experience' :
+                         subscription.subscriptionType.replace('_', ' ').replace('-', ' ')}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        ₦{subscription.price.toLocaleString()} • {subscription.duration} months
+                        ₦{(subscription.price / 100).toLocaleString()} • {subscription.duration / 30} months
                       </p>
                     </div>
                     <Badge variant={subscription.status === 'active' ? 'default' : 'secondary'}>

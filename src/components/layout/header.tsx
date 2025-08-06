@@ -94,15 +94,21 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Dashboard</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link href="/dashboard/career" className="cursor-pointer">
                       <Briefcase className="mr-2 h-4 w-4" />
                       <span>Career Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Dating Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/profile-forwarding" className="cursor-pointer">
+                      <FileText className="mr-2 h-4 w-4" />
+                      <span>Profile Forwarding</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>

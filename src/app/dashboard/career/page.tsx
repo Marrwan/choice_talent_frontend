@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,6 +34,7 @@ import Link from 'next/link';
 
 export default function CareerDashboardPage() {
   const toast = useToast();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
@@ -119,8 +121,14 @@ export default function CareerDashboardPage() {
   };
 
   const handleDownloadProfile = () => {
-    // TODO: Implement PDF generation and download
-    toast.showInfo('PDF download feature coming soon', 'Info');
+    // Check if profile is complete
+    if (stats.profileComplete < 100) {
+      toast.showError('Please complete your career profile before downloading', 'Profile Incomplete');
+      return;
+    }
+    
+    // Redirect to payment page
+    router.push('/dashboard/career/resume-payment');
   };
 
   if (loading) {

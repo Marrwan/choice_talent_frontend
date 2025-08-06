@@ -155,7 +155,7 @@ export default function PaymentDetailsPage() {
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Payment Details</h1>
           <p className="text-muted-foreground">
-            Complete your payment to activate your profile forwarding subscription
+            Complete your payment to activate your job subscription
           </p>
         </div>
 
@@ -198,7 +198,7 @@ export default function PaymentDetailsPage() {
               ₦{payment.amount.toLocaleString()}
             </div>
             <p className="text-muted-foreground mt-2">
-              Amount to be paid for your profile forwarding subscription
+              Amount to be paid for your job subscription
             </p>
           </CardContent>
         </Card>
@@ -385,7 +385,7 @@ export default function PaymentDetailsPage() {
             variant="outline"
             onClick={() => router.push('/dashboard/job-subscription')}
           >
-            Back to Profile Forwarding
+            Back to Subscriptions
           </Button>
           <Button
             onClick={() => router.push('/dashboard/career')}
