@@ -15,6 +15,7 @@ import { authService } from '@/services/authService'
 import { ApiRequestError, tokenManager } from '@/lib/api'
 import { useAuth } from '@/lib/store'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
+import { professionalCareerProfileService } from '@/services/professionalCareerProfileService';
 
 export default function LoginPage() {
   const router = useRouter()
@@ -24,6 +25,7 @@ export default function LoginPage() {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [needsActivation, setNeedsActivation] = useState(false)
   const [userEmail, setUserEmail] = useState<string>('')
+  const [checkingProfile, setCheckingProfile] = useState(false);
 
   const {
     register,
@@ -55,10 +57,44 @@ export default function LoginPage() {
       tokenManager.set(response.token)
       login(response.user, response.token)
       
-      // Redirect to career dashboard
-      console.log('[LoginPage] Login successful, redirecting to career dashboard')
-      router.replace('/dashboard/career')
-
+      // After login, check career profile completion
+      setCheckingProfile(true)
+      const profileRes = await professionalCareerProfileService.getProfile();
+      setCheckingProfile(false)
+      if (profileRes.success && profileRes.data.profile) {
+        const profile = profileRes.data.profile;
+        // Check required fields (adjust as needed)
+        const requiredFields = [
+          profile.fullName,
+          profile.gender,
+          profile.dateOfBirth,
+          profile.phoneNumber,
+          profile.emailAddress,
+          profile.address,
+          profile.lgaOfResidence,
+          profile.stateOfResidence,
+          profile.professionalSummary,
+          profile.persona,
+          (profile.expertiseCompetencies?.length || 0) > 0,
+          (profile.softwareSkills?.length || 0) > 0,
+          (profile.workExperiences?.length || 0) > 0,
+          (profile.higherEducations?.length || 0) > 0,
+          (profile.basicEducations?.length || 0) > 0,
+          (profile.professionalMemberships?.length || 0) > 0,
+          (profile.trainingCertifications?.length || 0) > 0,
+          profile.nyscStatus,
+          (profile.referenceDetails?.length || 0) > 0
+        ];
+        const isComplete = requiredFields.filter(Boolean).length === requiredFields.length;
+        if (isComplete) {
+          router.replace('/dashboard/career');
+        } else {
+          router.replace('/dashboard/professional-career-profile');
+        }
+      } else {
+        // If no profile, redirect to form
+        router.replace('/dashboard/professional-career-profile');
+      }
     } catch (error: unknown) {
       let errorMessage = 'Login failed. Please check your credentials and try again.'
       
@@ -77,6 +113,7 @@ export default function LoginPage() {
       setSubmitError(errorMessage)
     } finally {
       setIsSubmitting(false)
+      setCheckingProfile(false)
     }
   }
 
@@ -106,6 +143,17 @@ export default function LoginPage() {
       
       setSubmitError(errorMessage)
     }
+  }
+
+  if (checkingProfile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Checking your profile...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

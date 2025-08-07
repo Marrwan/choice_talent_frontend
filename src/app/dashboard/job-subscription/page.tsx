@@ -257,11 +257,8 @@ export default function JobSubscriptionPage() {
       <div className="space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Job Application Support</h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Get professional support for your job search with our comprehensive subscription packages. 
-            We'll help you stand out to potential employers and advance your career.
-          </p>
+          <h1 className="text-3xl font-bold">Profile Forwarding</h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto">Get your profile in front of employers with our Profile Forwarding service. We'll help you stand out and advance your career.</p>
         </div>
 
         {/* Benefits */}

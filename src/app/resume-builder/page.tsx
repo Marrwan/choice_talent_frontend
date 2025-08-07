@@ -172,7 +172,7 @@ export default function ResumeBuilderPage() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 px-4 bg-gray-50">
+      {/* <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -237,7 +237,7 @@ export default function ResumeBuilderPage() {
             </Card>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Testimonials Section */}
       <section className="py-20 px-4 bg-white">

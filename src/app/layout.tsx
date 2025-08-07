@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ToastContextProvider } from "@/lib/useToast";
 import { AuthDebug } from "@/components/debug/AuthDebug";
+import { Header } from '@/components/layout/header';
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
           <ToastContextProvider>
+            <Header />
             {children}
             <AuthDebug />
           </ToastContextProvider>
