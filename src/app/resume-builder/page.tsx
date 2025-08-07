@@ -25,7 +25,7 @@ export default function ResumeBuilderPage() {
   const { isAuthenticated, user } = useAuth()
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated} user={user || undefined}>
+    <>
       {/* Hero Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto text-center">
@@ -102,8 +102,7 @@ export default function ResumeBuilderPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Download your professional resume as a high-quality PDF 
-                  ready to send to employers immediately.
+                  Download your resume instantly as a high-quality PDF, ready to share with employers.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -360,6 +359,6 @@ export default function ResumeBuilderPage() {
           )}
         </div>
       </section>
-    </MainLayout>
+    </>
   )
 } 

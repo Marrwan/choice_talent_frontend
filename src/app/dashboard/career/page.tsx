@@ -410,13 +410,13 @@ export default function CareerDashboardPage() {
               </CardContent>
             </Card>
 
-            {/* Job Subscription Status */}
+            {/* Subscription Status */}
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <CardTitle className="flex items-center">
                     <Crown className="mr-2 h-5 w-5" />
-                    Job Subscription Status
+                    Subscription Status
                   </CardTitle>
                   {subscriptionEligibility && (
                     <Link href="/dashboard/job-subscription">

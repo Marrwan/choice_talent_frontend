@@ -175,10 +175,10 @@ export default function JobSubscriptionPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-500" />
-              Active Job Subscription
+              Active Subscription
             </CardTitle>
             <CardDescription>
-              You currently have an active job subscription.
+              You currently have an active subscription.
             </CardDescription>
           </CardHeader>
           <CardContent>
