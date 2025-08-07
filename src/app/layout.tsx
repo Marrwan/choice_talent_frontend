@@ -5,6 +5,13 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ToastContextProvider } from "@/lib/useToast";
 import { AuthDebug } from "@/components/debug/AuthDebug";
 import { Header } from '@/components/layout/header';
+import { useAuth } from '@/lib/store';
+import React from 'react';
+
+function HeaderWithAuth() {
+  const { isAuthenticated, user, logout } = useAuth();
+  return <Header isAuthenticated={isAuthenticated} user={user || undefined} onLogout={logout} />;
+}
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -48,7 +55,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
           <ToastContextProvider>
-            <Header />
+            <HeaderWithAuth />
             {children}
             <AuthDebug />
           </ToastContextProvider>
