@@ -98,6 +98,26 @@ export const userService = {
   },
 
   // Change password
+
+  // Get all users (for group creation)
+  async getUsers(): Promise<{ success: boolean; data: User[] }> {
+    const response = await apiClient.request<{ success: boolean; data: User[] }>({
+      method: 'GET',
+      endpoint: '/user/users',
+      requiresAuth: true
+    })
+    return response
+  },
+
+  // Search users
+  async searchUsers(query: string): Promise<{ success: boolean; data: User[] }> {
+    const response = await apiClient.request<{ success: boolean; data: User[] }>({
+      method: 'GET',
+      endpoint: `/user/search?q=${encodeURIComponent(query)}`,
+      requiresAuth: true
+    })
+    return response
+  },
   async changePassword(data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> {
     const response = await apiClient.request<{ success: boolean; message: string }>({
       method: 'POST',

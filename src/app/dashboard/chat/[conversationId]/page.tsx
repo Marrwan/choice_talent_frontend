@@ -289,12 +289,17 @@ export default function ChatPage() {
     const pc = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' }
+      ],
+      iceCandidatePoolSize: 10
     })
 
     pc.onicecandidate = (event) => {
       if (event.candidate && conversation?.otherParticipant) {
+        console.log('[Call] Sending ICE candidate:', event.candidate)
         socketService.sendIceCandidate({
           targetUserId: conversation.otherParticipant.id,
           candidate: event.candidate,
@@ -303,8 +308,30 @@ export default function ChatPage() {
       }
     }
 
+    pc.oniceconnectionstatechange = () => {
+      console.log('[Call] ICE connection state:', pc.iceConnectionState)
+      if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+        console.log('[Call] ICE connection established successfully')
+        setCallState('active')
+      } else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
+        console.log('[Call] ICE connection failed or disconnected')
+        endCall()
+      }
+    }
+
+    pc.onconnectionstatechange = () => {
+      console.log('[Call] Connection state:', pc.connectionState)
+      if (pc.connectionState === 'connected') {
+        console.log('[Call] WebRTC connection established')
+        setCallState('active')
+      } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+        console.log('[Call] WebRTC connection failed')
+        endCall()
+      }
+    }
+
     pc.ontrack = (event) => {
-      console.log('[Call] Remote stream received')
+      console.log('[Call] Remote stream received:', event.streams[0])
       setRemoteStream(event.streams[0])
     }
 
@@ -329,8 +356,9 @@ export default function ChatPage() {
       setCallType(type)
       setCallState('initiating')
 
-      // Get user media
+      // Get user media with better error handling
       const stream = await getUserMedia(true, type === 'video')
+      console.log('[Call] Local media stream obtained:', stream.getTracks().map(t => t.kind))
       
       // Set up peer connection
       const pc = setupPeerConnection()
@@ -338,12 +366,20 @@ export default function ChatPage() {
 
       // Add stream to peer connection
       stream.getTracks().forEach(track => {
+        console.log('[Call] Adding track to peer connection:', track.kind, track.id)
         pc.addTrack(track, stream)
       })
 
-      // Create offer
-      const offer = await pc.createOffer()
+      // Create offer with proper constraints
+      const offerOptions = {
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: type === 'video'
+      }
+      
+      console.log('[Call] Creating offer with options:', offerOptions)
+      const offer = await pc.createOffer(offerOptions)
       await pc.setLocalDescription(offer)
+      console.log('[Call] Local description set:', offer.type)
 
       // Send call initiation
       socketService.initiateCall({
@@ -365,11 +401,13 @@ export default function ChatPage() {
       })
 
       setCallState('outgoing_ringing')
+      console.log('[Call] Call initiated successfully')
     } catch (error) {
       console.error('Error initiating call:', error)
       setCallState('idle')
+      toast.showError('Failed to start call. Please check your microphone and camera permissions.', 'Error')
     }
-  }, [conversation, conversationId, currentUser])
+  }, [conversation, conversationId, currentUser, toast])
 
   // Ensure socket is connected when component mounts
   useEffect(() => {
@@ -607,11 +645,40 @@ export default function ChatPage() {
       }
     }
 
+    const handleMessageSent = (...args: unknown[]) => {
+      const data = args[0] as any
+      console.log('[Chat] Message sent confirmation received:', data)
+      
+      // Replace temporary message with confirmed message
+      if (data.tempMessageId && data.messageId) {
+        setMessages((prev) => {
+          return prev.map(msg => 
+            msg.id === data.tempMessageId 
+              ? { ...msg, id: data.messageId, confirmed: true }
+              : msg
+          )
+        })
+      }
+    }
+
+    const handleMessageError = (...args: unknown[]) => {
+      const data = args[0] as any
+      console.error('[Chat] Message error received:', data)
+      
+      // Remove failed message and show error
+      if (data.tempMessageId) {
+        setMessages((prev) => prev.filter(msg => msg.id !== data.tempMessageId))
+        toast.showError('Failed to send message', 'Error')
+      }
+    }
+
     // Register socket event listeners with proper cleanup
     const eventListeners = [
       { event: 'new_message', handler: handleNewMessage },
       { event: 'user_typing', handler: handleTyping },
       { event: 'user_stopped_typing', handler: handleStopTyping },
+      { event: 'message_sent', handler: handleMessageSent },
+      { event: 'message_error', handler: handleMessageError },
       { event: 'incoming_call', handler: handleIncomingCall },
       { event: 'call_accepted', handler: handleCallAccepted },
       { event: 'call_ended', handler: handleCallEnded },
@@ -722,8 +789,9 @@ export default function ChatPage() {
       setIncomingCall(false)
       setCallState('connecting')
 
-      // Get user media
+      // Get user media with better error handling
       const stream = await getUserMedia(true, callType === 'video')
+      console.log('[Call] Local media stream obtained for incoming call:', stream.getTracks().map(t => t.kind))
       
       // Set up peer connection
       const pc = setupPeerConnection()
@@ -731,6 +799,7 @@ export default function ChatPage() {
 
       // Add stream to peer connection
       stream.getTracks().forEach(track => {
+        console.log('[Call] Adding track to peer connection for incoming call:', track.kind, track.id)
         pc.addTrack(track, stream)
       })
 
@@ -747,6 +816,7 @@ export default function ChatPage() {
       setIncomingCall(false)
       setIncomingCallData(null)
       endCall()
+      toast.showError('Failed to accept call. Please check your microphone and camera permissions.', 'Error')
     }
   }
 

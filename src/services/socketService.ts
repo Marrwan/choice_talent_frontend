@@ -383,9 +383,15 @@ class SocketService {
   }): void {
     if (this.socket?.connected) {
       console.log(`[Socket] Sending message to conversation: ${data.conversationId}`)
+      console.log(`[Socket] Message data:`, JSON.stringify(data, null, 2))
       this.socket.emit('send_message', data)
     } else {
       console.error(`[Socket] Cannot send message: Socket not connected`)
+      // Emit error event for UI handling
+      this.emitToHandlers('message_error', {
+        tempMessageId: data.tempMessageId,
+        error: 'Socket not connected'
+      })
     }
   }
 

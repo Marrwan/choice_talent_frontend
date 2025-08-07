@@ -378,7 +378,7 @@ export default function DashboardPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Crown className="h-5 w-5 text-yellow-600" />
-                  Job Application Support
+                  Profile Forwarding
                 </CardTitle>
                 <CardDescription>
                   Professional job search assistance and career support
