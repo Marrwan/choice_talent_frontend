@@ -3,15 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ToastContextProvider } from "@/lib/useToast";
-import { AuthDebug } from "@/components/debug/AuthDebug";
-import { Header } from '@/components/layout/header';
-import { useAuth } from '@/lib/store';
-import React from 'react';
+import { HeaderWithAuth } from '@/components/layout/HeaderWithAuth';
 
-function HeaderWithAuth() {
-  const { isAuthenticated, user, logout } = useAuth();
-  return <Header isAuthenticated={isAuthenticated} user={user || undefined} onLogout={logout} />;
-}
+import React from 'react';
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -57,7 +51,6 @@ export default function RootLayout({
           <ToastContextProvider>
             <HeaderWithAuth />
             {children}
-            <AuthDebug />
           </ToastContextProvider>
         </AuthProvider>
       </body>

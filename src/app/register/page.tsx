@@ -25,13 +25,13 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [registrationSuccess, setRegistrationSuccess] = useState<string | null>(null)
+  const [acceptTerms, setAcceptTerms] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
-    getValues
+    setValue
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -224,16 +224,25 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start space-x-3">
                 <Checkbox
                   id="acceptTerms"
-                  checked={getValues('acceptTerms')}
-                  onCheckedChange={(checked) => setValue('acceptTerms', !!checked)}
-                  className={errors.acceptTerms ? 'border-red-500' : ''}
+                  checked={acceptTerms}
+                  onCheckedChange={(checked) => {
+                    const isChecked = !!checked;
+                    setAcceptTerms(isChecked);
+                    setValue('acceptTerms', isChecked);
+                  }}
+                  className={`h-5 w-5 mt-0.5 ${errors.acceptTerms ? 'border-red-500' : ''}`}
                 />
                 <Label 
                   htmlFor="acceptTerms" 
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="text-sm leading-relaxed cursor-pointer"
+                  onClick={() => {
+                    const newValue = !acceptTerms;
+                    setAcceptTerms(newValue);
+                    setValue('acceptTerms', newValue);
+                  }}
                 >
                   I agree to the{' '}
                   <Link href="/terms" className="text-[#0044CC] hover:underline">

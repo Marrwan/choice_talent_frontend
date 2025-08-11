@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { useAuth } from '@/lib/store';
 import { professionalCareerProfileService } from '@/services/professionalCareerProfileService';
 import { jobHuntingSettingsService } from '@/services/jobHuntingSettingsService';
 import jobSubscriptionService from '@/services/jobSubscriptionService';
+import { userService } from '@/services/userService';
+import { getFullImageUrl } from '@/lib/utils';
 import { 
   User, 
   Briefcase, 
@@ -35,9 +37,10 @@ import Link from 'next/link';
 export default function CareerDashboardPage() {
   const toast = useToast();
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [jobSettings, setJobSettings] = useState<any>(null);
   const [subscriptionEligibility, setSubscriptionEligibility] = useState<any>(null);
   const [stats, setStats] = useState({
@@ -46,14 +49,38 @@ export default function CareerDashboardPage() {
     interviews: 0,
     offers: 0
   });
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [user]);
+
+  // Ensure user data is refreshed when component mounts and user is authenticated
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      refreshUser();
+    }
+  }, [isAuthenticated, user, refreshUser]);
+
+  // Update userProfile when user changes
+  useEffect(() => {
+    if (user) {
+      setUserProfile(user);
+    }
+  }, [user]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
+      
+      // Always refresh user data to ensure we have the latest information
+      if (user) {
+        setUserProfile(user);
+      } else {
+        await refreshUser();
+        // The user state will be updated after refreshUser
+      }
       
       // Load professional profile
       const profileResponse = await professionalCareerProfileService.getProfile();
@@ -131,6 +158,56 @@ export default function CareerDashboardPage() {
     router.push('/dashboard/career/resume-payment');
   };
 
+  const handleProfilePictureClick = () => {
+    setShowProfileModal(true);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      handleProfilePictureUpload(file);
+    }
+  };
+
+  const handleProfilePictureUpload = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('profilePicture', file);
+      
+      const response = await userService.uploadCareerProfilePicture(formData);
+      if (response.success) {
+        toast.showSuccess('Profile picture updated successfully!', 'Success');
+        
+        // Refresh user data in auth store to get the updated profile picture
+        await refreshUser();
+      } else {
+        toast.showError(response.message || 'Failed to update profile picture', 'Error');
+      }
+    } catch (error) {
+      console.error('Profile picture upload error:', error);
+      toast.showError('Failed to update profile picture', 'Error');
+    }
+    setShowProfileModal(false);
+  };
+
+  const handleDeleteProfilePicture = async () => {
+    try {
+      const response = await userService.deleteCareerProfilePicture();
+      if (response.success) {
+        toast.showSuccess('Profile picture deleted successfully!', 'Success');
+        
+        // Refresh user data in auth store to reflect the deletion
+        await refreshUser();
+      } else {
+        toast.showError(response.message || 'Failed to delete profile picture', 'Error');
+      }
+    } catch (error) {
+      console.error('Profile picture deletion error:', error);
+      toast.showError('Failed to delete profile picture', 'Error');
+    }
+    setShowProfileModal(false);
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -183,17 +260,26 @@ export default function CareerDashboardPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
-                  {profile?.profilePicture ? (
-                    <img
-                      src={profile.profilePicture}
-                      alt="Profile"
-                      className="w-16 h-16 object-cover rounded-full"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                      <User className="w-8 h-8 text-gray-400" />
-                    </div>
-                  )}
+                  <div 
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={handleProfilePictureClick}
+                  >
+                    {userProfile?.careerProfilePicture ? (
+                      <img
+                        src={getFullImageUrl(userProfile.careerProfilePicture)}
+                        alt="Profile"
+                        className="w-16 h-16 object-cover rounded-full"
+                        onError={(e) => {
+                          console.error('[Career Dashboard] Image failed to load:', userProfile.careerProfilePicture);
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                        <User className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">{user?.name || 'User'}</h3>
                     <p className="text-sm text-gray-600">{user?.email}</p>
@@ -250,10 +336,10 @@ export default function CareerDashboardPage() {
                   </Button>
                 </Link>
                 
-                <Link href="/dashboard/settings" className="block">
+                <Link href="/dashboard/career/settings" className="block">
                   <Button variant="outline" className="w-full justify-start">
                     <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                    Career Settings
                   </Button>
                 </Link>
               </CardContent>
@@ -284,7 +370,7 @@ export default function CareerDashboardPage() {
                     <div className="flex items-start gap-4">
                       {profile.profilePicture ? (
                         <img
-                          src={profile.profilePicture}
+                          src={getFullImageUrl(profile.profilePicture)}
                           alt="Profile"
                           className="w-20 h-20 object-cover rounded-lg"
                         />
@@ -504,7 +590,7 @@ export default function CareerDashboardPage() {
                       <div>
                         <h3 className="font-semibold text-yellow-700">No Active Subscription</h3>
                         <p className="text-sm text-gray-600">
-                          You're eligible for job subscription services
+                          You're eligible for subscription services
                         </p>
                       </div>
                     </div>
@@ -635,6 +721,60 @@ export default function CareerDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Profile Picture Modal */}
+      {showProfileModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Profile Picture</h3>
+            
+            {userProfile?.careerProfilePicture && (
+              <div className="mb-4">
+                <img
+                  src={getFullImageUrl(userProfile.careerProfilePicture)}
+                  alt="Current Profile"
+                  className="w-32 h-32 object-cover rounded-full mx-auto"
+                />
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full"
+              >
+                Upload New Picture
+              </Button>
+              
+              {userProfile?.careerProfilePicture && (
+                <Button
+                  variant="outline"
+                  onClick={handleDeleteProfilePicture}
+                  className="w-full"
+                >
+                  Remove Picture
+                </Button>
+              )}
+              
+              <Button
+                variant="outline"
+                onClick={() => setShowProfileModal(false)}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

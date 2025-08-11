@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
-import { User, LogOut, Settings, Crown, AlertCircle, Briefcase, FileText } from '@/lib/icons'
+import { User, LogOut, Settings, Crown, AlertCircle, Briefcase, FileText, Home } from 'lucide-react'
 
 interface UserData {
   id: string
@@ -22,13 +22,13 @@ interface UserData {
   isPremium?: boolean
 }
 
-interface HeaderProps {
+interface CareerHeaderProps {
   isAuthenticated?: boolean
   user?: UserData | null
   onLogout?: () => void
 }
 
-export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps) {
+export function CareerHeader({ isAuthenticated = false, user, onLogout }: CareerHeaderProps) {
   const getInitials = (email?: string, name?: string) => {
     if (!email && !name) return 'U' // Default fallback
     
@@ -48,11 +48,11 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/dashboard/career" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-[#0044CC] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">CT</span>
             </div>
-            <span className="text-xl font-semibold text-gray-900">Choice Talent</span>
+            <span className="text-xl font-semibold text-gray-900">Choice Talent - Career</span>
           </Link>
 
           {/* Navigation */}
@@ -98,32 +98,31 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                       <span>Career Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile-forwarding" className="cursor-pointer">
-                      <FileText className="mr-2 h-4 w-4" />
-                      <span>Profile Forwarding</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/subscription" className="cursor-pointer">
-                      <Crown className="mr-2 h-4 w-4" />
-                      <span>Subscription</span>
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
                       <FileText className="mr-2 h-4 w-4" />
                       <span>Professional Profile</span>
                     </Link>
                   </DropdownMenuItem>
-
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/job-hunting-settings" className="cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Job Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/job-subscription" className="cursor-pointer">
+                      <Crown className="mr-2 h-4 w-4" />
+                      <span>Job Subscription</span>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard/career/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Career Settings</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
 
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onLogout} className="cursor-pointer">

@@ -165,8 +165,8 @@ export default function ProfessionalCareerProfilePage() {
         location: '',
         courseOfStudy: '',
         qualification: '',
-        yearOfEntry: '',
-        yearOfGraduation: ''
+        entryYear: 0,
+        graduationYear: undefined
       }]
     }));
   };
@@ -193,7 +193,7 @@ export default function ProfessionalCareerProfilePage() {
       basicEducations: [...(prev.basicEducations || []), {
         schoolName: '',
         certification: '',
-        year: '',
+        year: undefined,
         educationType: 'Primary'
       }]
     }));
@@ -220,7 +220,7 @@ export default function ProfessionalCareerProfilePage() {
       ...prev,
       professionalMemberships: [...(prev.professionalMemberships || []), {
         professionalBodyName: '',
-        yearOfJoining: ''
+        yearOfJoining: undefined
       }]
     }));
   };
@@ -342,7 +342,7 @@ export default function ProfessionalCareerProfilePage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
+                              <User className="h-5 w-5" />
               Bio Information
             </CardTitle>
           </CardHeader>
@@ -393,7 +393,7 @@ export default function ProfessionalCareerProfilePage() {
                 <Label htmlFor="fullName">Full Name *</Label>
                 <Input
                   id="fullName"
-                  value={profile.fullName}
+                  value={profile.fullName || ''}
                   onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
                   required
                 />
@@ -419,7 +419,7 @@ export default function ProfessionalCareerProfilePage() {
                 <Input
                   id="dateOfBirth"
                   type="date"
-                  value={profile.dateOfBirth}
+                  value={profile.dateOfBirth || ''}
                   onChange={(e) => setProfile(prev => ({ ...prev, dateOfBirth: e.target.value }))}
                 />
               </div>
@@ -427,7 +427,7 @@ export default function ProfessionalCareerProfilePage() {
                 <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input
                   id="phoneNumber"
-                  value={profile.phoneNumber}
+                  value={profile.phoneNumber || ''}
                   onChange={(e) => setProfile(prev => ({ ...prev, phoneNumber: e.target.value }))}
                 />
               </div>
@@ -435,11 +435,11 @@ export default function ProfessionalCareerProfilePage() {
 
             <div>
               <Label htmlFor="emailAddress">Email Address</Label>
-              <Input
-                id="emailAddress"
-                type="email"
-                value={profile.emailAddress}
-                onChange={(e) => setProfile(prev => ({ ...prev, emailAddress: e.target.value }))}
+                              <Input
+                  id="emailAddress"
+                  type="email"
+                  value={profile.emailAddress || ''}
+                  onChange={(e) => setProfile(prev => ({ ...prev, emailAddress: e.target.value }))}
               />
             </div>
 
@@ -447,7 +447,7 @@ export default function ProfessionalCareerProfilePage() {
               <Label htmlFor="address">Address</Label>
               <Textarea
                 id="address"
-                value={profile.address}
+                value={profile.address || ''}
                 onChange={(e) => setProfile(prev => ({ ...prev, address: e.target.value }))}
                 rows={3}
               />
@@ -458,7 +458,7 @@ export default function ProfessionalCareerProfilePage() {
                 <Label htmlFor="lgaOfResidence">LGA of Residence</Label>
                 <Input
                   id="lgaOfResidence"
-                  value={profile.lgaOfResidence}
+                  value={profile.lgaOfResidence || ''}
                   onChange={(e) => setProfile(prev => ({ ...prev, lgaOfResidence: e.target.value }))}
                 />
               </div>
@@ -466,7 +466,7 @@ export default function ProfessionalCareerProfilePage() {
                 <Label htmlFor="stateOfResidence">State of Residence</Label>
                 <Input
                   id="stateOfResidence"
-                  value={profile.stateOfResidence}
+                  value={profile.stateOfResidence || ''}
                   onChange={(e) => setProfile(prev => ({ ...prev, stateOfResidence: e.target.value }))}
                 />
               </div>
@@ -487,7 +487,7 @@ export default function ProfessionalCareerProfilePage() {
               <Label htmlFor="professionalSummary">Professional Summary</Label>
               <Textarea
                 id="professionalSummary"
-                value={profile.professionalSummary}
+                value={profile.professionalSummary || ''}
                 onChange={(e) => setProfile(prev => ({ ...prev, professionalSummary: e.target.value }))}
                 placeholder="Describe your professional background or personal summary..."
                 rows={4}
@@ -497,7 +497,7 @@ export default function ProfessionalCareerProfilePage() {
               <Label htmlFor="persona">Persona</Label>
               <Textarea
                 id="persona"
-                value={profile.persona}
+                value={profile.persona || ''}
                 onChange={(e) => setProfile(prev => ({ ...prev, persona: e.target.value }))}
                 placeholder="Describe your professional persona or soft skills/personality..."
                 rows={4}
@@ -632,7 +632,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Company Name *</Label>
                     <Input
-                      value={experience.companyName}
+                      value={experience.companyName || ''}
                       onChange={(e) => updateWorkExperience(index, 'companyName', e.target.value)}
                       required
                     />
@@ -640,7 +640,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Company Location</Label>
                     <Input
-                      value={experience.companyLocation}
+                      value={experience.companyLocation || ''}
                       onChange={(e) => updateWorkExperience(index, 'companyLocation', e.target.value)}
                     />
                   </div>
@@ -650,7 +650,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Designation *</Label>
                     <Input
-                      value={experience.designation}
+                      value={experience.designation || ''}
                       onChange={(e) => updateWorkExperience(index, 'designation', e.target.value)}
                       required
                     />
@@ -659,7 +659,7 @@ export default function ProfessionalCareerProfilePage() {
                     <Label>Entry Date *</Label>
                     <Input
                       type="date"
-                      value={experience.entryDate}
+                      value={experience.entryDate || ''}
                       onChange={(e) => updateWorkExperience(index, 'entryDate', e.target.value)}
                       required
                     />
@@ -668,17 +668,17 @@ export default function ProfessionalCareerProfilePage() {
 
                 <div>
                   <Label>Exit Date</Label>
-                  <Input
-                    type="date"
-                    value={experience.exitDate}
-                    onChange={(e) => updateWorkExperience(index, 'exitDate', e.target.value)}
-                  />
+                                      <Input
+                      type="date"
+                      value={experience.exitDate || ''}
+                      onChange={(e) => updateWorkExperience(index, 'exitDate', e.target.value)}
+                    />
                 </div>
 
                 <div>
                   <Label>Job Description</Label>
                   <Textarea
-                    value={experience.jobDescription}
+                    value={experience.jobDescription || ''}
                     onChange={(e) => updateWorkExperience(index, 'jobDescription', e.target.value)}
                     rows={3}
                   />
@@ -687,7 +687,7 @@ export default function ProfessionalCareerProfilePage() {
                 <div>
                   <Label>Achievements</Label>
                   <Textarea
-                    value={experience.achievements}
+                    value={experience.achievements || ''}
                     onChange={(e) => updateWorkExperience(index, 'achievements', e.target.value)}
                     rows={3}
                   />
@@ -729,7 +729,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Institution Name *</Label>
                     <Input
-                      value={education.institutionName}
+                      value={education.institutionName || ''}
                       onChange={(e) => updateHigherEducation(index, 'institutionName', e.target.value)}
                       required
                     />
@@ -737,7 +737,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Location</Label>
                     <Input
-                      value={education.location}
+                      value={education.location || ''}
                       onChange={(e) => updateHigherEducation(index, 'location', e.target.value)}
                     />
                   </div>
@@ -747,7 +747,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Course of Study *</Label>
                     <Input
-                      value={education.courseOfStudy}
+                      value={education.courseOfStudy || ''}
                       onChange={(e) => updateHigherEducation(index, 'courseOfStudy', e.target.value)}
                       required
                     />
@@ -755,7 +755,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Qualification *</Label>
                     <Input
-                      value={education.qualification}
+                      value={education.qualification || ''}
                       onChange={(e) => updateHigherEducation(index, 'qualification', e.target.value)}
                       required
                     />
@@ -767,8 +767,8 @@ export default function ProfessionalCareerProfilePage() {
                     <Label>Entry Year *</Label>
                     <Input
                       type="number"
-                      value={education.yearOfEntry}
-                      onChange={(e) => updateHigherEducation(index, 'yearOfEntry', e.target.value)}
+                      value={education.entryYear || ''}
+                      onChange={(e) => updateHigherEducation(index, 'entryYear', parseInt(e.target.value) || 0)}
                       min="1900"
                       max={new Date().getFullYear()}
                       required
@@ -778,8 +778,8 @@ export default function ProfessionalCareerProfilePage() {
                     <Label>Graduation Year</Label>
                     <Input
                       type="number"
-                      value={education.yearOfGraduation}
-                      onChange={(e) => updateHigherEducation(index, 'yearOfGraduation', e.target.value)}
+                      value={education.graduationYear || ''}
+                      onChange={(e) => updateHigherEducation(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : undefined)}
                       min="1900"
                       max={new Date().getFullYear() + 10}
                     />
@@ -822,7 +822,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>School Name *</Label>
                     <Input
-                      value={education.schoolName}
+                      value={education.schoolName || ''}
                       onChange={(e) => updateBasicEducation(index, 'schoolName', e.target.value)}
                       required
                     />
@@ -845,7 +845,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Certification</Label>
                     <Input
-                      value={education.certification}
+                      value={education.certification || ''}
                       onChange={(e) => updateBasicEducation(index, 'certification', e.target.value)}
                     />
                   </div>
@@ -853,7 +853,7 @@ export default function ProfessionalCareerProfilePage() {
                     <Label>Year</Label>
                     <Input
                       type="number"
-                      value={education.year}
+                      value={education.year || ''}
                       onChange={(e) => updateBasicEducation(index, 'year', e.target.value)}
                       min="1900"
                       max={new Date().getFullYear()}
@@ -897,7 +897,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Professional Body Name *</Label>
                     <Input
-                      value={membership.professionalBodyName}
+                      value={membership.professionalBodyName || ''}
                       onChange={(e) => updateProfessionalMembership(index, 'professionalBodyName', e.target.value)}
                       required
                     />
@@ -906,7 +906,7 @@ export default function ProfessionalCareerProfilePage() {
                     <Label>Year of Joining</Label>
                     <Input
                       type="number"
-                      value={membership.yearOfJoining}
+                      value={membership.yearOfJoining || ''}
                       onChange={(e) => updateProfessionalMembership(index, 'yearOfJoining', e.target.value)}
                       min="1900"
                       max={new Date().getFullYear()}
@@ -950,7 +950,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Training Organization *</Label>
                     <Input
-                      value={certification.trainingOrganization}
+                      value={certification.trainingOrganization || ''}
                       onChange={(e) => updateTrainingCertification(index, 'trainingOrganization', e.target.value)}
                       required
                     />
@@ -958,7 +958,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Certification Name *</Label>
                     <Input
-                      value={certification.certificationName}
+                      value={certification.certificationName || ''}
                       onChange={(e) => updateTrainingCertification(index, 'certificationName', e.target.value)}
                       required
                     />
@@ -967,11 +967,11 @@ export default function ProfessionalCareerProfilePage() {
 
                 <div>
                   <Label>Date of Certification</Label>
-                  <Input
-                    type="date"
-                    value={certification.dateOfCertification}
-                    onChange={(e) => updateTrainingCertification(index, 'dateOfCertification', e.target.value)}
-                  />
+                                      <Input
+                      type="date"
+                      value={certification.dateOfCertification || ''}
+                      onChange={(e) => updateTrainingCertification(index, 'dateOfCertification', e.target.value)}
+                    />
                 </div>
               </div>
             ))}
@@ -1030,7 +1030,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Referee Name *</Label>
                     <Input
-                      value={reference.refereeName}
+                      value={reference.refereeName || ''}
                       onChange={(e) => updateReferenceDetail(index, 'refereeName', e.target.value)}
                       required
                     />
@@ -1038,7 +1038,7 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Occupation</Label>
                     <Input
-                      value={reference.occupation}
+                      value={reference.occupation || ''}
                       onChange={(e) => updateReferenceDetail(index, 'occupation', e.target.value)}
                     />
                   </div>
@@ -1048,14 +1048,14 @@ export default function ProfessionalCareerProfilePage() {
                   <div>
                     <Label>Location</Label>
                     <Input
-                      value={reference.location}
+                      value={reference.location || ''}
                       onChange={(e) => updateReferenceDetail(index, 'location', e.target.value)}
                     />
                   </div>
                   <div>
                     <Label>Contact Number</Label>
                     <Input
-                      value={reference.contactNumber}
+                      value={reference.contactNumber || ''}
                       onChange={(e) => updateReferenceDetail(index, 'contactNumber', e.target.value)}
                     />
                   </div>
@@ -1063,11 +1063,11 @@ export default function ProfessionalCareerProfilePage() {
 
                 <div>
                   <Label>Email Address</Label>
-                  <Input
-                    type="email"
-                    value={reference.emailAddress}
-                    onChange={(e) => updateReferenceDetail(index, 'emailAddress', e.target.value)}
-                  />
+                                      <Input
+                      type="email"
+                      value={reference.emailAddress || ''}
+                      onChange={(e) => updateReferenceDetail(index, 'emailAddress', e.target.value)}
+                    />
                 </div>
               </div>
             ))}

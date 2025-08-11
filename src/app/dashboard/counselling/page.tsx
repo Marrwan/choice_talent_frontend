@@ -76,8 +76,8 @@ export default function CounsellingPage() {
     },
     {
       id: '3',
-      title: 'Dating Confidence Workshop',
-      description: 'Build confidence in dating scenarios and improve your social interaction skills.',
+              title: 'Career Confidence Workshop',
+        description: 'Build confidence in career scenarios and improve your professional interaction skills.',
       duration: '90 minutes',
       type: 'Group Session',
       price: '$79/session',
@@ -85,7 +85,7 @@ export default function CounsellingPage() {
         'Social confidence building',
         'Conversation starters',
         'Body language mastery',
-        'Online dating optimization',
+        'Online career optimization',
         'First date success tips'
       ],
       rating: 4.7,

@@ -87,8 +87,8 @@ export const browserUtils = {
 
 export function formatError(error: unknown): string {
   if (typeof error === 'string') return error
-  if (error?.message) return error.message
-  if (error?.error) return error.error
+  if (error && typeof error === 'object' && 'message' in error) return String(error.message)
+  if (error && typeof error === 'object' && 'error' in error) return String(error.error)
   return 'An unexpected error occurred'
 }
 
@@ -128,3 +128,26 @@ export function validatePassword(password: string): {
     errors
   }
 }
+
+/**
+ * Convert relative URLs to full backend URLs
+ */
+export const getFullImageUrl = (url: string | null | undefined): string | undefined => {
+  if (!url) return undefined;
+  
+  // If it's already a full URL, return as is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // If it's a relative URL starting with /api/uploads, convert to full backend URL
+  if (url.startsWith('/api/uploads/')) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    // Remove /api from the end if it exists to get the base URL
+    const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+    return `${baseUrl}${url}`;
+  }
+  
+  // Return as is for other relative URLs
+  return url;
+};

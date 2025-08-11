@@ -158,7 +158,7 @@ export default function SubscriptionPage() {
                 Subscription Plans
               </h1>
               <p className="text-gray-600 mt-2">
-                Choose the perfect plan for your dating journey
+                Choose the perfect plan for your career journey
               </p>
             </div>
             {currentSubscription?.isActive && (
@@ -246,7 +246,7 @@ export default function SubscriptionPage() {
                   </li>
                   <li className="flex items-center">
                     <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-                    <span className="text-sm">Cannot initiate matchmaking</span>
+                    <span className="text-sm">Basic features only</span>
                   </li>
                 </ul>
                 <Button 
@@ -282,15 +282,15 @@ export default function SubscriptionPage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Access to Matchmaking System</span>
+                    <span className="text-sm">Access to Advanced Features</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Set matchmaking preferences</span>
+                    <span className="text-sm">Set advanced preferences</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Submit matchmaking form</span>
+                    <span className="text-sm">Submit advanced forms</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
@@ -352,7 +352,7 @@ export default function SubscriptionPage() {
                       <td className="text-center py-3 px-4">Full Access</td>
                     </tr>
                     <tr className="border-b">
-                      <td className="py-3 px-4">Matchmaking System</td>
+                      <td className="py-3 px-4">Advanced System</td>
                       <td className="text-center py-3 px-4">❌</td>
                       <td className="text-center py-3 px-4">✅</td>
                     </tr>

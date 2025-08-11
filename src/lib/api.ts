@@ -138,6 +138,14 @@ export const apiClient = {
     // Only set Content-Type for non-FormData requests
     if (!(data instanceof FormData)) {
       defaultHeaders['Content-Type'] = 'application/json'
+    } else {
+      // Log FormData debugging info
+      console.log('[API] FormData detected, letting browser set Content-Type with boundary')
+      console.log('[API] FormData entries:', Array.from(data.entries()).map(([key, value]) => ({
+        key,
+        type: value instanceof File ? 'File' : 'String',
+        size: value instanceof File ? value.size : value.length
+      })))
     }
     
     // Add auth header if required
@@ -155,6 +163,13 @@ export const apiClient = {
     // Merge headers
     const finalHeaders = { ...defaultHeaders, ...headers }
     
+    // Log headers for debugging (excluding auth token)
+    const debugHeaders = { ...finalHeaders }
+    if (debugHeaders.Authorization) {
+      debugHeaders.Authorization = 'Bearer [REDACTED]'
+    }
+    console.log('[API] Request headers:', debugHeaders)
+    
     // Request configuration
     const requestConfig: RequestInit = {
       method,
@@ -165,8 +180,10 @@ export const apiClient = {
     if (data && method !== 'GET') {
       if (data instanceof FormData) {
         requestConfig.body = data
+        console.log('[API] Using FormData as body')
       } else {
         requestConfig.body = JSON.stringify(data)
+        console.log('[API] Using JSON as body')
       }
     }
 

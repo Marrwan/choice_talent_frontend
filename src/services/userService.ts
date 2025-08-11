@@ -7,16 +7,10 @@ export interface User {
   name: string
   realName?: string
   username?: string
-  interests?: string
-  hobbies?: string
-  loveLanguage?: string
   profilePicture?: string
+  careerProfilePicture?: string
   dateOfBirth?: string
   gender?: string
-  maritalStatus?: string
-  height?: string
-  complexion?: string
-  bodySize?: string
   occupation?: string
   country?: string
   state?: string
@@ -28,23 +22,15 @@ export interface User {
   updatedAt: string
   subscriptionStatus?: 'free' | 'premium'
   isPremium?: boolean
-  canAccessMatchmaking?: boolean
 }
 
 export interface UpdateProfileRequest {
   name?: string
   realName?: string
   username?: string
-  interests?: string
-  hobbies?: string
-  loveLanguage?: string
   profilePicture?: string
   dateOfBirth?: string
   gender?: string
-  maritalStatus?: string
-  height?: string
-  complexion?: string
-  bodySize?: string
   occupation?: string
   country?: string
   state?: string
@@ -57,8 +43,6 @@ export interface DashboardStats {
   memberSince: string
   lastLogin?: string
   profileCompletion: number
-  totalMatches?: number
-  activeDatePlans?: number
 }
 
 // User Service
@@ -138,11 +122,31 @@ export const userService = {
     return { message: response.message }
   },
 
+  // Upload career profile picture
+  async uploadCareerProfilePicture(formData: FormData): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.request<{ success: boolean; message: string }>({
+      method: 'POST',
+      endpoint: '/user/career-profile-picture',
+      data: formData,
+      requiresAuth: true
+    })
+    return { success: response.success, message: response.message }
+  },
+
+  // Delete career profile picture
+  async deleteCareerProfilePicture(): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.request<{ success: boolean; message: string }>({
+      method: 'DELETE',
+      endpoint: '/user/career-profile-picture',
+      requiresAuth: true
+    })
+    return { success: response.success, message: response.message }
+  },
+
   // Check if profile is complete
   isProfileComplete(user: User): boolean {
     const requiredFields: (keyof User)[] = [
       'realName', 'username', 'dateOfBirth', 'gender', 
-      'maritalStatus', 'height', 'complexion', 'bodySize', 
       'occupation', 'country', 'state', 'lga'
     ]
     
@@ -155,10 +159,8 @@ export const userService = {
   // Calculate profile completion percentage
   getProfileCompletionPercentage(user: User): number {
     const allFields: (keyof User)[] = [
-      'realName', 'username', 'interests', 'hobbies', 'loveLanguage',
-      'profilePicture', 'dateOfBirth', 'gender', 'maritalStatus', 
-      'height', 'complexion', 'bodySize', 'occupation', 
-      'country', 'state', 'lga', 'contactNumber'
+      'realName', 'username', 'profilePicture', 'dateOfBirth', 'gender', 
+      'occupation', 'country', 'state', 'lga', 'contactNumber'
     ]
     
     const completedFields = allFields.filter(field => {

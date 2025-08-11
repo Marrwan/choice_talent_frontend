@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { useWebRTC, CallState } from '@/hooks/useWebRTC';
+import { useWebRTC } from '@/hooks/useWebRTC';
+import { CallState } from '@/services/webrtcService';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -268,7 +269,7 @@ export function CallInterfaceV2({
           />
           {!isVideoOn && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <User className="h-6 w-6 text-white" />
+                              <User className="h-6 w-6 text-white" />
             </div>
           )}
         </div>

@@ -6,6 +6,27 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://choice-talent-backend.onrender.com/api',
     NEXT_PUBLIC_SOCKET_URL: process.env.NEXT_PUBLIC_SOCKET_URL || 'https://choice-talent-backend.onrender.com',
   },
+  // HMR optimizations to prevent module factory issues with lucide-react
+  webpack: (config, { dev, isServer }) => {
+    if (dev && !isServer) {
+      // Optimize HMR for better stability
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          ...config.optimization.splitChunks,
+          cacheGroups: {
+            ...config.optimization.splitChunks?.cacheGroups,
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+          },
+        },
+      };
+    }
+    return config;
+  },
   images: {
     domains: ['localhost', 'choice-talent-backend.onrender.com'],
     

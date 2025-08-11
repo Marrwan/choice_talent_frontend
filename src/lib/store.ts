@@ -42,9 +42,7 @@ export const useAuthStore = create<AuthState>()(
 
       // Actions
       login: (user: User, token?: string) => {
-        console.log('[AuthStore] Logging in user:', user.email, 'Token provided:', !!token)
         if (token) {
-          console.log('[AuthStore] Setting token:', token.substring(0, 20) + '...')
           tokenManager.set(token)
           set({ token })
         }
@@ -52,23 +50,19 @@ export const useAuthStore = create<AuthState>()(
           user: {
             ...user,
             subscriptionStatus: user.subscriptionStatus || 'free',
-            isPremium: user.isPremium || false,
-            canAccessMatchmaking: user.canAccessMatchmaking || false
+            isPremium: user.isPremium || false
           },
           isAuthenticated: true,
           isLoading: false
         })
-        console.log('[AuthStore] User logged in successfully')
       },
 
       logout: async () => {
         set({ isLoading: true })
         try {
-          console.log('[AuthStore] Logging out...')
           
           // Disconnect socket first
           if (socketService) {
-            console.log('[AuthStore] Disconnecting socket...')
             socketService.disconnect()
           }
           
@@ -78,16 +72,44 @@ export const useAuthStore = create<AuthState>()(
         } finally {
           // Clear token and state
           tokenManager.remove()
+          
+          // Clear all browser storage
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.clear()
+              sessionStorage.clear()
+              
+              // Clear IndexedDB if it exists
+              if ('indexedDB' in window) {
+                indexedDB.databases().then(databases => {
+                  databases.forEach(db => {
+                    if (db.name) {
+                      indexedDB.deleteDatabase(db.name)
+                    }
+                  })
+                })
+              }
+              
+              // Clear cookies
+              document.cookie.split(";").forEach(cookie => {
+                const eqPos = cookie.indexOf("=")
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/"
+              })
+            } catch (storageError) {
+              console.warn('Error clearing storage:', storageError)
+            }
+          }
+          
           set({
             user: null,
             isAuthenticated: false,
             isLoading: false,
             token: null,
-            isInitialized: false // Reset initialization to force re-initialization
+            isInitialized: true // Keep initialized to prevent re-initialization loops
           })
-          console.log('[AuthStore] User logged out, token cleared')
           
-          // Force page reload to clear all state and socket connections
+          // Navigate to login page
           if (typeof window !== 'undefined') {
             window.location.href = '/login'
           }
@@ -102,11 +124,9 @@ export const useAuthStore = create<AuthState>()(
               ...currentUser, 
               ...userData,
               subscriptionStatus: userData.subscriptionStatus || currentUser.subscriptionStatus || 'free',
-              isPremium: userData.isPremium || currentUser.isPremium || false,
-              canAccessMatchmaking: userData.canAccessMatchmaking || currentUser.canAccessMatchmaking || false
+              isPremium: userData.isPremium || currentUser.isPremium || false
             }
           })
-          console.log('[AuthStore] User updated:', userData)
         }
       },
 
@@ -124,30 +144,24 @@ export const useAuthStore = create<AuthState>()(
           const storeToken = get().token
           const token = storeToken || localStorageToken
           
-          console.log('[AuthStore] Initializing. Store token:', storeToken ? 'Yes' : 'No', 'LocalStorage token:', localStorageToken ? 'Yes' : 'No')
-          
           if (token) {
             // Ensure token is in both places
             tokenManager.set(token)
             set({ token })
             
             // Verify token and get user data
-            console.log('[AuthStore] Attempting to get user profile...')
             const user = await authService.getProfile()
-            console.log('[AuthStore] User profile retrieved:', user)
             
             set({
               user: {
                 ...user,
                 subscriptionStatus: user.subscriptionStatus || 'free',
-                isPremium: user.isPremium || false,
-                canAccessMatchmaking: user.canAccessMatchmaking || false
+                isPremium: user.isPremium || false
               },
               isAuthenticated: true,
               isInitialized: true,
               token
             })
-            console.log('[AuthStore] Initialization success. User authenticated')
           } else {
             set({
               user: null,
@@ -155,7 +169,6 @@ export const useAuthStore = create<AuthState>()(
               isInitialized: true,
               token: null
             })
-            console.log('[AuthStore] Initialization: No token found, not authenticated')
           }
         } catch (error) {
           console.error('[AuthStore] Auth initialization failed:', error)
@@ -167,7 +180,6 @@ export const useAuthStore = create<AuthState>()(
             isInitialized: true,
             token: null
           })
-          console.log('[AuthStore] Initialization failed, token cleared')
         } finally {
           set({ isLoading: false })
         }
@@ -182,11 +194,9 @@ export const useAuthStore = create<AuthState>()(
             user: {
               ...user,
               subscriptionStatus: user.subscriptionStatus || 'free',
-              isPremium: user.isPremium || false,
-              canAccessMatchmaking: user.canAccessMatchmaking || false
+              isPremium: user.isPremium || false
             }
           })
-          console.log('[AuthStore] User refreshed:', user)
         } catch (error) {
           console.error('Failed to refresh user:', error)
           // If token is invalid, logout
@@ -201,16 +211,9 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => {
         const browserName = browserUtils.getBrowserName()
         const storage = browserUtils.getBestStorage()
-        console.log(`[AuthStore] Creating storage for ${browserName}, storage available:`, !!storage)
         return storage || localStorage // Fallback to localStorage if browserUtils fails
       }),
       partialize: (state) => {
-        const browserName = browserUtils.getBrowserName()
-        console.log(`[AuthStore] Partializing state for ${browserName}:`, {
-          hasUser: !!state.user,
-          isAuthenticated: state.isAuthenticated,
-          hasToken: !!state.token
-        })
         return {
           user: state.user,
           isAuthenticated: state.isAuthenticated,
@@ -219,8 +222,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
       onRehydrateStorage: () => (state) => {
-        const browserName = browserUtils.getBrowserName()
-        console.log(`[AuthStore] Rehydrating state for ${browserName}:`, state)
+        // Storage rehydration completed
       },
     }
   )

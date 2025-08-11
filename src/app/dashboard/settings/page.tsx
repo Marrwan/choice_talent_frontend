@@ -306,17 +306,7 @@ export default function SettingsPage() {
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <h4 className="font-medium">Match Preferences</h4>
-                  <p className="text-sm text-gray-500">Update your matching criteria</p>
-                </div>
-                <Link href="/dashboard/match-making">
-                  <Button variant="outline" size="sm">
-                    Update
-                  </Button>
-                </Link>
-              </div>
+
             </CardContent>
           </Card>
 

@@ -8,11 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar } from '@/components/ui/avatar'
 import { useAuth } from '@/lib/store'
-import { chatService, User } from '@/services/chatService'
-import { ArrowLeft, Search, MessageCircle, Users, MapPin, Briefcase, Heart, User as UserIcon } from 'lucide-react'
+import { chatService, User as ChatUser } from '@/services/chatService'
+import { ArrowLeft, Search, MessageCircle, Users, MapPin, Briefcase, Heart, User } from 'lucide-react'
 
 interface UserCardProps {
-  user: User
+  user: ChatUser
   onStartChat: (userId: string) => void
 }
 
@@ -31,7 +31,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onStartChat }) => {
                 />
               ) : (
                 <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
-                  <UserIcon className="h-8 w-8 text-gray-400" />
+                  <User className="h-8 w-8 text-gray-400" />
                 </div>
               )}
             </Avatar>
@@ -108,7 +108,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onStartChat }) => {
 export default function UsersPage() {
   const router = useRouter()
   const { user: currentUser, isAuthenticated } = useAuth()
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<ChatUser[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
