@@ -74,7 +74,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">Choice Talent</h1>
+            <h1 className="text-xl font-semibold text-gray-900">MyJobHunting</h1>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export default function DashboardPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Choice Talent</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Welcome to MyJobHunting</h2>
           <p className="text-lg text-gray-600">Choose your experience below</p>
         </div>
 

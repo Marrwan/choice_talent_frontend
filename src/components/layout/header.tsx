@@ -49,10 +49,8 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-[#0044CC] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CT</span>
-            </div>
-            <span className="text-xl font-semibold text-gray-900">Choice Talent</span>
+            <img src="/company%20logo.png" alt="MyJobHunting" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="text-xl font-semibold text-gray-900">MyJobHunting.com</span>
           </Link>
 
           {/* Navigation */}

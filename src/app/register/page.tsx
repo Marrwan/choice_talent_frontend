@@ -142,7 +142,7 @@ export default function RegisterPage() {
               Create Account
             </CardTitle>
             <CardDescription>
-              Join Choice Talent and discover amazing opportunities
+              Join MyJobHunting and discover amazing opportunities
             </CardDescription>
           </CardHeader>
           <CardContent>

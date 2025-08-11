@@ -120,7 +120,7 @@ export default function ActivateAccountPage() {
                 
                 <div className="text-center space-y-4">
                   <p className="text-sm text-gray-600">
-                    You can now login to your account and start using Choice Talent.
+                   You can now login to your account and start using MyJobHunting.
                   </p>
                   
                   <Button asChild className="w-full">

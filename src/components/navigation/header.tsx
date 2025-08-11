@@ -8,8 +8,9 @@ export function Header() {
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo/Brand */}
-          <Link href="/" className="text-2xl font-bold text-primary">
-            Choice Talent
+          <Link href="/" className="flex items-center space-x-2 text-2xl font-bold text-primary">
+            <img src="/company%20logo.png" alt="MyJobHunting" className="w-8 h-8 rounded-lg object-cover" />
+            <span>MyJobHunting</span>
           </Link>
 
           {/* Desktop Navigation */}

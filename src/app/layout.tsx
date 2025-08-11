@@ -13,29 +13,33 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Choice Talent - Empower Your Talent Acquisition",
-  description: "Choice Talent provides innovative solutions to streamline your hiring process, connect with top talent, and build exceptional teams.",
-  authors: [{ name: "Choice Talent Team" }],
-  keywords: "talent acquisition,hiring,recruitment,HR,Choice Talent",
-  creator: "Choice Talent",
-  publisher: "Choice Talent",
+  title: "MyJobHunting - Find Jobs Faster",
+  description: "MyJobHunting helps professionals discover opportunities, manage applications, and get hired faster.",
+  authors: [{ name: "MyJobHunting Team" }],
+  keywords: "myjobhunting,job hunting,jobs,careers,recruitment,employment,MyJobHunting",
+  creator: "MyJobHunting",
+  publisher: "MyJobHunting",
   robots: "index, follow",
   openGraph: {
-    title: "Choice Talent - Empower Your Talent Acquisition",
-    description: "Choice Talent provides innovative solutions to streamline your hiring process, connect with top talent, and build exceptional teams.",
-    url: "https://choicetalent.com",
-    siteName: "Choice Talent",
+    title: "MyJobHunting - Find Jobs Faster",
+    description: "MyJobHunting helps professionals discover opportunities, manage applications, and get hired faster.",
+    url: "https://myjobhunting.com",
+    siteName: "MyJobHunting",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    creator: "@choicetalent",
-    title: "Choice Talent - Empower Your Talent Acquisition",
-    description: "Choice Talent provides innovative solutions to streamline your hiring process, connect with top talent, and build exceptional teams.",
+    creator: "@myjobhunting",
+    title: "MyJobHunting - Find Jobs Faster",
+    description: "MyJobHunting helps professionals discover opportunities, manage applications, and get hired faster.",
   },
   icons: {
-    icon: "/favicon.ico"
+    icon: [
+      { url: "/company%20logo.png", rel: "icon" },
+      { url: "/company%20logo.png", rel: "shortcut icon" }
+    ],
+    apple: "/company%20logo.png"
   }
 };
 

@@ -140,7 +140,7 @@ export default function ConversationsPage() {
     fetchGroups();
     
     // Connect to socket for real-time updates
-    const token = localStorage.getItem('choice_talent_token')
+    const token = localStorage.getItem('jobhunting_token') || localStorage.getItem('choice_talent_token')
     if (token) {
       console.log('[Chat] Connecting to socket with token')
       socketService.connect(token)
@@ -247,7 +247,7 @@ export default function ConversationsPage() {
       new Notification(`${sender} sent a message`, {
         body: notificationContent,
         icon: message.sender.profilePicture || '/default-avatar.png',
-        badge: '/favicon.ico',
+        badge: '/company%20logo.png',
         tag: `chat-conversation-${message.conversationId}`,
         silent: false
       })

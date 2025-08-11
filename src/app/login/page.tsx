@@ -165,7 +165,7 @@ export default function LoginPage() {
               Welcome Back
             </CardTitle>
             <CardDescription>
-              Sign in to your Choice Talent account
+              Sign in to your MyJobHunting account
             </CardDescription>
           </CardHeader>
           <CardContent>
