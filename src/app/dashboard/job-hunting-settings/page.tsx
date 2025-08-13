@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/lib/useToast';
+import { useAuth } from '@/lib/store';
+import { professionalCareerProfileService } from '@/services/professionalCareerProfileService';
+import { jobSubscriptionService } from '@/services/jobSubscriptionService';
 import { 
   jobHuntingSettingsService, 
   CreateJobHuntingSettingsData,
@@ -21,11 +26,15 @@ import {
   NIGERIAN_STATES,
   SALARY_NEGOTIABLE_OPTIONS
 } from '@/services/jobHuntingSettingsService';
+import { ArrowLeft, AlertTriangle } from 'lucide-react';
 
 export default function JobHuntingSettingsPage() {
+  const router = useRouter();
   const toast = useToast();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [profileCompletion, setProfileCompletion] = useState(0);
   const [settings, setSettings] = useState<CreateJobHuntingSettingsData>({
     jobTypes: [],
     careerCategory: '',
@@ -37,14 +46,47 @@ export default function JobHuntingSettingsPage() {
     salaryExpectationNegotiable: ''
   });
 
-  // Load existing settings
+  // Load existing settings and check profile completion
   useEffect(() => {
-    loadSettings();
+    loadData();
   }, []);
 
-  const loadSettings = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
+      
+      // Load profile completion percentage
+      const profileResponse = await professionalCareerProfileService.getProfile();
+      if (profileResponse.success && profileResponse.data.profile) {
+        const profileData = profileResponse.data.profile;
+        const fields = [
+          profileData.fullName,
+          profileData.gender,
+          profileData.dateOfBirth,
+          profileData.phoneNumber,
+          profileData.emailAddress,
+          profileData.address,
+          profileData.lgaOfResidence,
+          profileData.stateOfResidence,
+          profileData.professionalSummary,
+          profileData.persona,
+          (profileData.expertiseCompetencies?.length || 0) > 0,
+          (profileData.softwareSkills?.length || 0) > 0,
+          (profileData.workExperiences?.length || 0) > 0,
+          (profileData.higherEducations?.length || 0) > 0,
+          (profileData.basicEducations?.length || 0) > 0,
+          (profileData.professionalMemberships?.length || 0) > 0,
+          (profileData.trainingCertifications?.length || 0) > 0,
+          profileData.nyscStatus,
+          (profileData.referenceDetails?.length || 0) > 0
+        ];
+        
+        const completedFields = fields.filter(Boolean).length;
+        const completionPercentage = Math.round((completedFields / fields.length) * 100);
+        setProfileCompletion(completionPercentage);
+      }
+      
+      // Load job hunting settings
       const response = await jobHuntingSettingsService.getSettings();
       
       if (response.success && response.data.settings) {
@@ -61,8 +103,8 @@ export default function JobHuntingSettingsPage() {
         });
       }
     } catch (error) {
-      console.error('Error loading job hunting settings:', error);
-      toast.showError('Failed to load job hunting settings', 'Error');
+      console.error('Error loading data:', error);
+      toast.showError('Failed to load data', 'Error');
     } finally {
       setLoading(false);
     }
@@ -75,6 +117,21 @@ export default function JobHuntingSettingsPage() {
       
       if (response.success) {
         toast.showSuccess(response.message || 'Job hunting settings saved successfully', 'Success');
+        
+        // Check if user is subscribed
+        try {
+          const eligibilityResponse = await jobSubscriptionService.checkEligibility();
+          if (eligibilityResponse.isEligible) {
+            // If subscribed, redirect to Career Dashboard
+            router.push('/dashboard/career');
+          } else {
+            // If not subscribed, redirect to subscription page
+            router.push('/dashboard/subscription');
+          }
+        } catch (error) {
+          // If not eligible, redirect to subscription page
+          router.push('/dashboard/subscription');
+        }
       }
     } catch (error) {
       console.error('Error saving job hunting settings:', error);
@@ -128,10 +185,40 @@ export default function JobHuntingSettingsPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-4xl mx-auto">
+        {/* Header */}
         <div className="mb-6">
+          <Link 
+            href="/dashboard/career" 
+            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Return to Dashboard
+          </Link>
           <h1 className="text-3xl font-bold text-gray-900">Job Hunting Settings</h1>
           <p className="text-gray-600 mt-2">Configure your job preferences and requirements</p>
         </div>
+
+        {/* Profile Completion Check */}
+        {profileCompletion < 50 && (
+          <Card className="mb-6 border-yellow-200 bg-yellow-50">
+            <CardContent className="pt-6">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-yellow-800 mb-2">Profile Completion Required</h3>
+                  <p className="text-yellow-700 text-sm mb-3">
+                    Your profile is {profileCompletion}% complete. You need at least 50% completion to set job hunting preferences.
+                  </p>
+                  <Link href="/dashboard/professional-career-profile/edit">
+                    <Button variant="outline" size="sm">
+                      Complete Profile
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>
@@ -325,10 +412,15 @@ export default function JobHuntingSettingsPage() {
             <Separator />
 
             {/* Save Button */}
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <Link href="/dashboard/career">
+                <Button variant="outline">
+                  Cancel
+                </Button>
+              </Link>
               <Button 
                 onClick={handleSave} 
-                disabled={saving}
+                disabled={saving || profileCompletion < 50}
                 className="px-8"
               >
                 {saving ? 'Saving...' : 'Save Settings'}

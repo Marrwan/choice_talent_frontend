@@ -208,6 +208,63 @@ export default function CareerDashboardPage() {
     setShowProfileModal(false);
   };
 
+  const getCompletionPercentage = () => {
+    if (!profile) return 0;
+    
+    const fields = [
+      profile.fullName,
+      profile.gender,
+      profile.dateOfBirth,
+      profile.phoneNumber,
+      profile.emailAddress,
+      profile.address,
+      profile.lgaOfResidence,
+      profile.stateOfResidence,
+      profile.professionalSummary,
+      profile.persona,
+      (profile.expertiseCompetencies?.length || 0) > 0,
+      (profile.softwareSkills?.length || 0) > 0,
+      (profile.workExperiences?.length || 0) > 0,
+      (profile.higherEducations?.length || 0) > 0,
+      (profile.basicEducations?.length || 0) > 0,
+      (profile.professionalMemberships?.length || 0) > 0,
+      (profile.trainingCertifications?.length || 0) > 0,
+      profile.nyscStatus,
+      (profile.referenceDetails?.length || 0) > 0
+    ];
+    
+    const completedFields = fields.filter(Boolean).length;
+    return Math.round((completedFields / fields.length) * 100);
+  };
+
+  const getMissingFields = () => {
+    if (!profile) return [];
+    
+    const missingFields = [];
+    
+    if (!profile.fullName) missingFields.push({ field: 'Full Name', section: 'Personal Information' });
+    if (!profile.gender) missingFields.push({ field: 'Gender', section: 'Personal Information' });
+    if (!profile.dateOfBirth) missingFields.push({ field: 'Date of Birth', section: 'Personal Information' });
+    if (!profile.phoneNumber) missingFields.push({ field: 'Phone Number', section: 'Contact Information' });
+    if (!profile.emailAddress) missingFields.push({ field: 'Email Address', section: 'Contact Information' });
+    if (!profile.address) missingFields.push({ field: 'Address', section: 'Contact Information' });
+    if (!profile.lgaOfResidence) missingFields.push({ field: 'LGA of Residence', section: 'Contact Information' });
+    if (!profile.stateOfResidence) missingFields.push({ field: 'State of Residence', section: 'Contact Information' });
+    if (!profile.professionalSummary) missingFields.push({ field: 'Professional Summary', section: 'Professional Information' });
+    if (!profile.persona) missingFields.push({ field: 'Persona', section: 'Professional Information' });
+    if (!profile.expertiseCompetencies?.length) missingFields.push({ field: 'Areas of Expertise', section: 'Skills' });
+    if (!profile.softwareSkills?.length) missingFields.push({ field: 'Software Skills', section: 'Skills' });
+    if (!profile.workExperiences?.length) missingFields.push({ field: 'Work Experience', section: 'Experience' });
+    if (!profile.higherEducations?.length) missingFields.push({ field: 'Higher Education', section: 'Education' });
+    if (!profile.basicEducations?.length) missingFields.push({ field: 'Basic Education', section: 'Education' });
+    if (!profile.professionalMemberships?.length) missingFields.push({ field: 'Professional Memberships', section: 'Memberships' });
+    if (!profile.trainingCertifications?.length) missingFields.push({ field: 'Training & Certifications', section: 'Certifications' });
+    if (!profile.nyscStatus) missingFields.push({ field: 'NYSC Status', section: 'Certifications' });
+    if (!profile.referenceDetails?.length) missingFields.push({ field: 'Reference Details', section: 'References' });
+    
+    return missingFields;
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto p-6">
@@ -329,6 +386,13 @@ export default function CareerDashboardPage() {
                   </Button>
                 </Link>
                 
+                <Link href="/dashboard/subscription" className="block">
+                  <Button variant="outline" className="w-full justify-start">
+                    <Crown className="mr-2 h-4 w-4" />
+                    Subscription
+                  </Button>
+                </Link>
+                
                 <Link href="/dashboard/career/activities" className="block">
                   <Button variant="outline" className="w-full justify-start">
                     <Activity className="mr-2 h-4 w-4" />
@@ -344,6 +408,40 @@ export default function CareerDashboardPage() {
                 </Link>
               </CardContent>
             </Card>
+
+            {/* Profile Completion Indicator */}
+            {profile && getCompletionPercentage() < 100 && (
+              <Card className="border-yellow-200 bg-yellow-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-yellow-800">
+                    <AlertTriangle className="mr-2 h-5 w-5" />
+                    Profile Completion: {getCompletionPercentage()}%
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-yellow-700 text-sm mb-3">
+                    Complete your profile to unlock all features. Here's what's missing:
+                  </p>
+                  <div className="space-y-2">
+                    {getMissingFields().slice(0, 5).map((item, index) => (
+                      <div key={index} className="flex items-center justify-between text-sm">
+                        <span className="text-yellow-800">{item.field}</span>
+                        <Link href="/dashboard/professional-career-profile/edit">
+                          <Button variant="outline" size="sm" className="h-6 px-2 text-xs">
+                            Complete
+                          </Button>
+                        </Link>
+                      </div>
+                    ))}
+                    {getMissingFields().length > 5 && (
+                      <div className="text-yellow-700 text-xs mt-2">
+                        +{getMissingFields().length - 5} more fields to complete
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Right Column - Main Content */}

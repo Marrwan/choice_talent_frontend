@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { MainLayout } from '@/components/layout/main-layout'
 import { useAuth } from '@/lib/store'
 import { 
   ArrowRight, 
@@ -23,6 +23,19 @@ import {
 
 export default function ResumeBuilderPage() {
   const { isAuthenticated, user } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    // If user is authenticated, redirect to Career Dashboard
+    if (isAuthenticated) {
+      router.replace('/dashboard/career')
+    }
+  }, [isAuthenticated, router])
+
+  // If authenticated, don't render the page content
+  if (isAuthenticated) {
+    return null
+  }
 
   return (
     <>

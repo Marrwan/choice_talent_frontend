@@ -48,7 +48,7 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href={isAuthenticated ? "/dashboard/career" : "/"} className="flex items-center space-x-2">
             <img src="/company%20logo.png" alt="MyJobHunting" className="w-8 h-8 rounded-lg object-cover" />
             <span className="text-xl font-semibold text-gray-900">MyJobHunting.com</span>
           </Link>

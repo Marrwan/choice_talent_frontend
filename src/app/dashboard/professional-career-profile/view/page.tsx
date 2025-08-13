@@ -144,9 +144,13 @@ export default function ProfessionalCareerProfileViewPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto p-6">
         <div className="max-w-5xl mx-auto">
-                      {/* Header Navigation */}
+          {/* Header Navigation */}
             <div className="mb-8 no-print">
-            <Link href="/dashboard/professional-career-profile" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4">
+            <Link href="/dashboard/career" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Return to Dashboard
+            </Link>
+            <Link href="/dashboard/professional-career-profile" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 ml-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Profile
             </Link>
@@ -221,7 +225,7 @@ export default function ProfessionalCareerProfileViewPage() {
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
                     <FileText className="mr-3 h-6 w-6 text-red-700" />
-                    SUMMARY
+                    PROFESSIONAL SUMMARY
                   </h3>
                   <div className="content-section bg-gray-50 rounded-lg p-6">
                     <p className="text-gray-700 leading-relaxed text-lg">{profile.professionalSummary}</p>
@@ -234,7 +238,7 @@ export default function ProfessionalCareerProfileViewPage() {
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
                     <User className="mr-3 h-6 w-6 text-red-700" />
-                    PROFESSIONAL PERSONA
+                    PERSONA
                   </h3>
                   <div className="content-section bg-gray-50 rounded-lg p-6">
                     <p className="text-gray-700 leading-relaxed text-lg">{profile.persona}</p>
@@ -303,15 +307,19 @@ export default function ProfessionalCareerProfileViewPage() {
                           </div>
                           <div className="text-right">
                             <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
-                              {formatDate(experience.entryDate)} - {experience.exitDate ? formatDate(experience.exitDate) : 'Present'}
+                              {formatDate(experience.entryDate)} - {experience.exitDate ? formatDate(experience.exitDate) : 'Date'}
                             </span>
                           </div>
                         </div>
                         {experience.jobDescription && (
-                          <p className="text-gray-700 mb-3">{experience.jobDescription}</p>
+                          <div className="mb-3">
+                            <h5 className="font-semibold text-gray-800 mb-2">Responsibilities:</h5>
+                            <div className="text-gray-700 whitespace-pre-line">{experience.jobDescription}</div>
+                          </div>
                         )}
                         {experience.achievements && (
                           <div className="text-gray-700">
+                            <h5 className="font-semibold text-gray-800 mb-2">Achievements:</h5>
                             <div className="whitespace-pre-line">{experience.achievements}</div>
                           </div>
                         )}
@@ -334,8 +342,9 @@ export default function ProfessionalCareerProfileViewPage() {
                         <div className="flex justify-between items-start">
                           <div>
                             <h4 className="text-xl font-bold text-gray-900">{education.courseOfStudy}</h4>
-                            <p className="text-lg font-semibold text-green-700">{education.institutionName}</p>
-                            <p className="text-gray-600">{education.location}</p>
+                            <p className="text-lg font-semibold text-green-700">
+                              {education.institutionName}{education.location ? `, ${education.location}` : ''}
+                            </p>
                             <p className="text-gray-600">{education.qualification}</p>
                           </div>
                           <div className="text-right">

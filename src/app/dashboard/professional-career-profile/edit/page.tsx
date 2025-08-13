@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/lib/useToast';
 import { professionalCareerProfileService, ProfessionalCareerProfile, WorkExperience, HigherEducation, BasicEducation, ProfessionalMembership, TrainingCertification, ReferenceDetail } from '@/services/professionalCareerProfileService';
-import { Plus, Trash2, Save, User, Briefcase, GraduationCap, School, Award, Users, FileText } from 'lucide-react';
+import { Plus, Trash2, Save, User, Briefcase, GraduationCap, School, Award, Users, FileText, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProfessionalCareerProfilePage() {
   const router = useRouter();
@@ -328,757 +329,778 @@ export default function ProfessionalCareerProfilePage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Professional Career Profile</h1>
-        <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
-          <Save className="h-4 w-4" />
-          {saving ? 'Saving...' : 'Save Profile'}
-        </Button>
-      </div>
+    <div className="container mx-auto p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <Link 
+            href="/dashboard/career" 
+            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Return to Dashboard
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">Edit Professional Career Profile</h1>
+          <p className="text-gray-600 mt-2">Update your professional career information</p>
+        </div>
 
-      <form className="space-y-6">
-        {/* Bio Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-                              <User className="h-5 w-5" />
-              Bio Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="profilePicture">Profile Picture</Label>
-                <Input
-                  id="profilePicture"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePictureChange}
-                  className="mt-1"
-                />
-                {profilePicturePreview && (
-                  <img
-                    src={profilePicturePreview}
-                    alt="Profile preview"
-                    className="mt-2 h-20 w-20 object-cover rounded"
-                    onError={(e) => {
-                      console.error('Image failed to load:', profilePicturePreview);
-                      console.error('Image error:', e);
-                    }}
-                    onLoad={() => {
-                      console.log('Image loaded successfully:', profilePicturePreview);
-                    }}
+        <form className="space-y-6">
+          {/* Bio Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Bio Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="profilePicture">Profile Picture</Label>
+                  <Input
+                    id="profilePicture"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePictureChange}
+                    className="mt-1"
                   />
-                )}
-                {!profilePicturePreview && profile.profilePicture && (
-                  <img
-                    src={profile.profilePicture}
-                    alt="Profile picture"
-                    className="mt-2 h-20 w-20 object-cover rounded"
-                    onError={(e) => {
-                      console.error('Image failed to load:', profile.profilePicture);
-                      console.error('Image error:', e);
-                    }}
-                    onLoad={() => {
-                      console.log('Image loaded successfully:', profile.profilePicture);
-                    }}
+                  {profilePicturePreview && (
+                    <img
+                      src={profilePicturePreview}
+                      alt="Profile preview"
+                      className="mt-2 h-20 w-20 object-cover rounded"
+                      onError={(e) => {
+                        console.error('Image failed to load:', profilePicturePreview);
+                        console.error('Image error:', e);
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', profilePicturePreview);
+                      }}
+                    />
+                  )}
+                  {!profilePicturePreview && profile.profilePicture && (
+                    <img
+                      src={profile.profilePicture}
+                      alt="Profile picture"
+                      className="mt-2 h-20 w-20 object-cover rounded"
+                      onError={(e) => {
+                        console.error('Image failed to load:', profile.profilePicture);
+                        console.error('Image error:', e);
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', profile.profilePicture);
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Input
+                    id="fullName"
+                    value={profile.fullName || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
+                    required
                   />
-                )}
+                </div>
+                <div>
+                  <Label htmlFor="gender">Gender</Label>
+                  <Select value={profile.gender} onValueChange={(value) => setProfile(prev => ({ ...prev, gender: value as any }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={profile.fullName || ''}
-                  onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                  <Input
+                    id="dateOfBirth"
+                    type="date"
+                    value={profile.dateOfBirth || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Input
+                    id="phoneNumber"
+                    value={profile.phoneNumber || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="gender">Gender</Label>
-                <Select value={profile.gender} onValueChange={(value) => setProfile(prev => ({ ...prev, gender: value as any }))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <Label htmlFor="emailAddress">Email Address</Label>
                 <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={profile.dateOfBirth || ''}
-                  onChange={(e) => setProfile(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <Input
-                  id="phoneNumber"
-                  value={profile.phoneNumber || ''}
-                  onChange={(e) => setProfile(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="emailAddress">Email Address</Label>
-                              <Input
                   id="emailAddress"
                   type="email"
                   value={profile.emailAddress || ''}
                   onChange={(e) => setProfile(prev => ({ ...prev, emailAddress: e.target.value }))}
-              />
-            </div>
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="address">Address</Label>
-              <Textarea
-                id="address"
-                value={profile.address || ''}
-                onChange={(e) => setProfile(prev => ({ ...prev, address: e.target.value }))}
-                rows={3}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="lgaOfResidence">LGA of Residence</Label>
-                <Input
-                  id="lgaOfResidence"
-                  value={profile.lgaOfResidence || ''}
-                  onChange={(e) => setProfile(prev => ({ ...prev, lgaOfResidence: e.target.value }))}
+                <Label htmlFor="address">Address</Label>
+                <Textarea
+                  id="address"
+                  value={profile.address || ''}
+                  onChange={(e) => setProfile(prev => ({ ...prev, address: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="lgaOfResidence">LGA of Residence</Label>
+                  <Input
+                    id="lgaOfResidence"
+                    value={profile.lgaOfResidence || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, lgaOfResidence: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="stateOfResidence">State of Residence</Label>
+                  <Input
+                    id="stateOfResidence"
+                    value={profile.stateOfResidence || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, stateOfResidence: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Professional Summary & Persona */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Professional Summary & Persona
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="professionalSummary">Professional Summary</Label>
+                <Textarea
+                  id="professionalSummary"
+                  value={profile.professionalSummary || ''}
+                  onChange={(e) => setProfile(prev => ({ ...prev, professionalSummary: e.target.value }))}
+                  placeholder="Describe your professional background or personal summary..."
+                  rows={4}
                 />
               </div>
               <div>
-                <Label htmlFor="stateOfResidence">State of Residence</Label>
-                <Input
-                  id="stateOfResidence"
-                  value={profile.stateOfResidence || ''}
-                  onChange={(e) => setProfile(prev => ({ ...prev, stateOfResidence: e.target.value }))}
+                <Label htmlFor="persona">Persona</Label>
+                <Textarea
+                  id="persona"
+                  value={profile.persona || ''}
+                  onChange={(e) => setProfile(prev => ({ ...prev, persona: e.target.value }))}
+                  placeholder="Describe your professional persona or soft skills/personality..."
+                  rows={4}
                 />
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Professional Summary & Persona */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              Professional Summary & Persona
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="professionalSummary">Professional Summary</Label>
-              <Textarea
-                id="professionalSummary"
-                value={profile.professionalSummary || ''}
-                onChange={(e) => setProfile(prev => ({ ...prev, professionalSummary: e.target.value }))}
-                placeholder="Describe your professional background or personal summary..."
-                rows={4}
-              />
-            </div>
-            <div>
-              <Label htmlFor="persona">Persona</Label>
-              <Textarea
-                id="persona"
-                value={profile.persona || ''}
-                onChange={(e) => setProfile(prev => ({ ...prev, persona: e.target.value }))}
-                placeholder="Describe your professional persona or soft skills/personality..."
-                rows={4}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Expertise & Competencies */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Expertise & Competencies
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Areas of Expertise</Label>
-              <div className="flex gap-2 mt-1">
-                <Input
-                  placeholder="Add expertise..."
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addArrayItem('expertiseCompetencies', e.currentTarget.value);
-                      e.currentTarget.value = '';
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    const input = document.querySelector('input[placeholder="Add expertise..."]') as HTMLInputElement;
-                    if (input) {
-                      addArrayItem('expertiseCompetencies', input.value);
-                      input.value = '';
-                    }
-                  }}
-                >
-                  Add
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {profile.expertiseCompetencies?.map((item, index) => (
-                  <div key={index} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
-                    <span>{item}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeArrayItem('expertiseCompetencies', index)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <Label>Software Skills</Label>
-              <div className="flex gap-2 mt-1">
-                <Input
-                  placeholder="Add software skill..."
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      addArrayItem('softwareSkills', e.currentTarget.value);
-                      e.currentTarget.value = '';
-                    }
-                  }}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    const input = document.querySelector('input[placeholder="Add software skill..."]') as HTMLInputElement;
-                    if (input) {
-                      addArrayItem('softwareSkills', input.value);
-                      input.value = '';
-                    }
-                  }}
-                >
-                  Add
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {profile.softwareSkills?.map((item, index) => (
-                  <div key={index} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
-                    <span>{item}</span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeArrayItem('softwareSkills', index)}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Work Experience */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5" />
-              Work Experience
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.workExperiences?.map((experience, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Work Experience {index + 1}</h4>
+          {/* Expertise & Competencies */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5" />
+                Expertise & Competencies
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Areas of Expertise</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    placeholder="Add expertise..."
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addArrayItem('expertiseCompetencies', e.currentTarget.value);
+                        e.currentTarget.value = '';
+                      }
+                    }}
+                  />
                   <Button
                     type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeWorkExperience(index)}
+                    variant="outline"
+                    onClick={() => {
+                      const input = document.querySelector('input[placeholder="Add expertise..."]') as HTMLInputElement;
+                      if (input) {
+                        addArrayItem('expertiseCompetencies', input.value);
+                        input.value = '';
+                      }
+                    }}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    Add
                   </Button>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Company Name *</Label>
-                    <Input
-                      value={experience.companyName || ''}
-                      onChange={(e) => updateWorkExperience(index, 'companyName', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label>Company Location</Label>
-                    <Input
-                      value={experience.companyLocation || ''}
-                      onChange={(e) => updateWorkExperience(index, 'companyLocation', e.target.value)}
-                    />
-                  </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {profile.expertiseCompetencies?.map((item, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
+                      <span>{item}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeArrayItem('expertiseCompetencies', index)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Designation *</Label>
-                    <Input
-                      value={experience.designation || ''}
-                      onChange={(e) => updateWorkExperience(index, 'designation', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label>Entry Date *</Label>
-                    <Input
-                      type="date"
-                      value={experience.entryDate || ''}
-                      onChange={(e) => updateWorkExperience(index, 'entryDate', e.target.value)}
-                      required
-                    />
-                  </div>
+              <div>
+                <Label>Software Skills</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    placeholder="Add software skill..."
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addArrayItem('softwareSkills', e.currentTarget.value);
+                        e.currentTarget.value = '';
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const input = document.querySelector('input[placeholder="Add software skill..."]') as HTMLInputElement;
+                      if (input) {
+                        addArrayItem('softwareSkills', input.value);
+                        input.value = '';
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
                 </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {profile.softwareSkills?.map((item, index) => (
+                    <div key={index} className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded">
+                      <span>{item}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeArrayItem('softwareSkills', index)}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <div>
-                  <Label>Exit Date</Label>
-                                      <Input
+          {/* Work Experience */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5" />
+                Work Experience
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.workExperiences?.map((experience, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Work Experience {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeWorkExperience(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Company Name *</Label>
+                      <Input
+                        value={experience.companyName || ''}
+                        onChange={(e) => updateWorkExperience(index, 'companyName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Company Location</Label>
+                      <Input
+                        value={experience.companyLocation || ''}
+                        onChange={(e) => updateWorkExperience(index, 'companyLocation', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Designation *</Label>
+                      <Input
+                        value={experience.designation || ''}
+                        onChange={(e) => updateWorkExperience(index, 'designation', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Entry Date *</Label>
+                      <Input
+                        type="date"
+                        value={experience.entryDate || ''}
+                        onChange={(e) => updateWorkExperience(index, 'entryDate', e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Exit Date</Label>
+                    <Input
                       type="date"
                       value={experience.exitDate || ''}
                       onChange={(e) => updateWorkExperience(index, 'exitDate', e.target.value)}
                     />
-                </div>
+                  </div>
 
-                <div>
-                  <Label>Job Description</Label>
-                  <Textarea
-                    value={experience.jobDescription || ''}
-                    onChange={(e) => updateWorkExperience(index, 'jobDescription', e.target.value)}
-                    rows={3}
-                  />
-                </div>
-
-                <div>
-                  <Label>Achievements</Label>
-                  <Textarea
-                    value={experience.achievements || ''}
-                    onChange={(e) => updateWorkExperience(index, 'achievements', e.target.value)}
-                    rows={3}
-                  />
-                </div>
-              </div>
-            ))}
-
-            <Button type="button" variant="outline" onClick={addWorkExperience} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Another Work Experience
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Higher Education */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <GraduationCap className="h-5 w-5" />
-              Higher Education
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.higherEducations?.map((education, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Higher Education {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeHigherEducation(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Institution Name *</Label>
-                    <Input
-                      value={education.institutionName || ''}
-                      onChange={(e) => updateHigherEducation(index, 'institutionName', e.target.value)}
-                      required
+                    <Label>Job Description</Label>
+                    <Textarea
+                      value={experience.jobDescription || ''}
+                      onChange={(e) => updateWorkExperience(index, 'jobDescription', e.target.value)}
+                      rows={3}
                     />
                   </div>
+
                   <div>
-                    <Label>Location</Label>
-                    <Input
-                      value={education.location || ''}
-                      onChange={(e) => updateHigherEducation(index, 'location', e.target.value)}
+                    <Label>Achievements</Label>
+                    <Textarea
+                      value={experience.achievements || ''}
+                      onChange={(e) => updateWorkExperience(index, 'achievements', e.target.value)}
+                      rows={3}
                     />
                   </div>
                 </div>
+              ))}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Course of Study *</Label>
-                    <Input
-                      value={education.courseOfStudy || ''}
-                      onChange={(e) => updateHigherEducation(index, 'courseOfStudy', e.target.value)}
-                      required
-                    />
+              <Button type="button" variant="outline" onClick={addWorkExperience} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Another Work Experience
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Higher Education */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <GraduationCap className="h-5 w-5" />
+                Higher Education
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.higherEducations?.map((education, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Higher Education {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeHigherEducation(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div>
-                    <Label>Qualification *</Label>
-                    <Input
-                      value={education.qualification || ''}
-                      onChange={(e) => updateHigherEducation(index, 'qualification', e.target.value)}
-                      required
-                    />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Institution Name *</Label>
+                      <Input
+                        value={education.institutionName || ''}
+                        onChange={(e) => updateHigherEducation(index, 'institutionName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Location</Label>
+                      <Input
+                        value={education.location || ''}
+                        onChange={(e) => updateHigherEducation(index, 'location', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Course of Study *</Label>
+                      <Input
+                        value={education.courseOfStudy || ''}
+                        onChange={(e) => updateHigherEducation(index, 'courseOfStudy', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Qualification *</Label>
+                      <Input
+                        value={education.qualification || ''}
+                        onChange={(e) => updateHigherEducation(index, 'qualification', e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Entry Year *</Label>
+                      <Input
+                        type="number"
+                        value={education.entryYear || ''}
+                        onChange={(e) => updateHigherEducation(index, 'entryYear', parseInt(e.target.value) || 0)}
+                        min="1900"
+                        max={new Date().getFullYear()}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Graduation Year</Label>
+                      <Input
+                        type="number"
+                        value={education.graduationYear || ''}
+                        onChange={(e) => updateHigherEducation(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : undefined)}
+                        min="1900"
+                        max={new Date().getFullYear() + 10}
+                      />
+                    </div>
                   </div>
                 </div>
+              ))}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Entry Year *</Label>
-                    <Input
-                      type="number"
-                      value={education.entryYear || ''}
-                      onChange={(e) => updateHigherEducation(index, 'entryYear', parseInt(e.target.value) || 0)}
-                      min="1900"
-                      max={new Date().getFullYear()}
-                      required
-                    />
+              <Button type="button" variant="outline" onClick={addHigherEducation} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Another Higher Education
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Secondary & Primary Education */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <School className="h-5 w-5" />
+                Secondary & Primary Education
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.basicEducations?.map((education, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">{education.educationType} Education {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeBasicEducation(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div>
-                    <Label>Graduation Year</Label>
-                    <Input
-                      type="number"
-                      value={education.graduationYear || ''}
-                      onChange={(e) => updateHigherEducation(index, 'graduationYear', e.target.value ? parseInt(e.target.value) : undefined)}
-                      min="1900"
-                      max={new Date().getFullYear() + 10}
-                    />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>School Name *</Label>
+                      <Input
+                        value={education.schoolName || ''}
+                        onChange={(e) => updateBasicEducation(index, 'schoolName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Education Type *</Label>
+                      <Select value={education.educationType} onValueChange={(value) => updateBasicEducation(index, 'educationType', value as any)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Primary">Primary</SelectItem>
+                          <SelectItem value="Secondary">Secondary</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Certification</Label>
+                      <Input
+                        value={education.certification || ''}
+                        onChange={(e) => updateBasicEducation(index, 'certification', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Year</Label>
+                      <Input
+                        type="number"
+                        value={education.year || ''}
+                        onChange={(e) => updateBasicEducation(index, 'year', e.target.value)}
+                        min="1900"
+                        max={new Date().getFullYear()}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            <Button type="button" variant="outline" onClick={addHigherEducation} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Another Higher Education
-            </Button>
-          </CardContent>
-        </Card>
+              <Button type="button" variant="outline" onClick={addBasicEducation} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Another Education
+              </Button>
+            </CardContent>
+          </Card>
 
-        {/* Secondary & Primary Education */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <School className="h-5 w-5" />
-              Secondary & Primary Education
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.basicEducations?.map((education, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">{education.educationType} Education {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeBasicEducation(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>School Name *</Label>
-                    <Input
-                      value={education.schoolName || ''}
-                      onChange={(e) => updateBasicEducation(index, 'schoolName', e.target.value)}
-                      required
-                    />
+          {/* Professional Memberships */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Professional Memberships & Associations
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.professionalMemberships?.map((membership, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Membership {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeProfessionalMembership(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div>
-                    <Label>Education Type *</Label>
-                    <Select value={education.educationType} onValueChange={(value) => updateBasicEducation(index, 'educationType', value as any)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Primary">Primary</SelectItem>
-                        <SelectItem value="Secondary">Secondary</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Professional Body Name *</Label>
+                      <Input
+                        value={membership.professionalBodyName || ''}
+                        onChange={(e) => updateProfessionalMembership(index, 'professionalBodyName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Year of Joining</Label>
+                      <Input
+                        type="number"
+                        value={membership.yearOfJoining || ''}
+                        onChange={(e) => updateProfessionalMembership(index, 'yearOfJoining', e.target.value)}
+                        min="1900"
+                        max={new Date().getFullYear()}
+                      />
+                    </div>
                   </div>
                 </div>
+              ))}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Certification</Label>
-                    <Input
-                      value={education.certification || ''}
-                      onChange={(e) => updateBasicEducation(index, 'certification', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label>Year</Label>
-                    <Input
-                      type="number"
-                      value={education.year || ''}
-                      onChange={(e) => updateBasicEducation(index, 'year', e.target.value)}
-                      min="1900"
-                      max={new Date().getFullYear()}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
+              <Button type="button" variant="outline" onClick={addProfessionalMembership} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Another Membership
+              </Button>
+            </CardContent>
+          </Card>
 
-            <Button type="button" variant="outline" onClick={addBasicEducation} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Another Education
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Professional Memberships */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Professional Memberships & Associations
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.professionalMemberships?.map((membership, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Membership {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeProfessionalMembership(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Professional Body Name *</Label>
-                    <Input
-                      value={membership.professionalBodyName || ''}
-                      onChange={(e) => updateProfessionalMembership(index, 'professionalBodyName', e.target.value)}
-                      required
-                    />
+          {/* Training & Certification */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Award className="h-5 w-5" />
+                Training & Certification
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.trainingCertifications?.map((certification, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Certification {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTrainingCertification(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <div>
-                    <Label>Year of Joining</Label>
-                    <Input
-                      type="number"
-                      value={membership.yearOfJoining || ''}
-                      onChange={(e) => updateProfessionalMembership(index, 'yearOfJoining', e.target.value)}
-                      min="1900"
-                      max={new Date().getFullYear()}
-                    />
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Training Organization *</Label>
+                      <Input
+                        value={certification.trainingOrganization || ''}
+                        onChange={(e) => updateTrainingCertification(index, 'trainingOrganization', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Certification Name *</Label>
+                      <Input
+                        value={certification.certificationName || ''}
+                        onChange={(e) => updateTrainingCertification(index, 'certificationName', e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
 
-            <Button type="button" variant="outline" onClick={addProfessionalMembership} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Another Membership
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Training & Certification */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5" />
-              Training & Certification
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.trainingCertifications?.map((certification, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Certification {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeTrainingCertification(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label>Training Organization *</Label>
+                    <Label>Date of Certification</Label>
                     <Input
-                      value={certification.trainingOrganization || ''}
-                      onChange={(e) => updateTrainingCertification(index, 'trainingOrganization', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label>Certification Name *</Label>
-                    <Input
-                      value={certification.certificationName || ''}
-                      onChange={(e) => updateTrainingCertification(index, 'certificationName', e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <Label>Date of Certification</Label>
-                                      <Input
                       type="date"
                       value={certification.dateOfCertification || ''}
                       onChange={(e) => updateTrainingCertification(index, 'dateOfCertification', e.target.value)}
                     />
-                </div>
-              </div>
-            ))}
-
-            <Button type="button" variant="outline" onClick={addTrainingCertification} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Another Certification
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* NYSC Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>NYSC Certification Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Select value={profile.nyscStatus} onValueChange={(value) => setProfile(prev => ({ ...prev, nyscStatus: value as any }))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select NYSC status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Yes">Yes</SelectItem>
-                <SelectItem value="No">No</SelectItem>
-                <SelectItem value="Ongoing">Ongoing</SelectItem>
-                <SelectItem value="Exempted">Exempted</SelectItem>
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-
-        {/* Reference Details */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Reference Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {profile.referenceDetails?.map((reference, index) => (
-              <div key={index} className="border rounded-lg p-4 space-y-4">
-                <div className="flex justify-between items-center">
-                  <h4 className="font-medium">Reference {index + 1}</h4>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => removeReferenceDetail(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Referee Name *</Label>
-                    <Input
-                      value={reference.refereeName || ''}
-                      onChange={(e) => updateReferenceDetail(index, 'refereeName', e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label>Occupation</Label>
-                    <Input
-                      value={reference.occupation || ''}
-                      onChange={(e) => updateReferenceDetail(index, 'occupation', e.target.value)}
-                    />
                   </div>
                 </div>
+              ))}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Location</Label>
-                    <Input
-                      value={reference.location || ''}
-                      onChange={(e) => updateReferenceDetail(index, 'location', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label>Contact Number</Label>
-                    <Input
-                      value={reference.contactNumber || ''}
-                      onChange={(e) => updateReferenceDetail(index, 'contactNumber', e.target.value)}
-                    />
-                  </div>
-                </div>
+              <Button type="button" variant="outline" onClick={addTrainingCertification} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Another Certification
+              </Button>
+            </CardContent>
+          </Card>
 
-                <div>
-                  <Label>Email Address</Label>
-                                      <Input
+          {/* NYSC Status */}
+          <Card>
+            <CardHeader>
+              <CardTitle>NYSC Certification Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Select value={profile.nyscStatus} onValueChange={(value) => setProfile(prev => ({ ...prev, nyscStatus: value as any }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select NYSC status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Ongoing">Ongoing</SelectItem>
+                  <SelectItem value="Exempted">Exempted</SelectItem>
+                  <SelectItem value="Not Applicable">Not Applicable</SelectItem>
+                  <SelectItem value="Foreigner">Foreigner</SelectItem>
+                </SelectContent>
+              </Select>
+            </CardContent>
+          </Card>
+
+          {/* Reference Details */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Reference Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {profile.referenceDetails?.map((reference, index) => (
+                <div key={index} className="border rounded-lg p-4 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-medium">Reference {index + 1}</h4>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeReferenceDetail(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Referee Name *</Label>
+                      <Input
+                        value={reference.refereeName || ''}
+                        onChange={(e) => updateReferenceDetail(index, 'refereeName', e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Occupation</Label>
+                      <Input
+                        value={reference.occupation || ''}
+                        onChange={(e) => updateReferenceDetail(index, 'occupation', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Location</Label>
+                      <Input
+                        value={reference.location || ''}
+                        onChange={(e) => updateReferenceDetail(index, 'location', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Contact Number</Label>
+                      <Input
+                        value={reference.contactNumber || ''}
+                        onChange={(e) => updateReferenceDetail(index, 'contactNumber', e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label>Email Address</Label>
+                    <Input
                       type="email"
                       value={reference.emailAddress || ''}
                       onChange={(e) => updateReferenceDetail(index, 'emailAddress', e.target.value)}
                     />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            <Button type="button" variant="outline" onClick={addReferenceDetail} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Add Another Reference
+              <Button type="button" variant="outline" onClick={addReferenceDetail} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add Another Reference
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Save Button */}
+          <div className="flex justify-between items-center pt-6">
+            <Link href="/dashboard/career">
+              <Button variant="outline">
+                Cancel
+              </Button>
+            </Link>
+            <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
+              <Save className="h-4 w-4" />
+              {saving ? 'Saving...' : 'Save Profile'}
             </Button>
-          </CardContent>
-        </Card>
-      </form>
+          </div>
+        </form>
+      </div>
     </div>
   );
 } 

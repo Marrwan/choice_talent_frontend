@@ -18,7 +18,13 @@ import {
   Heart, 
   Users,
   AlertCircle,
-  Loader2
+  Loader2,
+  Download,
+  Eye,
+  Settings,
+  FileText,
+  TrendingUp,
+  MessageSquare
 } from 'lucide-react'
 
 export default function SubscriptionPage() {
@@ -60,7 +66,7 @@ export default function SubscriptionPage() {
       // Load current subscription
       try {
         const subscription = await paymentService.getCurrentSubscription()
-        setCurrentSubscription(subscription.data)
+        setCurrentSubscription(subscription)
       } catch (error) {
         // User might not have a subscription
         console.log('No active subscription found')
@@ -145,7 +151,7 @@ export default function SubscriptionPage() {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            href="/dashboard" 
+            href="/dashboard/career" 
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -220,7 +226,7 @@ export default function SubscriptionPage() {
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose Your Plan</h2>
-            <p className="text-gray-600">Select a plan that best fits your needs</p>
+            <p className="text-gray-600">Select a plan that best fits your career needs</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -238,15 +244,15 @@ export default function SubscriptionPage() {
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Response-Only Account</span>
+                    <span className="text-sm">Basic profile features</span>
                   </li>
                   <li className="flex items-center">
-                    <MessageCircle className="h-4 w-4 text-yellow-500 mr-2" />
-                    <span className="text-sm">Can receive: Chat, Audio Call, Video Call</span>
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span className="text-sm">Limited job search</span>
                   </li>
                   <li className="flex items-center">
                     <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-                    <span className="text-sm">Basic features only</span>
+                    <span className="text-sm">No advanced features</span>
                   </li>
                 </ul>
                 <Button 
@@ -272,17 +278,25 @@ export default function SubscriptionPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <span className="text-3xl font-bold">₦10,000</span>
+                  <span className="text-3xl font-bold">₦3,000</span>
                   <span className="text-gray-600">/month</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Initiate & receive Chat, Audio Calls, Video Calls</span>
+                    <span className="text-sm">Free resume profile download in PDF format</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Access to Advanced Features</span>
+                    <span className="text-sm">Appear on profile search result</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span className="text-sm">Profile assessment feedback</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
+                    <span className="text-sm">Access to advanced features</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
@@ -294,15 +308,11 @@ export default function SubscriptionPage() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Discover and connect with compatible matches</span>
+                    <span className="text-sm">Interest messaging</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Send interest messages</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Build serious relationships</span>
+                    <span className="text-sm">Advanced communications features</span>
                   </li>
                 </ul>
                 <Button 
@@ -320,59 +330,39 @@ export default function SubscriptionPage() {
                   ) : (
                     'Upgrade to Premium'
                   )}
-              </Button>
+                </Button>
               </CardContent>
             </Card>
           </div>
 
-          {/* Features Comparison */}
-          <Card className="mt-12">
+          {/* Payment Details */}
+          <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="text-center">Feature Comparison</CardTitle>
+              <CardTitle className="text-center">Payment Details</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left py-3 px-4">Feature</th>
-                      <th className="text-center py-3 px-4">Free Basic</th>
-                      <th className="text-center py-3 px-4">Premium</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="py-3 px-4">Chat Access</td>
-                      <td className="text-center py-3 px-4">Receive Only</td>
-                      <td className="text-center py-3 px-4">Full Access</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-3 px-4">Audio/Video Calls</td>
-                      <td className="text-center py-3 px-4">Receive Only</td>
-                      <td className="text-center py-3 px-4">Full Access</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-3 px-4">Advanced System</td>
-                      <td className="text-center py-3 px-4">❌</td>
-                      <td className="text-center py-3 px-4">✅</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-3 px-4">Set Preferences</td>
-                      <td className="text-center py-3 px-4">❌</td>
-                      <td className="text-center py-3 px-4">✅</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-3 px-4">Send Interest Messages</td>
-                      <td className="text-center py-3 px-4">❌</td>
-                      <td className="text-center py-3 px-4">✅</td>
-                    </tr>
-                    <tr>
-                      <td className="py-3 px-4">Monthly Price</td>
-                      <td className="text-center py-3 px-4 font-bold">₦0</td>
-                      <td className="text-center py-3 px-4 font-bold">₦10,000</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="max-w-2xl mx-auto space-y-6">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">MONTHLY SUBSCRIPTION FEE: NGN 3,000</h3>
+                </div>
+                
+                <div className="bg-gray-50 p-6 rounded-lg">
+                  <h4 className="font-semibold text-gray-900 mb-4">Change Payment Details:</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Account Name:</span>
+                      <span className="font-medium">Choice Talents LTD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Account Number:</span>
+                      <span className="font-medium">0876 039 732</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Bank:</span>
+                      <span className="font-medium">Guaranty Trust Bank (GTB)</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -386,7 +376,7 @@ export default function SubscriptionPage() {
               <div>
                 <h4 className="font-semibold mb-2">How does the subscription work?</h4>
                 <p className="text-gray-600 text-sm">
-                  Premium subscriptions are billed monthly at ₦10,000. You can cancel anytime and continue using the service until the end of your billing period.
+                  Premium subscriptions are billed monthly at ₦3,000. You can cancel anytime and continue using the service until the end of your billing period.
                 </p>
               </div>
               <div>

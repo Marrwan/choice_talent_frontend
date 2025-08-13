@@ -154,7 +154,7 @@ export class PDFService {
     } = options;
 
     try {
-      // Add print-specific styles
+      // Add print-specific styles for better readability
       const originalStyle = element.style.cssText;
       element.style.cssText += `
         background: white !important;
@@ -162,10 +162,38 @@ export class PDFService {
         box-shadow: none !important;
         border: none !important;
         margin: 0 !important;
-        padding: 20px !important;
-        font-size: 12px !important;
-        line-height: 1.4 !important;
+        padding: 30px !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        font-family: Arial, sans-serif !important;
       `;
+
+      // Apply styles to child elements for better PDF formatting
+      const styleElement = document.createElement('style');
+      styleElement.textContent = `
+        @media print {
+          * {
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            font-family: Arial, sans-serif !important;
+          }
+          h1, h2, h3, h4, h5, h6 {
+            font-weight: bold !important;
+            margin-top: 20px !important;
+            margin-bottom: 10px !important;
+          }
+          h1 { font-size: 24px !important; }
+          h2 { font-size: 20px !important; }
+          h3 { font-size: 18px !important; }
+          h4 { font-size: 16px !important; }
+          p { margin-bottom: 10px !important; }
+          .profile-header { padding: 20px !important; }
+          .contact-info { font-size: 14px !important; }
+          .section { margin-bottom: 20px !important; }
+          .no-print { display: none !important; }
+        }
+      `;
+      document.head.appendChild(styleElement);
 
       // Generate PDF
       await this.generatePDFFromElement(element, {
@@ -175,7 +203,8 @@ export class PDFService {
         quality
       });
 
-      // Restore original styles
+      // Clean up
+      document.head.removeChild(styleElement);
       element.style.cssText = originalStyle;
     } catch (error) {
       console.error('Error generating career profile PDF:', error);

@@ -131,7 +131,7 @@ export default function CounsellingPage() {
   ]
 
   return (
-    <MainLayout isAuthenticated={isAuthenticated} user={user} onLogout={() => {}}>
+    <MainLayout showHeader={false} isAuthenticated={isAuthenticated} user={user} onLogout={() => {}}>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
