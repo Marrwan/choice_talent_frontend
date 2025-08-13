@@ -10,14 +10,11 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      // If logged in, redirect to Career Dashboard
-      router.replace('/dashboard/career')
+      router.replace('/dashboard')
     } else {
-      // If not logged in, redirect to resume builder page
       router.replace('/resume-builder')
     }
   }, [router, isAuthenticated])
 
-  // Return null to avoid any flash of content
   return null
 }

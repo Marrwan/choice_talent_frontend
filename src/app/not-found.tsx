@@ -47,7 +47,7 @@ export default function NotFound() {
               <p className="text-sm text-gray-500 mb-2">Looking for something specific?</p>
               <div className="space-y-2">
 
-                <Link href="/dashboard/career" className="block">
+                <Link href="/dashboard" className="block">
                   <Button variant="ghost" size="sm" className="w-full">
                     <Search className="mr-2 h-4 w-4" />
                     Career Dashboard

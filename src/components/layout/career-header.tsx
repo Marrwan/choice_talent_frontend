@@ -48,7 +48,7 @@ export function CareerHeader({ isAuthenticated = false, user, onLogout }: Career
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/dashboard/career" className="flex items-center space-x-2">
+          <Link href="/dashboard" className="flex items-center space-x-2">
             <img src="/company%20logo.png" alt="MyJobHunting" className="w-8 h-8 rounded-lg object-cover" />
             <span className="text-xl font-semibold text-gray-900">MyJobHunting - Career</span>
           </Link>
@@ -91,9 +91,9 @@ export function CareerHeader({ isAuthenticated = false, user, onLogout }: Career
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/career" className="cursor-pointer">
+                    <Link href="/dashboard" className="cursor-pointer">
                       <Briefcase className="mr-2 h-4 w-4" />
-                      <span>Career Dashboard</span>
+                      <span>Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -115,9 +115,9 @@ export function CareerHeader({ isAuthenticated = false, user, onLogout }: Career
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/career/settings" className="cursor-pointer">
+                    <Link href="/dashboard/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Career Settings</span>
+                      <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

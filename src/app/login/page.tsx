@@ -87,7 +87,7 @@ export default function LoginPage() {
         ];
         const isComplete = requiredFields.filter(Boolean).length === requiredFields.length;
         if (isComplete) {
-          router.replace('/dashboard/career');
+          router.replace('/dashboard');
         } else {
           router.replace('/dashboard/professional-career-profile');
         }

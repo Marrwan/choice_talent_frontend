@@ -240,7 +240,7 @@ export default function JobSubscriptionPage() {
                 </Button>
                 <Button 
                   variant="outline"
-                  onClick={() => router.push('/dashboard/career')}
+                  onClick={() => router.push('/dashboard')}
                 >
                   Career Dashboard
                 </Button>

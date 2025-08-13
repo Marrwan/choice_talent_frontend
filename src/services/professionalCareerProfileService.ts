@@ -7,6 +7,7 @@ export interface WorkExperience {
   designation: string;
   entryDate: string;
   exitDate?: string;
+  isCurrentJob?: boolean;
   jobDescription?: string;
   achievements?: string;
 }
@@ -67,7 +68,8 @@ export interface ProfessionalCareerProfile {
   persona?: string;
   expertiseCompetencies?: string[];
   softwareSkills?: string[];
-  nyscStatus?: 'Yes' | 'No' | 'Ongoing' | 'Exempted';
+  nyscStatus?: 'Completed' | 'Ongoing' | 'Exempted' | 'Not Applicable' | 'Foreigner';
+  nyscCompletionDate?: string;
   workExperiences?: WorkExperience[];
   higherEducations?: HigherEducation[];
   basicEducations?: BasicEducation[];
@@ -100,9 +102,13 @@ export const professionalCareerProfileService = {
   ): Promise<ProfileResponse> {
     const formData = new FormData();
     
+    console.log('Creating FormData for profile update');
+    console.log('Profile picture provided:', profilePicture ? 'Yes' : 'No');
+    
     // Add profile picture if provided
     if (profilePicture) {
       formData.append('profilePicture', profilePicture);
+      console.log('Added profile picture to FormData:', profilePicture.name);
     }
 
     // Add all profile data as individual form fields
@@ -117,6 +123,12 @@ export const professionalCareerProfileService = {
         }
       }
     });
+
+    console.log('FormData entries:', Array.from(formData.entries()).map(([key, value]) => ({
+      key,
+      type: value instanceof File ? 'File' : 'String',
+      size: value instanceof File ? value.size : (value as string).length
+    })));
 
     const response = await apiClient.post<ProfileResponse>('/professional-career-profile', formData, true);
     return response;

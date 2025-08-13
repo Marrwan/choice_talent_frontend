@@ -146,10 +146,10 @@ export default function ProfessionalCareerProfileViewPage() {
         <div className="max-w-5xl mx-auto">
           {/* Header Navigation */}
             <div className="mb-8 no-print">
-            <Link href="/dashboard/career" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Return to Dashboard
-            </Link>
+                    <Link href="/dashboard" className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Return to Dashboard
+        </Link>
             <Link href="/dashboard/professional-career-profile" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 ml-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Profile
@@ -307,7 +307,7 @@ export default function ProfessionalCareerProfileViewPage() {
                           </div>
                           <div className="text-right">
                             <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
-                              {formatDate(experience.entryDate)} - {experience.exitDate ? formatDate(experience.exitDate) : 'Date'}
+                              {formatDate(experience.entryDate)} - {experience.isCurrentJob ? 'Present' : (experience.exitDate ? formatDate(experience.exitDate) : 'Date')}
                             </span>
                           </div>
                         </div>
@@ -367,9 +367,16 @@ export default function ProfessionalCareerProfileViewPage() {
                     NYSC STATUS
                   </h3>
                   <div className="content-section bg-gray-50 rounded-lg p-6">
-                    <span className="nysc-status bg-gray-600 text-white px-4 py-2 rounded-full">
-                      {profile.nyscStatus}
-                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className="nysc-status bg-gray-600 text-white px-4 py-2 rounded-full">
+                        {profile.nyscStatus}
+                      </span>
+                      {profile.nyscStatus === 'Completed' && profile.nyscCompletionDate && (
+                        <span className="text-gray-700">
+                          Completed on: {formatDate(profile.nyscCompletionDate)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

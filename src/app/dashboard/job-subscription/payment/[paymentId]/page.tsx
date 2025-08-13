@@ -388,7 +388,7 @@ export default function PaymentDetailsPage() {
             Back to Subscriptions
           </Button>
           <Button
-            onClick={() => router.push('/dashboard/career')}
+            onClick={() => router.push('/dashboard')}
           >
             Career Dashboard
           </Button>

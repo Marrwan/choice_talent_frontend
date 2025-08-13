@@ -312,7 +312,7 @@ export default function ProfileForwardingPage() {
                 Choose the plan that best fits your career goals and start getting noticed by employers.
               </p>
               <div className="flex gap-3 justify-center">
-                <Link href="/dashboard/career">
+                <Link href="/dashboard">
                   <Button variant="outline">
                     <Users className="mr-2 h-4 w-4" />
                     Back to Career Dashboard

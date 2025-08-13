@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ToastContextProvider } from "@/lib/useToast";
-import { HeaderWithAuth } from '@/components/layout/HeaderWithAuth';
+import { ConditionalHeader } from '@/components/layout/ConditionalHeader';
 
 import React from 'react';
 
@@ -53,7 +53,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <AuthProvider>
           <ToastContextProvider>
-            <HeaderWithAuth />
+            <ConditionalHeader />
             {children}
           </ToastContextProvider>
         </AuthProvider>

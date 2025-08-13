@@ -51,7 +51,7 @@ export default function ActivityLogPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="outline" onClick={() => router.push('/dashboard/career')}>
+        <Button variant="outline" onClick={() => router.push('/dashboard')}>
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
         </Button>
         <h1 className="text-2xl font-bold">Profile Forwarding Activity</h1>

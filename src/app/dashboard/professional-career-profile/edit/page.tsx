@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/lib/useToast';
 import { professionalCareerProfileService, ProfessionalCareerProfile, WorkExperience, HigherEducation, BasicEducation, ProfessionalMembership, TrainingCertification, ReferenceDetail } from '@/services/professionalCareerProfileService';
 import { Plus, Trash2, Save, User, Briefcase, GraduationCap, School, Award, Users, FileText, ArrowLeft } from 'lucide-react';
@@ -33,6 +34,7 @@ export default function ProfessionalCareerProfilePage() {
     expertiseCompetencies: [],
     softwareSkills: [],
     nyscStatus: undefined,
+    nyscCompletionDate: undefined,
     workExperiences: [],
     higherEducations: [],
     basicEducations: [],
@@ -53,6 +55,8 @@ export default function ProfessionalCareerProfilePage() {
     try {
       setLoading(true);
       const response = await professionalCareerProfileService.getProfile();
+      console.log('Load profile response:', response);
+      
       if (response.success && response.data.profile) {
         // Ensure all array fields are properly initialized and null values are converted to empty strings
         const profileData = {
@@ -78,6 +82,7 @@ export default function ProfessionalCareerProfilePage() {
           referenceDetails: response.data.profile.referenceDetails || []
         };
         setProfile(profileData);
+        console.log('Profile picture from response:', response.data.profile.profilePicture);
         if (response.data.profile.profilePicture) {
           console.log('Profile picture URL:', response.data.profile.profilePicture);
           setProfilePicturePreview(response.data.profile.profilePicture);
@@ -106,7 +111,18 @@ export default function ProfessionalCareerProfilePage() {
   const handleSave = async () => {
     try {
       setSaving(true);
+      console.log('Saving profile with picture:', profilePicture ? 'Yes' : 'No');
+      if (profilePicture) {
+        console.log('Profile picture details:', {
+          name: profilePicture.name,
+          size: profilePicture.size,
+          type: profilePicture.type
+        });
+      }
+      
       const response = await professionalCareerProfileService.createOrUpdateProfile(profile, profilePicture || undefined);
+      
+      console.log('Save response:', response);
       
       if (response.success) {
         toast.showSuccess(response.message || 'Profile saved successfully', 'Success');
@@ -136,6 +152,7 @@ export default function ProfessionalCareerProfilePage() {
         designation: '',
         entryDate: '',
         exitDate: '',
+        isCurrentJob: false,
         jobDescription: '',
         achievements: ''
       }]
@@ -149,11 +166,11 @@ export default function ProfessionalCareerProfilePage() {
     }));
   };
 
-  const updateWorkExperience = (index: number, field: keyof WorkExperience, value: string) => {
+  const updateWorkExperience = (index: number, field: keyof WorkExperience, value: any) => {
     setProfile(prev => ({
       ...prev,
       workExperiences: prev.workExperiences?.map((exp, i) => 
-        i === index ? { ...exp, [field]: value || '' } : exp
+        i === index ? { ...exp, [field]: value } : exp
       ) || []
     }));
   };
@@ -333,10 +350,10 @@ export default function ProfessionalCareerProfilePage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <Link 
-            href="/dashboard/career" 
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
-          >
+                  <Link
+          href="/dashboard"
+          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+        >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Return to Dashboard
           </Link>
@@ -673,14 +690,34 @@ export default function ProfessionalCareerProfilePage() {
                     </div>
                   </div>
 
-                  <div>
-                    <Label>Exit Date</Label>
-                    <Input
-                      type="date"
-                      value={experience.exitDate || ''}
-                      onChange={(e) => updateWorkExperience(index, 'exitDate', e.target.value)}
-                    />
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`current-job-${index}`}
+                        checked={experience.isCurrentJob || false}
+                        onCheckedChange={(checked) => {
+                          updateWorkExperience(index, 'isCurrentJob', checked as boolean);
+                          if (checked) {
+                            updateWorkExperience(index, 'exitDate', '');
+                          }
+                        }}
+                      />
+                      <Label htmlFor={`current-job-${index}`} className="text-sm font-normal cursor-pointer">
+                        I currently work here
+                      </Label>
+                    </div>
                   </div>
+
+                  {!experience.isCurrentJob && (
+                    <div>
+                      <Label>Exit Date</Label>
+                      <Input
+                        type="date"
+                        value={experience.exitDate || ''}
+                        onChange={(e) => updateWorkExperience(index, 'exitDate', e.target.value)}
+                      />
+                    </div>
+                  )}
 
                   <div>
                     <Label>Job Description</Label>
@@ -995,7 +1032,7 @@ export default function ProfessionalCareerProfilePage() {
             <CardHeader>
               <CardTitle>NYSC Certification Status</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Select value={profile.nyscStatus} onValueChange={(value) => setProfile(prev => ({ ...prev, nyscStatus: value as any }))}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select NYSC status" />
@@ -1008,6 +1045,20 @@ export default function ProfessionalCareerProfilePage() {
                   <SelectItem value="Foreigner">Foreigner</SelectItem>
                 </SelectContent>
               </Select>
+              
+              {profile.nyscStatus === 'Completed' && (
+                <div>
+                  <Label htmlFor="nyscCompletionDate">NYSC Completion Date *</Label>
+                  <Input
+                    id="nyscCompletionDate"
+                    type="date"
+                    value={profile.nyscCompletionDate || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, nyscCompletionDate: e.target.value }))}
+                    required
+                    className="mt-2"
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -1089,11 +1140,11 @@ export default function ProfessionalCareerProfilePage() {
 
           {/* Save Button */}
           <div className="flex justify-between items-center pt-6">
-            <Link href="/dashboard/career">
-              <Button variant="outline">
-                Cancel
-              </Button>
-            </Link>
+                    <Link href="/dashboard">
+          <Button variant="outline">
+            Cancel
+          </Button>
+        </Link>
             <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
               <Save className="h-4 w-4" />
               {saving ? 'Saving...' : 'Save Profile'}

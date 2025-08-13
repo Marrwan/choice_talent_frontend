@@ -43,7 +43,7 @@ export default function RegisterPage() {
   React.useEffect(() => {
     if (isInitialized && isAuthenticated) {
       console.log('[RegisterPage] User is authenticated, redirecting to career dashboard')
-      router.replace('/dashboard/career')
+              router.replace('/dashboard')
     }
   }, [isAuthenticated, isInitialized, router])
 

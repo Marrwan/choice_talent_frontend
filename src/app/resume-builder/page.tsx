@@ -26,9 +26,9 @@ export default function ResumeBuilderPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // If user is authenticated, redirect to Career Dashboard
+    // If user is authenticated, redirect to Dashboard
     if (isAuthenticated) {
-      router.replace('/dashboard/career')
+      router.replace('/dashboard')
     }
   }, [isAuthenticated, router])
 
@@ -55,7 +55,7 @@ export default function ResumeBuilderPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {isAuthenticated ? (
                 <Button asChild size="lg" className="text-lg px-8">
-                  <Link href="/dashboard/career">
+                  <Link href="/dashboard">
                     Start Building Resume
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
@@ -232,7 +232,7 @@ export default function ResumeBuilderPage() {
                 
                 {isAuthenticated ? (
                   <Button asChild size="lg" className="w-full">
-                    <Link href="/dashboard/career">
+                    <Link href="/dashboard">
                       Start Building Now
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
@@ -364,8 +364,8 @@ export default function ResumeBuilderPage() {
             </Button>
           ) : (
             <Button asChild size="lg" className="text-lg px-8">
-              <Link href="/dashboard/career">
-                Go to Career Dashboard
+              <Link href="/dashboard">
+                Go to Dashboard
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>

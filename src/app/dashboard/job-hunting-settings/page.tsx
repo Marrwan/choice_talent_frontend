@@ -26,12 +26,12 @@ import {
   NIGERIAN_STATES,
   SALARY_NEGOTIABLE_OPTIONS
 } from '@/services/jobHuntingSettingsService';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Crown } from 'lucide-react';
 
 export default function JobHuntingSettingsPage() {
   const router = useRouter();
   const toast = useToast();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileCompletion, setProfileCompletion] = useState(0);
@@ -116,20 +116,42 @@ export default function JobHuntingSettingsPage() {
       const response = await jobHuntingSettingsService.createOrUpdateSettings(settings);
       
       if (response.success) {
-        toast.showSuccess(response.message || 'Job hunting settings saved successfully', 'Success');
+        // Refresh user data to get the most up-to-date subscription status
+        await refreshUser();
         
-        // Check if user is subscribed
+        // Check user's subscription status from auth context
+        const userSubscriptionStatus = user?.subscriptionStatus;
+        const isUserPremium = user?.isPremium;
+        
+        console.log('User subscription status:', userSubscriptionStatus);
+        console.log('User is premium:', isUserPremium);
+        
+        // Primary check: Use auth context
+        if (userSubscriptionStatus === 'premium' || isUserPremium) {
+          // If user has premium subscription, redirect to Dashboard
+          toast.showSuccess('Job hunting settings saved successfully! Redirecting to dashboard...', 'Success');
+          router.push('/dashboard');
+          return;
+        }
+        
+        // Secondary check: Make API call to verify subscription status
         try {
           const eligibilityResponse = await jobSubscriptionService.checkEligibility();
-          if (eligibilityResponse.isEligible) {
-            // If subscribed, redirect to Career Dashboard
-            router.push('/dashboard/career');
+          console.log('Eligibility response:', eligibilityResponse);
+          
+          if (eligibilityResponse.hasActiveSubscription) {
+            // If user has active subscription, redirect to Dashboard
+            toast.showSuccess('Job hunting settings saved successfully! Redirecting to dashboard...', 'Success');
+            router.push('/dashboard');
           } else {
-            // If not subscribed, redirect to subscription page
+            // If user doesn't have active subscription, redirect to subscription page
+            toast.showSuccess('Job hunting settings saved! You need a subscription to access job hunting features.', 'Success');
             router.push('/dashboard/subscription');
           }
         } catch (error) {
-          // If not eligible, redirect to subscription page
+          console.error('Error checking subscription status:', error);
+          // If there's an error checking subscription, redirect to subscription page
+          toast.showSuccess('Job hunting settings saved! You need a subscription to access job hunting features.', 'Success');
           router.push('/dashboard/subscription');
         }
       }
@@ -188,7 +210,7 @@ export default function JobHuntingSettingsPage() {
         {/* Header */}
         <div className="mb-6">
           <Link 
-            href="/dashboard/career" 
+            href="/dashboard" 
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -411,13 +433,30 @@ export default function JobHuntingSettingsPage() {
 
             <Separator />
 
+            {/* Subscription Notice */}
+            {(!user?.subscriptionStatus || user.subscriptionStatus === 'free') && (
+              <Card className="border-blue-200 bg-blue-50">
+                <CardContent className="pt-6">
+                  <div className="flex items-start gap-3">
+                    <Crown className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <h3 className="font-semibold text-blue-800 mb-2">Subscription Required</h3>
+                      <p className="text-blue-700 text-sm mb-3">
+                        After saving your job hunting settings, you'll need a premium subscription to access job hunting features like profile forwarding and employer matching.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Save Button */}
             <div className="flex justify-between items-center">
-              <Link href="/dashboard/career">
-                <Button variant="outline">
-                  Cancel
-                </Button>
-              </Link>
+                      <Link href="/dashboard">
+          <Button variant="outline">
+            Cancel
+          </Button>
+        </Link>
               <Button 
                 onClick={handleSave} 
                 disabled={saving || profileCompletion < 50}

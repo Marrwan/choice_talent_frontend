@@ -81,7 +81,7 @@ export default function ProfessionalCareerProfilePage() {
         {/* Header */}
         <div className="mb-6">
           <Link 
-            href="/dashboard/career" 
+            href="/dashboard" 
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
