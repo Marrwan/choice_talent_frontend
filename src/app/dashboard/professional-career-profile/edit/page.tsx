@@ -154,7 +154,10 @@ export default function ProfessionalCareerProfilePage() {
         exitDate: '',
         isCurrentJob: false,
         jobDescription: '',
-        achievements: ''
+        achievements: '',
+        employerOrSupervisorName: '',
+        officialPhone: '',
+        officialEmail: ''
       }]
     }));
   };
@@ -736,6 +739,39 @@ export default function ProfessionalCareerProfilePage() {
                       rows={3}
                     />
                   </div>
+
+                  {/* Optional Reference Fields */}
+                  <Separator className="my-4" />
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h5 className="font-medium text-gray-900 mb-3">Optional Reference Information</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Employer or Supervisor Name (Optional)</Label>
+                        <Input
+                          value={experience.employerOrSupervisorName || ''}
+                          onChange={(e) => updateWorkExperience(index, 'employerOrSupervisorName', e.target.value)}
+                          placeholder="Name of employer or supervisor"
+                        />
+                      </div>
+                      <div>
+                        <Label>Official Phone (Optional)</Label>
+                        <Input
+                          value={experience.officialPhone || ''}
+                          onChange={(e) => updateWorkExperience(index, 'officialPhone', e.target.value)}
+                          placeholder="Official phone number"
+                        />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <Label>Official Email (Optional)</Label>
+                      <Input
+                        type="email"
+                        value={experience.officialEmail || ''}
+                        onChange={(e) => updateWorkExperience(index, 'officialEmail', e.target.value)}
+                        placeholder="Official email address"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
 
@@ -1140,11 +1176,11 @@ export default function ProfessionalCareerProfilePage() {
 
           {/* Save Button */}
           <div className="flex justify-between items-center pt-6">
-                    <Link href="/dashboard">
-          <Button variant="outline">
-            Cancel
-          </Button>
-        </Link>
+            <Link href="/dashboard/professional-career-profile/view">
+              <Button variant="outline">
+                Preview
+              </Button>
+            </Link>
             <Button onClick={handleSave} disabled={saving} className="flex items-center gap-2">
               <Save className="h-4 w-4" />
               {saving ? 'Saving...' : 'Save Profile'}

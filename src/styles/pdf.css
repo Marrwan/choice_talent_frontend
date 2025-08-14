@@ -1,0 +1,132 @@
+/* PDF-specific styles for better career profile PDF generation */
+
+.pdf-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  font-size: 16px;
+}
+
+.pdf-content .profile-header {
+  background: white;
+  padding: 30px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.pdf-content h1, .pdf-content h2, .pdf-content h3, .pdf-content h4 {
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+.pdf-content h1 {
+  font-size: 32px;
+}
+
+.pdf-content h2 {
+  font-size: 28px;
+}
+
+.pdf-content h3 {
+  font-size: 24px;
+}
+
+.pdf-content h4 {
+  font-size: 20px;
+}
+
+.pdf-content p {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.pdf-content .contact-info {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.pdf-content .section {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.pdf-content .work-experience-item,
+.pdf-content .education-item {
+  margin-bottom: 20px;
+  padding: 20px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.pdf-content .work-experience-item h4,
+.pdf-content .education-item h4 {
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.pdf-content .work-experience-item p,
+.pdf-content .education-item p {
+  margin-bottom: 8px;
+  color: #6b7280;
+}
+
+.pdf-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+.pdf-content .nysc-status {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #374151;
+  color: white;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* Print-specific styles */
+@media print {
+  .pdf-content {
+    font-size: 16px !important;
+    line-height: 1.8 !important;
+  }
+  
+  .pdf-content h1 {
+    font-size: 36px !important;
+  }
+  
+  .pdf-content h2 {
+    font-size: 32px !important;
+  }
+  
+  .pdf-content h3 {
+    font-size: 28px !important;
+  }
+  
+  .pdf-content h4 {
+    font-size: 24px !important;
+  }
+  
+  .pdf-content .profile-header {
+    padding: 40px !important;
+  }
+  
+  .pdf-content .section {
+    margin-bottom: 30px !important;
+    padding: 25px !important;
+  }
+  
+  .pdf-content .work-experience-item,
+  .pdf-content .education-item {
+    margin-bottom: 25px !important;
+    padding: 25px !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}

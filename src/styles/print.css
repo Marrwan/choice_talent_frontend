@@ -10,9 +10,10 @@
 
   body {
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    line-height: 1.6;
+    line-height: 1.4;
     color: #333;
     background: white;
+    font-size: 11pt !important;
   }
 
   /* Hide non-printable elements */
@@ -37,78 +38,78 @@
   .profile-header h2,
   .profile-header-regular h2 {
     color: black !important;
-    font-size: 24px !important;
+    font-size: 16pt !important;
     font-weight: bold !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 12pt !important;
   }
 
   .profile-header .contact-info,
   .profile-header-regular .contact-info {
     color: #374151 !important;
-    font-size: 14px !important;
+    font-size: 11pt !important;
   }
 
-  /* Section headings - Red like template */
+  /* Section headings - Black for better readability */
   h3 {
-    color: #dc2626 !important;
-    font-size: 18px !important;
+    color: #000000 !important;
+    font-size: 14pt !important;
     font-weight: bold !important;
-    margin: 20px 0 10px 0 !important;
-    border-bottom: 2px solid #dc2626 !important;
-    padding-bottom: 5px !important;
+    margin: 15pt 0 10pt 0 !important;
+    border-bottom: 2px solid #000000 !important;
+    padding-bottom: 6pt !important;
     text-transform: uppercase !important;
   }
 
   /* Work experience items */
   .work-experience-item {
-    border-left: 4px solid #dc2626 !important;
-    padding: 15px !important;
-    margin: 10px 0 !important;
+    border-left: 4px solid #000000 !important;
+    padding: 15pt !important;
+    margin: 12pt 0 !important;
     background: #f9fafb !important;
   }
 
   .work-experience-item h4 {
     color: #111827 !important;
-    font-size: 16px !important;
+    font-size: 13pt !important;
     font-weight: bold !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 6pt !important;
   }
 
   .work-experience-item .position {
-    color: #dc2626 !important;
+    color: #000000 !important;
     font-weight: bold !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 8px !important;
   }
 
   /* Education items */
   .education-item {
-    border-left: 4px solid #059669 !important;
-    padding: 15px !important;
-    margin: 10px 0 !important;
+    border-left: 4px solid #000000 !important;
+    padding: 15pt !important;
+    margin: 12pt 0 !important;
     background: #f9fafb !important;
   }
 
   .education-item h4 {
     color: #111827 !important;
-    font-size: 16px !important;
+    font-size: 13pt !important;
     font-weight: bold !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 6pt !important;
   }
 
   .education-item .course {
-    color: #059669 !important;
+    color: #000000 !important;
     font-weight: bold !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 8px !important;
   }
 
   /* Skills */
   .skill-badge {
     background: #6b7280 !important;
     color: white !important;
-    padding: 4px 8px !important;
+    padding: 3pt 6pt !important;
     border-radius: 12px !important;
-    font-size: 12px !important;
-    margin: 2px !important;
+    font-size: 10pt !important;
+    margin: 2pt !important;
     display: inline-block !important;
   }
 
@@ -121,9 +122,10 @@
   /* Content sections */
   .content-section {
     background: #f9fafb !important;
-    padding: 15px !important;
-    margin: 10px 0 !important;
+    padding: 15pt !important;
+    margin: 12pt 0 !important;
     border-radius: 8px !important;
+    font-size: 11pt !important;
   }
 
   /* NYSC status */
@@ -157,17 +159,18 @@
 
   /* Ensure text is readable */
   p {
-    margin-bottom: 10px !important;
-    line-height: 1.5 !important;
+    margin-bottom: 10pt !important;
+    line-height: 1.4 !important;
+    font-size: 11pt !important;
   }
 
-  /* Company names in red */
+  /* Company names in black */
   .text-red-700 {
-    color: #dc2626 !important;
+    color: #000000 !important;
   }
 
-  /* Institution names in green */
+  /* Institution names in black */
   .text-green-700 {
-    color: #059669 !important;
+    color: #000000 !important;
   }
 } 

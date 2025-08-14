@@ -24,16 +24,18 @@ export class PDFService {
     } = options;
 
     try {
-      // Create canvas from HTML element
+      // Create canvas from HTML element with optimal scaling
       const canvas = await html2canvas(element, {
-        scale: 2, // Higher resolution
+        scale: 2, // Reduced from 3 to prevent over-scaling
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         width: element.scrollWidth,
         height: element.scrollHeight,
         scrollX: 0,
-        scrollY: 0
+        scrollY: 0,
+        logging: false,
+        imageTimeout: 0
       });
 
       // Convert canvas to image
@@ -44,15 +46,35 @@ export class PDFService {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
-      // Calculate image dimensions to fit PDF
+      // Calculate image dimensions to fit PDF with proper scaling
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
+      
+      // Use fixed margins and calculate scaling to fit content properly
+      const margin = 10; // 10mm margin on all sides
+      const maxWidth = pdfWidth - (margin * 2);
+      const maxHeight = pdfHeight - (margin * 2);
+      
+      // Calculate scaling ratio to fit content within page bounds
+      const widthRatio = maxWidth / imgWidth;
+      const heightRatio = maxHeight / imgHeight;
+      
+      // Use the larger ratio to ensure content fits and is readable
+      const ratio = Math.max(widthRatio, heightRatio);
+      
+      // If ratio is too small (content too large), cap it to prevent tiny text
+      const minRatio = 0.3; // Minimum scaling to prevent tiny text
+      const finalRatio = Math.max(ratio, minRatio);
+      
+      const finalWidth = imgWidth * finalRatio;
+      const finalHeight = imgHeight * finalRatio;
+      
+      // Center the image on the page
+      const imgX = (pdfWidth - finalWidth) / 2;
+      const imgY = margin; // 10mm from top
 
       // Add image to PDF
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
 
       // Download PDF
       pdf.save(filename);
@@ -87,24 +109,35 @@ export class PDFService {
         }
 
         const canvas = await html2canvas(elements[i], {
-          scale: 2,
+          scale: 3,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#ffffff',
           width: elements[i].scrollWidth,
           height: elements[i].scrollHeight,
           scrollX: 0,
-          scrollY: 0
+          scrollY: 0,
+          logging: false,
+          imageTimeout: 0
         });
 
         const imgData = canvas.toDataURL('image/png', quality);
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        const imgX = (pdfWidth - imgWidth * ratio) / 2;
-        const imgY = 0;
+        
+        // Use a more generous scaling to make content larger
+        const maxWidth = pdfWidth - 20; // Leave 10mm margin on each side
+        const maxHeight = pdfHeight - 20; // Leave 10mm margin on each side
+        
+        const ratio = Math.min(maxWidth / imgWidth, maxHeight / imgHeight);
+        const finalWidth = imgWidth * ratio;
+        const finalHeight = imgHeight * ratio;
+        
+        // Center the image on the page
+        const imgX = (pdfWidth - finalWidth) / 2;
+        const imgY = 10; // 10mm from top
 
-        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        pdf.addImage(imgData, 'PNG', imgX, imgY, finalWidth, finalHeight);
       }
 
       pdf.save(filename);
@@ -154,7 +187,7 @@ export class PDFService {
     } = options;
 
     try {
-      // Add print-specific styles for better readability
+      // Add print-specific styles for better readability with proper font sizes
       const originalStyle = element.style.cssText;
       element.style.cssText += `
         background: white !important;
@@ -163,34 +196,81 @@ export class PDFService {
         border: none !important;
         margin: 0 !important;
         padding: 30px !important;
-        font-size: 14px !important;
-        line-height: 1.6 !important;
+        font-size: 11pt !important;
+        line-height: 1.4 !important;
         font-family: Arial, sans-serif !important;
+        max-width: 100% !important;
+        width: 100% !important;
       `;
 
-      // Apply styles to child elements for better PDF formatting
+      // Apply styles to child elements for better PDF formatting with explicit point sizes
       const styleElement = document.createElement('style');
       styleElement.textContent = `
         @media print {
           * {
-            font-size: 14px !important;
-            line-height: 1.6 !important;
+            font-size: 11pt !important;
+            line-height: 1.4 !important;
             font-family: Arial, sans-serif !important;
           }
           h1, h2, h3, h4, h5, h6 {
             font-weight: bold !important;
-            margin-top: 20px !important;
-            margin-bottom: 10px !important;
+            margin-top: 15pt !important;
+            margin-bottom: 10pt !important;
           }
-          h1 { font-size: 24px !important; }
-          h2 { font-size: 20px !important; }
-          h3 { font-size: 18px !important; }
-          h4 { font-size: 16px !important; }
-          p { margin-bottom: 10px !important; }
-          .profile-header { padding: 20px !important; }
-          .contact-info { font-size: 14px !important; }
-          .section { margin-bottom: 20px !important; }
+          h1 { font-size: 18pt !important; }
+          h2 { font-size: 16pt !important; }
+          h3 { font-size: 14pt !important; }
+          h4 { font-size: 13pt !important; }
+          h5 { font-size: 12pt !important; }
+          h6 { font-size: 11pt !important; }
+          p { 
+            margin-bottom: 10pt !important; 
+            font-size: 11pt !important;
+            line-height: 1.4 !important;
+          }
+          .profile-header { 
+            padding: 20pt !important; 
+            margin-bottom: 20pt !important;
+          }
+          .contact-info { 
+            font-size: 11pt !important; 
+            margin-bottom: 15pt !important;
+          }
+          .section { 
+            margin-bottom: 20pt !important; 
+            padding: 15pt !important;
+          }
+          .work-experience-item, .education-item {
+            margin-bottom: 15pt !important;
+            padding: 15pt !important;
+          }
+          .work-experience-item h4, .education-item h4 {
+            font-size: 13pt !important;
+            margin-bottom: 6pt !important;
+          }
+          .skill-badge {
+            font-size: 10pt !important;
+            padding: 3pt 6pt !important;
+          }
+          .content-section {
+            font-size: 11pt !important;
+            padding: 15pt !important;
+            margin: 12pt 0 !important;
+          }
           .no-print { display: none !important; }
+          img {
+            max-width: 100% !important;
+            height: auto !important;
+          }
+          table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+          }
+          td, th {
+            padding: 8pt !important;
+            border: 1px solid #ddd !important;
+            font-size: 11pt !important;
+          }
         }
       `;
       document.head.appendChild(styleElement);

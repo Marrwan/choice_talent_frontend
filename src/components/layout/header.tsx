@@ -49,8 +49,8 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center space-x-2">
-            <img src="/company%20logo.png" alt="MyJobHunting" className="w-8 h-8 rounded-lg object-cover" />
-            <span className="text-xl font-semibold text-gray-900">MyJobHunting.com</span>
+            <img src="/company%20logo.png" alt="My Job Hunting" className="w-8 h-8 rounded-lg object-cover" />
+            <span className="text-xl font-semibold text-[#0044CC]">My Job Hunting</span>
           </Link>
 
           {/* Navigation */}
@@ -132,12 +132,38 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-3">
-                <Button asChild variant="ghost">
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register">Get Started</Link>
-                </Button>
+                {/* Desktop navigation */}
+                <div className="hidden md:flex items-center space-x-3">
+                  <Button asChild variant="ghost">
+                    <Link href="/login">Sign In</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/register">Get Started</Link>
+                  </Button>
+                </div>
+                
+                {/* Mobile navigation dropdown */}
+                <div className="md:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Menu
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem asChild>
+                        <Link href="/login" className="cursor-pointer">
+                          Sign In
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/register" className="cursor-pointer">
+                          Get Started
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             )}
           </div>

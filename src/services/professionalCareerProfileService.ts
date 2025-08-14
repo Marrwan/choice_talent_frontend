@@ -10,6 +10,9 @@ export interface WorkExperience {
   isCurrentJob?: boolean;
   jobDescription?: string;
   achievements?: string;
+  employerOrSupervisorName?: string;
+  officialPhone?: string;
+  officialEmail?: string;
 }
 
 export interface HigherEducation {

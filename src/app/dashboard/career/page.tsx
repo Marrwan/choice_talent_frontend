@@ -406,6 +406,13 @@ export default function CareerDashboardPage() {
                     Career Settings
                   </Button>
                 </Link>
+                
+                <Link href="/dashboard/report-abuse" className="block">
+                  <Button variant="outline" className="w-full justify-start">
+                    <AlertTriangle className="mr-2 h-4 w-4" />
+                    Report Abuse
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 

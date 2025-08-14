@@ -23,6 +23,7 @@ import {
   Settings
 } from 'lucide-react'
 import Link from 'next/link'
+import '@/styles/pdf.css'
 
 export default function ProfessionalCareerProfileViewPage() {
   const toast = useToast();
@@ -68,7 +69,7 @@ export default function ProfessionalCareerProfileViewPage() {
           filename: `${profile?.fullName?.replace(/\s+/g, '-').toLowerCase() || 'career'}-profile.pdf`,
           format: 'a4',
           orientation: 'portrait',
-          quality: 1
+          quality: 1.0
         }
       );
 
@@ -175,7 +176,7 @@ export default function ProfessionalCareerProfileViewPage() {
           </div>
 
           {/* Main Profile Content */}
-          <div id="career-profile-content" className="bg-white shadow-xl rounded-lg overflow-hidden">
+          <div id="career-profile-content" className="bg-white shadow-xl rounded-lg overflow-hidden pdf-content">
             {/* Profile Header - White background like template */}
             <div className="profile-header profile-header-regular p-8">
               <div className="flex items-start gap-8">
@@ -223,8 +224,8 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Professional Summary */}
               {profile.professionalSummary && (
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                    <FileText className="mr-3 h-6 w-6 text-red-700" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <FileText className="mr-3 h-6 w-6 text-gray-700" />
                     PROFESSIONAL SUMMARY
                   </h3>
                   <div className="content-section bg-gray-50 rounded-lg p-6">
@@ -236,8 +237,8 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Persona */}
               {profile.persona && (
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                    <User className="mr-3 h-6 w-6 text-red-700" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <User className="mr-3 h-6 w-6 text-gray-700" />
                     PERSONA
                   </h3>
                   <div className="content-section bg-gray-50 rounded-lg p-6">
@@ -251,8 +252,8 @@ export default function ProfessionalCareerProfileViewPage() {
                 {/* Expertise & Competencies */}
                 {profile.expertiseCompetencies && profile.expertiseCompetencies.length > 0 && (
                   <div>
-                    <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                      <Code className="mr-3 h-6 w-6 text-red-700" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                      <Code className="mr-3 h-6 w-6 text-gray-700" />
                       TECHNICAL SKILLS
                     </h3>
                     <div className="content-section bg-gray-50 rounded-lg p-6">
@@ -270,8 +271,8 @@ export default function ProfessionalCareerProfileViewPage() {
                 {/* Software Skills */}
                 {profile.softwareSkills && profile.softwareSkills.length > 0 && (
                   <div>
-                    <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                      <Settings className="mr-3 h-6 w-6 text-red-700" />
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                      <Settings className="mr-3 h-6 w-6 text-gray-700" />
                       DEVELOPMENT SKILLS
                     </h3>
                     <div className="content-section bg-gray-50 rounded-lg p-6">
@@ -290,19 +291,19 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Work Experience - Latest First */}
               {profile.workExperiences && profile.workExperiences.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                    <Briefcase className="mr-3 h-6 w-6 text-red-700" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <Briefcase className="mr-3 h-6 w-6 text-gray-700" />
                     WORK EXPERIENCE
                   </h3>
                   <div className="space-y-6">
                     {profile.workExperiences
                       .sort((a: any, b: any) => new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime())
                       .map((experience: any, index: number) => (
-                      <div key={experience.id} className="work-experience-item bg-gray-50 rounded-lg p-6 border-l-4 border-red-700">
+                      <div key={experience.id} className="work-experience-item bg-gray-50 rounded-lg p-6 border-l-4 border-gray-700">
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <h4 className="text-xl font-bold text-gray-900">{experience.designation}</h4>
-                            <p className="text-lg font-semibold text-red-700">{experience.companyName}</p>
+                            <p className="text-lg font-semibold text-gray-700">{experience.companyName}</p>
                             <p className="text-gray-600">{experience.companyLocation}</p>
                           </div>
                           <div className="text-right">
@@ -323,6 +324,33 @@ export default function ProfessionalCareerProfileViewPage() {
                             <div className="whitespace-pre-line">{experience.achievements}</div>
                           </div>
                         )}
+                        
+                        {/* Reference Information */}
+                        {(experience.employerOrSupervisorName || experience.officialPhone || experience.officialEmail) && (
+                          <div className="mt-4 pt-4 border-t border-gray-200">
+                            <h5 className="font-semibold text-gray-800 mb-2">Reference Information:</h5>
+                            <div className="space-y-1 text-sm text-gray-700">
+                              {experience.employerOrSupervisorName && (
+                                <div className="flex items-center">
+                                  <User className="mr-2 h-4 w-4 text-gray-500" />
+                                  <span><strong>Contact:</strong> {experience.employerOrSupervisorName}</span>
+                                </div>
+                              )}
+                              {experience.officialPhone && (
+                                <div className="flex items-center">
+                                  <Phone className="mr-2 h-4 w-4 text-gray-500" />
+                                  <span><strong>Phone:</strong> {experience.officialPhone}</span>
+                                </div>
+                              )}
+                              {experience.officialEmail && (
+                                <div className="flex items-center">
+                                  <Mail className="mr-2 h-4 w-4 text-gray-500" />
+                                  <span><strong>Email:</strong> {experience.officialEmail}</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -332,22 +360,22 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Education */}
               {profile.higherEducations && profile.higherEducations.length > 0 && (
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                    <GraduationCap className="mr-3 h-6 w-6 text-red-700" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <GraduationCap className="mr-3 h-6 w-6 text-gray-700" />
                     EDUCATION
                   </h3>
                   <div className="space-y-4">
                     {profile.higherEducations.map((education: any) => (
-                      <div key={education.id} className="education-item bg-gray-50 rounded-lg p-6 border-l-4 border-green-600">
+                      <div key={education.id} className="education-item bg-gray-50 rounded-lg p-6 border-l-4 border-gray-600">
                         <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="text-xl font-bold text-gray-900">{education.courseOfStudy}</h4>
-                            <p className="text-lg font-semibold text-green-700">
+                          <div className="flex-1">
+                            <h4 className="text-xl font-bold text-gray-900 mb-2">
                               {education.institutionName}{education.location ? `, ${education.location}` : ''}
-                            </p>
+                            </h4>
+                            <p className="text-lg font-semibold text-gray-700 mb-1">{education.courseOfStudy}</p>
                             <p className="text-gray-600">{education.qualification}</p>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right ml-4">
                             <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm">
                               {education.entryYear} - {education.graduationYear}
                             </span>
@@ -362,8 +390,8 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* NYSC Status */}
               {profile.nyscStatus && (
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-red-700 mb-4 flex items-center border-b-2 border-red-700 pb-2">
-                    <Award className="mr-3 h-6 w-6 text-red-700" />
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <Award className="mr-3 h-6 w-6 text-gray-700" />
                     NYSC STATUS
                   </h3>
                   <div className="content-section bg-gray-50 rounded-lg p-6">
