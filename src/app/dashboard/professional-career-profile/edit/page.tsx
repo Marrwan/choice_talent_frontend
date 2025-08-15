@@ -955,7 +955,7 @@ export default function ProfessionalCareerProfilePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5" />
-                Professional Memberships & Associations
+                Professional Memberships
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

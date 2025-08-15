@@ -315,7 +315,7 @@ export default function ProfessionalCareerProfileViewPage() {
                           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                             <div className="flex-1">
                               <span className="text-xl sm:text-2xl font-bold text-black mb-1">
-                                {experience.companyName} | {experience.companyLocation}
+                                {experience.companyName} | <span className="text-base sm:text-lg font-bold text-black">{experience.companyLocation}</span>
                               </span>
                             </div>
                           </div>
@@ -490,21 +490,29 @@ export default function ProfessionalCareerProfileViewPage() {
               <div className="mb-6 sm:mb-8">
                 <h3 className="text-xl sm:text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                  PROFESSIONAL MEMBERSHIPS & ASSOCIATIONS
+                  PROFESSIONAL MEMBERSHIPS 
                 </h3>
                 <div className="space-y-4">
                   {profile.professionalMemberships && profile.professionalMemberships.length > 0 ? (
                     profile.professionalMemberships.map((membership: any) => (
                       <div key={membership.id} className="membership-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                          <div className="flex-1">
-                            <h4 className="text-lg sm:text-xl font-bold text-black mb-2">{membership.professionalBodyName}</h4>
-                            <p className="text-base sm:text-lg font-semibold text-black mb-1">Professional Member</p>
+                        <div className="flex flex-col gap-3 mb-3">
+                          {/* First line: Organization name */}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <div className="flex-1">
+                              <span className="text-xl sm:text-2xl font-bold text-black mb-1">
+                                {membership.professionalBodyName}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-left sm:text-right sm:ml-4">
-                            <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
-                              {membership.yearOfJoining}
-                            </span>
+                          
+                          {/* Second line: Member type and date */}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <div className="flex-1">
+                              <span className="text-xl sm:text-2xl font-bold text-black">
+                                Professional Member | <span className="text-base sm:text-lg font-bold text-black">{membership.yearOfJoining}</span>
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -527,15 +535,23 @@ export default function ProfessionalCareerProfileViewPage() {
                   {profile.trainingCertifications && profile.trainingCertifications.length > 0 ? (
                     profile.trainingCertifications.map((certification: any) => (
                       <div key={certification.id} className="certification-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                          <div className="flex-1">
-                            <h4 className="text-lg sm:text-xl font-bold text-black mb-2">{certification.certificationName}</h4>
-                            <p className="text-base sm:text-lg font-semibold text-black mb-1">{certification.trainingOrganization}</p>
+                        <div className="flex flex-col gap-3 mb-3">
+                          {/* First line: Organization name */}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <div className="flex-1">
+                              <span className="text-xl sm:text-2xl font-bold text-black mb-1">
+                                {certification.trainingOrganization}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-left sm:text-right sm:ml-4">
-                            <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
-                              {certification.dateOfCertification ? formatDate(certification.dateOfCertification) : 'N/A'}
-                            </span>
+                          
+                          {/* Second line: Certification name and date */}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <div className="flex-1">
+                              <span className="text-xl sm:text-2xl font-bold text-black">
+                                {certification.certificationName} | <span className="text-base sm:text-lg font-bold text-black">{certification.dateOfCertification ? formatDate(certification.dateOfCertification) : 'N/A'}</span>
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </div>
