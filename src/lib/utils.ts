@@ -130,24 +130,76 @@ export function validatePassword(password: string): {
 }
 
 /**
- * Convert relative URLs to full backend URLs
+ * Resize image before upload to improve performance
  */
-export const getFullImageUrl = (url: string | null | undefined): string | undefined => {
-  if (!url) return undefined;
+export const resizeImage = (file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.8): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = () => {
+      // Calculate new dimensions while maintaining aspect ratio
+      let { width, height } = img;
+      
+      if (width > height) {
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = (width * maxHeight) / height;
+          height = maxHeight;
+        }
+      }
+
+      // Set canvas dimensions
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw resized image
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      // Convert to blob
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            // Create new file with resized image
+            const resizedFile = new File([blob], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+            resolve(resizedFile);
+          } else {
+            reject(new Error('Failed to resize image'));
+          }
+        },
+        file.type,
+        quality
+      );
+    };
+
+    img.onerror = () => {
+      reject(new Error('Failed to load image'));
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+};
+
+/**
+ * Get full image URL with proper error handling
+ */
+export const getFullImageUrl = (imagePath: string | null | undefined): string => {
+  if (!imagePath) return '';
   
   // If it's already a full URL, return as is
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
   }
   
-  // If it's a relative URL starting with /api/uploads, convert to full backend URL
-  if (url.startsWith('/api/uploads/')) {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-    // Remove /api from the end if it exists to get the base URL
-    const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-    return `${baseUrl}${url}`;
-  }
-  
-  // Return as is for other relative URLs
-  return url;
+  // If it's a relative path, prepend the API base URL
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  return `${baseUrl}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
 };

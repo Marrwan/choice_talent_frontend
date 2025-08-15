@@ -19,7 +19,6 @@ import {
   Search, 
   Activity, 
   Settings, 
-  LogOut, 
   Crown,
   FileText,
   Award,
@@ -37,7 +36,7 @@ import Link from 'next/link';
 export default function DashboardPage() {
   const toast = useToast();
   const router = useRouter();
-  const { user, logout, refreshUser, isAuthenticated } = useAuth();
+  const { user, refreshUser, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -142,10 +141,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    toast.showSuccess('Logged out successfully', 'Success');
-  };
+
 
   const handleDownloadProfile = () => {
     // Check if profile is complete
@@ -295,11 +291,6 @@ export default function DashboardPage() {
                   Premium
                 </Badge>
               )}
-              <Button variant="outline" onClick={handleLogout} className="h-10 px-3 sm:px-4">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Log out</span>
-                <span className="sm:hidden">Logout</span>
-              </Button>
             </div>
           </div>
         </div>

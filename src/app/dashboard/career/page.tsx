@@ -11,7 +11,7 @@ import { professionalCareerProfileService } from '@/services/professionalCareerP
 import { jobHuntingSettingsService } from '@/services/jobHuntingSettingsService';
 import jobSubscriptionService from '@/services/jobSubscriptionService';
 import { userService } from '@/services/userService';
-import { getFullImageUrl } from '@/lib/utils';
+import { getFullImageUrl, resizeImage } from '@/lib/utils';
 import { 
   User, 
   Briefcase, 
@@ -19,7 +19,6 @@ import {
   Search, 
   Activity, 
   Settings, 
-  LogOut, 
   Crown,
   FileText,
   Award,
@@ -37,7 +36,7 @@ import Link from 'next/link';
 export default function CareerDashboardPage() {
   const toast = useToast();
   const router = useRouter();
-  const { user, logout, refreshUser, isAuthenticated } = useAuth();
+  const { user, refreshUser, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -142,10 +141,7 @@ export default function CareerDashboardPage() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    toast.showSuccess('Logged out successfully', 'Success');
-  };
+
 
   const handleDownloadProfile = () => {
     // Check if profile is complete
@@ -171,8 +167,11 @@ export default function CareerDashboardPage() {
 
   const handleProfilePictureUpload = async (file: File) => {
     try {
+      // Resize image before upload for better performance
+      const resizedFile = await resizeImage(file, 800, 800, 0.8);
+      
       const formData = new FormData();
-      formData.append('profilePicture', file);
+      formData.append('profilePicture', resizedFile);
       
       const response = await userService.uploadCareerProfilePicture(formData);
       if (response.success) {
@@ -295,10 +294,6 @@ export default function CareerDashboardPage() {
                   Premium
                 </Badge>
               )}
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </Button>
             </div>
           </div>
         </div>

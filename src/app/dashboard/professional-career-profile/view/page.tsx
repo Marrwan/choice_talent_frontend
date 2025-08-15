@@ -20,7 +20,8 @@ import {
   MapPin, 
   Calendar, 
   Code,
-  Settings
+  Settings,
+  Users
 } from 'lucide-react'
 import Link from 'next/link'
 import '@/styles/pdf.css'
@@ -304,8 +305,8 @@ export default function ProfessionalCareerProfileViewPage() {
                       <div key={experience.id} className="work-experience-item bg-gray-50 rounded-lg p-4 sm:p-6 border-l-4 border-gray-700">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
                           <div className="flex-1">
-                            <h4 className="text-lg sm:text-xl font-bold text-gray-900">{experience.designation}</h4>
-                            <p className="text-base sm:text-lg font-semibold text-gray-700">{experience.companyName}</p>
+                            <p className="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{experience.companyName}</p>
+                            <p className="text-lg sm:text-xl font-extrabold text-gray-900 mb-1">{experience.designation}</p>
                             <p className="text-gray-600 text-sm sm:text-base">{experience.companyLocation}</p>
                           </div>
                           <div className="text-left sm:text-right">
@@ -407,6 +408,135 @@ export default function ProfessionalCareerProfileViewPage() {
                         </span>
                       )}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Basic Education */}
+              {profile.basicEducations && profile.basicEducations.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
+                    BASIC EDUCATION
+                  </h3>
+                  <div className="space-y-4">
+                    {profile.basicEducations.map((education: any) => (
+                      <div key={education.id} className="education-item bg-gray-50 rounded-lg p-4 sm:p-6 border-l-4 border-gray-500">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                          <div className="flex-1">
+                            <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
+                              {education.institutionName}{education.location ? `, ${education.location}` : ''}
+                            </h4>
+                            <p className="text-base sm:text-lg font-semibold text-gray-700 mb-1">{education.courseOfStudy}</p>
+                            <p className="text-gray-600 text-sm sm:text-base">{education.qualification}</p>
+                          </div>
+                          <div className="text-left sm:text-right sm:ml-4">
+                            <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs sm:text-sm">
+                              {education.entryYear} - {education.graduationYear}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Professional Memberships */}
+              {profile.professionalMemberships && profile.professionalMemberships.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
+                    PROFESSIONAL MEMBERSHIPS & ASSOCIATIONS
+                  </h3>
+                  <div className="space-y-4">
+                    {profile.professionalMemberships.map((membership: any) => (
+                      <div key={membership.id} className="membership-item bg-gray-50 rounded-lg p-4 sm:p-6 border-l-4 border-blue-600">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                          <div className="flex-1">
+                            <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{membership.organizationName}</h4>
+                            <p className="text-base sm:text-lg font-semibold text-gray-700 mb-1">{membership.membershipType}</p>
+                            <p className="text-gray-600 text-sm sm:text-base">{membership.membershipNumber}</p>
+                          </div>
+                          <div className="text-left sm:text-right sm:ml-4">
+                            <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs sm:text-sm">
+                              {membership.membershipYear}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Training & Certifications */}
+              {profile.trainingCertifications && profile.trainingCertifications.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
+                    TRAINING & CERTIFICATIONS
+                  </h3>
+                  <div className="space-y-4">
+                    {profile.trainingCertifications.map((certification: any) => (
+                      <div key={certification.id} className="certification-item bg-gray-50 rounded-lg p-4 sm:p-6 border-l-4 border-green-600">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                          <div className="flex-1">
+                            <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{certification.certificationName}</h4>
+                            <p className="text-base sm:text-lg font-semibold text-gray-700 mb-1">{certification.issuingOrganization}</p>
+                            <p className="text-gray-600 text-sm sm:text-base">{certification.certificationNumber}</p>
+                          </div>
+                          <div className="text-left sm:text-right sm:ml-4">
+                            <span className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs sm:text-sm">
+                              {certification.issueDate ? formatDate(certification.issueDate) : certification.issueYear}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reference Details */}
+              {profile.referenceDetails && profile.referenceDetails.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 flex items-center border-b-2 border-gray-700 pb-2">
+                    <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
+                    REFERENCES
+                  </h3>
+                  <div className="space-y-4">
+                    {profile.referenceDetails.map((reference: any) => (
+                      <div key={reference.id} className="reference-item bg-gray-50 rounded-lg p-4 sm:p-6 border-l-4 border-purple-600">
+                        <div className="space-y-3">
+                          <div>
+                            <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{reference.fullName}</h4>
+                            <p className="text-base sm:text-lg font-semibold text-gray-700 mb-1">{reference.designation}</p>
+                            <p className="text-gray-600 text-sm sm:text-base">{reference.organizationName}</p>
+                          </div>
+                          <div className="space-y-2 text-sm sm:text-base text-gray-700">
+                            {reference.emailAddress && (
+                              <div className="flex items-center">
+                                <Mail className="mr-2 h-4 w-4 text-gray-500 flex-shrink-0" />
+                                <span>{reference.emailAddress}</span>
+                              </div>
+                            )}
+                            {reference.phoneNumber && (
+                              <div className="flex items-center">
+                                <Phone className="mr-2 h-4 w-4 text-gray-500 flex-shrink-0" />
+                                <span>{reference.phoneNumber}</span>
+                              </div>
+                            )}
+                            {reference.relationship && (
+                              <div className="flex items-center">
+                                <User className="mr-2 h-4 w-4 text-gray-500 flex-shrink-0" />
+                                <span><strong>Relationship:</strong> {reference.relationship}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
