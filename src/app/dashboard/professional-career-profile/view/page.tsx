@@ -41,6 +41,9 @@ export default function ProfessionalCareerProfileViewPage() {
       const response = await professionalCareerProfileService.getProfile();
       
       if (response.success && response.data.profile) {
+        console.log('Profile data received:', response.data.profile);
+        console.log('NYSC Status:', response.data.profile.nyscStatus);
+        console.log('NYSC Completion Date:', response.data.profile.nyscCompletionDate);
         setProfile(response.data.profile);
       } else {
         toast.showError('No professional career profile found', 'Error');
@@ -262,7 +265,7 @@ export default function ProfessionalCareerProfileViewPage() {
                     <div className="flex flex-wrap gap-2">
                       {profile.expertiseCompetencies && profile.expertiseCompetencies.length > 0 ? (
                         profile.expertiseCompetencies.map((skill: string, index: number) => (
-                          <span key={index} className="skill-badge bg-black text-white px-3 py-1 rounded-full text-sm">
+                          <span key={index} className="skill-badge bg-white text-black px-3 py-1 rounded-full text-sm">
                             {skill}
                           </span>
                         ))
@@ -283,7 +286,7 @@ export default function ProfessionalCareerProfileViewPage() {
                     <div className="flex flex-wrap gap-2">
                       {profile.softwareSkills && profile.softwareSkills.length > 0 ? (
                         profile.softwareSkills.map((skill: string, index: number) => (
-                          <span key={index} className="skill-badge bg-black text-white px-3 py-1 rounded-full text-sm">
+                          <span key={index} className="skill-badge bg-white text-black px-3 py-1 rounded-full text-sm">
                             {skill}
                           </span>
                         ))
@@ -307,16 +310,26 @@ export default function ProfessionalCareerProfileViewPage() {
                         .sort((a: any, b: any) => new Date(b.entryDate).getTime() - new Date(a.entryDate).getTime())
                         .map((experience: any, index: number) => (
                         <div key={experience.id} className="work-experience-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
-                          <div className="flex-1">
-                            <p className="text-xl sm:text-2xl font-black text-black mb-1">{experience.companyName}</p>
-                            <p className="text-xl sm:text-2xl font-black text-black mb-1">{experience.designation}</p>
-                            <p className="text-black text-sm sm:text-base">{experience.companyLocation}</p>
+                        <div className="flex flex-col gap-3 mb-3">
+                          {/* First line: Company name and location together */}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <div className="flex-1">
+                              <span className="text-xl sm:text-2xl font-bold text-black mb-1">
+                                {experience.companyName} | {experience.companyLocation}
+                              </span>
+                            </div>
                           </div>
-                          <div className="text-left sm:text-right">
-                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs sm:text-sm">
-                              {formatDate(experience.entryDate)} - {experience.isCurrentJob ? 'Present' : (experience.exitDate ? formatDate(experience.exitDate) : 'Date')}
-                            </span>
+                          
+                          {/* Second line: Position/title and date */}
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <div className="flex-1">
+                              <span className="text-xl sm:text-2xl font-bold text-black">{experience.designation}</span>
+                            </div>
+                            <div className="text-left sm:text-right">
+                              <span className="bg-white font-bold text-black px-3 py-1 rounded-full text-xs sm:text-sm">
+                                {formatDate(experience.entryDate)} - {experience.isCurrentJob ? 'Present' : (experience.exitDate ? formatDate(experience.exitDate) : 'Date')}
+                              </span>
+                            </div>
                           </div>
                         </div>
                         {experience.jobDescription && (
@@ -387,7 +400,7 @@ export default function ProfessionalCareerProfileViewPage() {
                             <p className="text-black text-sm sm:text-base">{education.qualification}</p>
                           </div>
                           <div className="text-left sm:text-right sm:ml-4">
-                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs sm:text-sm">
+                            <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
                               {education.entryYear} - {education.graduationYear}
                             </span>
                           </div>
@@ -414,19 +427,19 @@ export default function ProfessionalCareerProfileViewPage() {
                     {profile.nyscStatus && profile.nyscStatus.trim() !== '' ? (
                       <>
                         <span className="nysc-status bg-black text-white px-4 py-2 rounded-full text-center">
-                          {profile.nyscStatus === 'Yes' ? 'Completed' : profile.nyscStatus}
+                          {profile.nyscStatus}
                         </span>
-                        {(profile.nyscStatus === 'Completed' || profile.nyscStatus === 'Yes') && profile.nyscCompletionDate && (
+                        {profile.nyscStatus === 'Completed' && profile.nyscCompletionDate && (
                           <span className="text-black text-sm sm:text-base">
                             Completed on: {formatDate(profile.nyscCompletionDate)}
                           </span>
                         )}
-                        {(profile.nyscStatus === 'Completed' || profile.nyscStatus === 'Yes') && !profile.nyscCompletionDate && (
+                        {profile.nyscStatus === 'Completed' && !profile.nyscCompletionDate && (
                           <span className="text-black text-sm sm:text-base">
-                            Status: {profile.nyscStatus === 'Yes' ? 'Completed' : profile.nyscStatus}
+                            Status: {profile.nyscStatus}
                           </span>
                         )}
-                        {profile.nyscStatus !== 'Completed' && profile.nyscStatus !== 'Yes' && (
+                        {profile.nyscStatus !== 'Completed' && (
                           <span className="text-black text-sm sm:text-base">
                             Status: {profile.nyscStatus}
                           </span>
@@ -458,7 +471,7 @@ export default function ProfessionalCareerProfileViewPage() {
                             <p className="text-black text-sm sm:text-base">{education.educationType}</p>
                           </div>
                           <div className="text-left sm:text-right sm:ml-4">
-                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs sm:text-sm">
+                            <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
                               {education.year}
                             </span>
                           </div>
@@ -489,7 +502,7 @@ export default function ProfessionalCareerProfileViewPage() {
                             <p className="text-base sm:text-lg font-semibold text-black mb-1">Professional Member</p>
                           </div>
                           <div className="text-left sm:text-right sm:ml-4">
-                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs sm:text-sm">
+                            <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
                               {membership.yearOfJoining}
                             </span>
                           </div>
@@ -520,7 +533,7 @@ export default function ProfessionalCareerProfileViewPage() {
                             <p className="text-base sm:text-lg font-semibold text-black mb-1">{certification.trainingOrganization}</p>
                           </div>
                           <div className="text-left sm:text-right sm:ml-4">
-                            <span className="bg-black text-white px-3 py-1 rounded-full text-xs sm:text-sm">
+                            <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
                               {certification.dateOfCertification ? formatDate(certification.dateOfCertification) : 'N/A'}
                             </span>
                           </div>
