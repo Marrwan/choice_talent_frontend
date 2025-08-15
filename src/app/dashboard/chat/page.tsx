@@ -56,7 +56,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
   const isGroup = conversation.type === 'group';
   return (
     <div onClick={onClick} className="cursor-pointer p-4 bg-white rounded-lg shadow hover:bg-gray-50 flex items-center space-x-3">
-            <Avatar className="h-12 w-12">
+      <Avatar className="h-12 w-12 flex-shrink-0">
         {isGroup ? (
           conversation.groupAvatar ? (
             <AuthenticatedImage src={conversation.groupAvatar} alt={conversation.groupName} className="w-full h-full object-cover rounded-full" />
@@ -68,20 +68,20 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
         ) : (
           conversation.otherParticipant.profilePicture ? (
             <AuthenticatedImage src={conversation.otherParticipant.profilePicture} alt={conversation.otherParticipant.name} className="w-full h-full object-cover rounded-full" />
-              ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center rounded-full">
               <UserIcon className="h-4 w-4 text-gray-400" />
-                </div>
+            </div>
           )
-              )}
-            </Avatar>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900 truncate">
+        )}
+      </Avatar>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-base">
             {isGroup ? conversation.groupName : (conversation.otherParticipant.realName || conversation.otherParticipant.name)}
             {isGroup && <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Group</span>}
-              </h3>
-              <div className="flex items-center space-x-2">
+          </h3>
+          <div className="flex items-center space-x-2 flex-shrink-0">
             {/* Call icons for direct only */}
             {!isGroup && (
               <>
@@ -89,11 +89,11 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
                 <button onClick={e => { e.stopPropagation(); router.push(`/dashboard/chat/${conversation.id}?call=video`) }} className="p-1 hover:bg-gray-100 rounded-full transition-colors" title="Video Call"><Video className="h-4 w-4 text-gray-600 hover:text-blue-600" /></button>
               </>
             )}
-                {conversation.lastMessage && (
+            {conversation.lastMessage && (
               <span className="text-xs text-gray-500">{formatTime(conversation.lastMessage.createdAt)}</span>
-                )}
-              </div>
-            </div>
+            )}
+          </div>
+        </div>
         <div className="truncate text-gray-600 text-sm">
           {isGroup ? (conversation.lastMessage ? `${conversation.lastMessage.sender?.realName || conversation.lastMessage.sender?.name}: ${conversation.lastMessage.content}` : 'No messages yet') : (conversation.lastMessage ? conversation.lastMessage.content : 'No messages yet')}
         </div>
@@ -332,11 +332,11 @@ export default function ConversationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
             <Link 
               href="/dashboard" 
               className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
@@ -346,21 +346,21 @@ export default function ConversationsPage() {
             </Link>
             <button 
               onClick={testNavigation}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors w-full sm:w-auto h-10"
             >
               Test Navigation
             </button>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Messages</h1>
               <p className="text-gray-600 mt-2">
                 Your conversations with other users
               </p>
             </div>
             <Link href="/dashboard/users">
-              <Button>
+              <Button className="w-full sm:w-auto h-12">
                 <Plus className="h-4 w-4 mr-2" />
                 New Chat
               </Button>
@@ -369,15 +369,18 @@ export default function ConversationsPage() {
         </div>
 
         {/* My Groups Section */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">My Groups</h2>
-            <Button onClick={() => setShowCreateGroup(true)}><Plus className="h-4 w-4 mr-2" />Create Group</Button>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+            <h2 className="text-lg sm:text-xl font-bold">My Groups</h2>
+            <Button onClick={() => setShowCreateGroup(true)} className="w-full sm:w-auto h-12">
+              <Plus className="h-4 w-4 mr-2" />
+              Create Group
+            </Button>
           </div>
-          <div className="space-y-2 mb-8">
+          <div className="space-y-2 mb-6 sm:mb-8">
             {groups.map(group => (
               <div key={group.id} className="p-3 bg-white rounded shadow flex items-center cursor-pointer hover:bg-blue-50" onClick={() => router.push(`/dashboard/chat/${group.conversation_id}`)}>
-                <Avatar className="h-10 w-10">
+                <Avatar className="h-10 w-10 flex-shrink-0">
                   {group.avatar_url ? (
                     <AuthenticatedImage src={group.avatar_url} alt={group.name} className="w-full h-full object-cover rounded-full" />
                   ) : (
@@ -386,8 +389,8 @@ export default function ConversationsPage() {
                     </div>
                   )}
                 </Avatar>
-                <div className="ml-3 flex-1">
-                  <div className="font-semibold text-gray-900">{group.name}</div>
+                <div className="ml-3 flex-1 min-w-0">
+                  <div className="font-semibold text-gray-900 truncate">{group.name}</div>
                   <div className="text-xs text-gray-500">{group.member_count} members</div>
                 </div>
               </div>
@@ -402,8 +405,8 @@ export default function ConversationsPage() {
               <Card key={i} className="animate-pulse">
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="h-12 w-12 bg-gray-200 rounded-full"></div>
-                    <div className="flex-1 space-y-2">
+                    <div className="h-12 w-12 bg-gray-200 rounded-full flex-shrink-0"></div>
+                    <div className="flex-1 space-y-2 min-w-0">
                       <div className="h-4 bg-gray-200 rounded w-1/3"></div>
                       <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                       <div className="h-3 bg-gray-200 rounded w-2/3"></div>
@@ -414,8 +417,8 @@ export default function ConversationsPage() {
             ))}
           </div>
         ) : conversations.length === 0 ? (
-          <div className="text-center py-16">
-            <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <div className="text-center py-12 sm:py-16">
+            <MessageSquare className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               No conversations yet
             </h3>
@@ -423,7 +426,7 @@ export default function ConversationsPage() {
               Start chatting with other users to see your conversations here
             </p>
             <Link href="/dashboard/users">
-              <Button>
+              <Button className="h-12">
                 <UserIcon className="h-4 w-4 mr-2" />
                 Find People to Chat With
               </Button>

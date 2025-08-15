@@ -29,6 +29,7 @@ export interface UpdateProfileRequest {
   realName?: string
   username?: string
   profilePicture?: string
+  interests?: string
   dateOfBirth?: string
   gender?: string
   occupation?: string

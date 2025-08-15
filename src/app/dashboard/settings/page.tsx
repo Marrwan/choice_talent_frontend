@@ -95,10 +95,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link
             href="/dashboard"
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
@@ -106,7 +106,7 @@ export default function SettingsPage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-600 mt-2">
             Manage your account settings and preferences
           </p>
@@ -123,11 +123,11 @@ export default function SettingsPage() {
             ) : (
               <AlertCircle className="h-5 w-5 mr-2" />
             )}
-            {message}
+            <span className="text-sm sm:text-base">{message}</span>
           </div>
         )}
 
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Account Information */}
           <Card>
             <CardHeader>
@@ -137,17 +137,17 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Email</Label>
-                  <p className="text-sm text-gray-900 mt-1">{user.email}</p>
+                  <p className="text-sm text-gray-900 mt-1 break-all">{user.email}</p>
                 </div>
                 <div>
                   <Label>Display Name</Label>
                   <p className="text-sm text-gray-900 mt-1">{user.name || 'Not set'}</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Username</Label>
                   <p className="text-sm text-gray-900 mt-1">{user.username || 'Not set'}</p>
@@ -159,7 +159,7 @@ export default function SettingsPage() {
               </div>
               <div className="pt-4">
                 <Link href="/dashboard/profile">
-                  <Button variant="outline">
+                  <Button variant="outline" className="h-12 px-6">
                     Edit Profile
                   </Button>
                 </Link>
@@ -187,6 +187,7 @@ export default function SettingsPage() {
                       onChange={(e) => handleInputChange('currentPassword', e.target.value)}
                       placeholder="Enter your current password"
                       required
+                      className="h-12 pr-12"
                     />
                     <button
                       type="button"
@@ -213,6 +214,7 @@ export default function SettingsPage() {
                       placeholder="Enter your new password"
                       required
                       minLength={6}
+                      className="h-12 pr-12"
                     />
                     <button
                       type="button"
@@ -241,6 +243,7 @@ export default function SettingsPage() {
                       onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                       placeholder="Confirm your new password"
                       required
+                      className="h-12 pr-12"
                     />
                     <button
                       type="button"
@@ -259,7 +262,7 @@ export default function SettingsPage() {
                 <Button
                   type="submit"
                   disabled={isSaving}
-                  className="flex items-center"
+                  className="flex items-center h-12"
                 >
                   {isSaving ? (
                     <>
@@ -286,27 +289,25 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <h4 className="font-medium">Profile Visibility</h4>
                   <p className="text-sm text-gray-500">Control who can see your profile</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="h-10 w-full sm:w-auto">
                   Manage
                 </Button>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                   <h4 className="font-medium">Contact Information</h4>
                   <p className="text-sm text-gray-500">Control who can see your contact details</p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="h-10 w-full sm:w-auto">
                   Manage
                 </Button>
               </div>
-
-
             </CardContent>
           </Card>
 
@@ -320,7 +321,7 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-red-200 rounded-lg gap-4">
                   <div>
                     <h4 className="font-medium text-red-600">Delete Account</h4>
                     <p className="text-sm text-gray-500">
@@ -329,7 +330,7 @@ export default function SettingsPage() {
                   </div>
                   <Button
                     variant="outline"
-                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    className="text-red-600 border-red-200 hover:bg-red-50 h-10 w-full sm:w-auto"
                     onClick={handleDeleteAccount}
                   >
                     Delete Account

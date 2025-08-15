@@ -265,11 +265,9 @@ export default function DashboardPage() {
     return missingFields;
   };
 
-
-
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-4 sm:p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
@@ -281,13 +279,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-start">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Career Dashboard</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Career Dashboard</h1>
               <p className="text-gray-600 mt-2">Welcome back, {user?.name || 'User'}!</p>
             </div>
             <div className="flex items-center gap-2">
@@ -297,18 +295,19 @@ export default function DashboardPage() {
                   Premium
                 </Badge>
               )}
-              <Button variant="outline" onClick={handleLogout}>
+              <Button variant="outline" onClick={handleLogout} className="h-10 px-3 sm:px-4">
                 <LogOut className="mr-2 h-4 w-4" />
-                Log out
+                <span className="hidden sm:inline">Log out</span>
+                <span className="sm:hidden">Logout</span>
               </Button>
             </div>
           </div>
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column - User Info & Quick Actions */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* User Profile Card */}
             <Card>
               <CardHeader>
@@ -339,9 +338,9 @@ export default function DashboardPage() {
                       </div>
                     )}
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{user?.name || 'User'}</h3>
-                    <p className="text-sm text-gray-600">{user?.email}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">{user?.name || 'User'}</h3>
+                    <p className="text-sm text-gray-600 truncate">{user?.email}</p>
                     <Badge variant={user?.isPremium ? 'default' : 'secondary'} className="mt-1">
                       {user?.isPremium ? 'Premium Plan' : 'Free Plan'}
                     </Badge>
@@ -370,47 +369,47 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link href="/dashboard/professional-career-profile" className="block">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start h-12">
                     <FileText className="mr-2 h-4 w-4" />
                     Career Profile
                   </Button>
                 </Link>
                 
-                <Button variant="outline" className="w-full justify-start" onClick={handleDownloadProfile}>
+                <Button variant="outline" className="w-full justify-start h-12" onClick={handleDownloadProfile}>
                   <Download className="mr-2 h-4 w-4" />
                   Download Profile
                 </Button>
                 
                 <Link href="/dashboard/job-hunting-settings" className="block">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start h-12">
                     <Search className="mr-2 h-4 w-4" />
                     Job Hunting
                   </Button>
                 </Link>
                 
                 <Link href="/dashboard/subscription" className="block">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start h-12">
                     <Crown className="mr-2 h-4 w-4" />
                     Subscription
                   </Button>
                 </Link>
                 
                 <Link href="/dashboard/career/activities" className="block">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start h-12">
                     <Activity className="mr-2 h-4 w-4" />
                     Track Activities
                   </Button>
                 </Link>
                 
                 <Link href="/dashboard/career/settings" className="block">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start h-12">
                     <Settings className="mr-2 h-4 w-4" />
                     Career Settings
                   </Button>
                 </Link>
                 
                 <Link href="/dashboard/report-abuse" className="block">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start h-12">
                     <AlertTriangle className="mr-2 h-4 w-4" />
                     Report Abuse
                   </Button>
@@ -422,7 +421,7 @@ export default function DashboardPage() {
             {profile && getCompletionPercentage() < 100 && (
               <Card className="border-yellow-200 bg-yellow-50">
                 <CardHeader>
-                  <CardTitle className="flex items-center text-yellow-800">
+                  <CardTitle className="flex items-center text-yellow-800 text-sm sm:text-base">
                     <AlertTriangle className="mr-2 h-5 w-5" />
                     Profile Completion: {getCompletionPercentage()}%
                   </CardTitle>
@@ -434,9 +433,9 @@ export default function DashboardPage() {
                   <div className="space-y-2">
                     {getMissingFields().slice(0, 5).map((item, index) => (
                       <div key={index} className="flex items-center justify-between text-sm">
-                        <span className="text-yellow-800">{item.field}</span>
+                        <span className="text-yellow-800 truncate flex-1 mr-2">{item.field}</span>
                         <Link href="/dashboard/professional-career-profile/edit">
-                          <Button variant="outline" size="sm" className="h-6 px-2 text-xs">
+                          <Button variant="outline" size="sm" className="h-8 px-2 text-xs flex-shrink-0">
                             Complete
                           </Button>
                         </Link>
@@ -454,17 +453,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Column - Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Career Profile Overview */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <CardTitle className="flex items-center">
                     <Briefcase className="mr-2 h-5 w-5" />
                     Career Profile Overview
                   </CardTitle>
                   <Link href="/dashboard/professional-career-profile">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
                       <Eye className="mr-2 h-4 w-4" />
                       View Full Profile
                     </Button>
@@ -474,35 +473,35 @@ export default function DashboardPage() {
               <CardContent>
                 {profile ? (
                   <div className="space-y-4">
-                    <div className="flex items-start gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                       {profile.profilePicture ? (
                         <img
                           src={getFullImageUrl(profile.profilePicture)}
                           alt="Profile"
-                          className="w-20 h-20 object-cover rounded-lg"
+                          className="w-20 h-20 object-cover rounded-lg mx-auto sm:mx-0"
                         />
                       ) : (
-                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
                           <User className="w-10 h-10 text-gray-400" />
                         </div>
                       )}
-                      <div className="flex-1">
+                      <div className="flex-1 text-center sm:text-left">
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">{profile.fullName}</h3>
                         <p className="text-gray-600 mb-3">{profile.professionalSummary}</p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div className="flex items-center">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div className="flex items-center justify-center sm:justify-start">
                             <Briefcase className="mr-2 h-4 w-4 text-gray-400" />
                             <span>{profile.workExperiences?.length || 0} Experience</span>
                           </div>
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-center sm:justify-start">
                             <GraduationCap className="mr-2 h-4 w-4 text-gray-400" />
                             <span>{profile.higherEducations?.length || 0} Education</span>
                           </div>
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-center sm:justify-start">
                             <Award className="mr-2 h-4 w-4 text-gray-400" />
                             <span>{profile.trainingCertifications?.length || 0} Certifications</span>
                           </div>
-                          <div className="flex items-center">
+                          <div className="flex items-center justify-center sm:justify-start">
                             <Users className="mr-2 h-4 w-4 text-gray-400" />
                             <span>{profile.referenceDetails?.length || 0} References</span>
                           </div>
@@ -518,7 +517,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No Career Profile</h3>
                     <p className="text-gray-600 mb-4">Create your professional career profile to get started.</p>
                     <Link href="/dashboard/professional-career-profile/edit">
-                      <Button>
+                      <Button className="h-12 px-6">
                         <Plus className="mr-2 h-4 w-4" />
                         Create Profile
                       </Button>
@@ -531,13 +530,13 @@ export default function DashboardPage() {
             {/* Job Hunting Status */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <CardTitle className="flex items-center">
                     <Search className="mr-2 h-5 w-5" />
                     Job Hunting Status
                   </CardTitle>
                   <Link href="/dashboard/job-hunting-settings">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
                       <Settings className="mr-2 h-4 w-4" />
                       Configure
                     </Button>
@@ -547,7 +546,7 @@ export default function DashboardPage() {
               <CardContent>
                 {jobSettings ? (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <h4 className="font-medium text-gray-900 mb-2">Career Category</h4>
                         <Badge variant="outline">{jobSettings.careerCategory}</Badge>
@@ -593,7 +592,7 @@ export default function DashboardPage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">No Job Preferences Set</h3>
                     <p className="text-gray-600 mb-4">Configure your job hunting preferences to get relevant opportunities.</p>
                     <Link href="/dashboard/job-hunting-settings">
-                      <Button>
+                      <Button className="h-12 px-6">
                         <Settings className="mr-2 h-4 w-4" />
                         Set Preferences
                       </Button>
@@ -606,14 +605,14 @@ export default function DashboardPage() {
             {/* Subscription Status */}
             <Card>
               <CardHeader>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <CardTitle className="flex items-center">
                     <Crown className="mr-2 h-5 w-5" />
                     Subscription Status
                   </CardTitle>
                   {subscriptionEligibility && (
                     <Link href="/dashboard/job-subscription">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
                         <Eye className="mr-2 h-4 w-4" />
                         View Subscriptions
                       </Button>
@@ -634,7 +633,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-600">Start Date:</span>
                         <p className="font-medium">
@@ -675,15 +674,15 @@ export default function DashboardPage() {
                       </ul>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <Link href="/dashboard/job-subscription/activity">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
                           <Activity className="mr-2 h-4 w-4" />
                           View Activity
                         </Button>
                       </Link>
                       <Link href="/dashboard/job-subscription">
-                        <Button size="sm">
+                        <Button size="sm" className="w-full sm:w-auto h-10">
                           <Crown className="mr-2 h-4 w-4" />
                           Manage Subscription
                         </Button>
@@ -729,7 +728,7 @@ export default function DashboardPage() {
                     </div>
                     
                     <Link href="/dashboard/job-subscription">
-                      <Button className="w-full">
+                      <Button className="w-full h-12">
                         <Crown className="mr-2 h-4 w-4" />
                         Get Job Subscription
                       </Button>
@@ -773,10 +772,10 @@ export default function DashboardPage() {
                       </ul>
                     </div>
                     
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       {!profile && (
                         <Link href="/dashboard/professional-career-profile/edit">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
                             <FileText className="mr-2 h-4 w-4" />
                             Complete Profile
                           </Button>
@@ -784,7 +783,7 @@ export default function DashboardPage() {
                       )}
                       {!jobSettings && (
                         <Link href="/dashboard/job-hunting-settings">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="w-full sm:w-auto h-10">
                             <Settings className="mr-2 h-4 w-4" />
                             Set Preferences
                           </Button>
@@ -806,7 +805,7 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg gap-3">
                     <div className="flex items-center">
                       <div className="p-2 bg-blue-100 rounded-full">
                         <CheckCircle className="h-4 w-4 text-blue-600" />
@@ -816,10 +815,10 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-600">Your professional profile was updated</p>
                       </div>
                     </div>
-                    <span className="text-sm text-gray-500">2 hours ago</span>
+                    <span className="text-sm text-gray-500 text-center sm:text-right">2 hours ago</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg gap-3">
                     <div className="flex items-center">
                       <div className="p-2 bg-green-100 rounded-full">
                         <Plus className="h-4 w-4 text-green-600" />
@@ -829,10 +828,10 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-600">Job hunting preferences are now available</p>
                       </div>
                     </div>
-                    <span className="text-sm text-gray-500">1 day ago</span>
+                    <span className="text-sm text-gray-500 text-center sm:text-right">1 day ago</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-gray-50 rounded-lg gap-3">
                     <div className="flex items-center">
                       <div className="p-2 bg-purple-100 rounded-full">
                         <FileText className="h-4 w-4 text-purple-600" />
@@ -842,7 +841,7 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-600">Your career profile was downloaded as PDF</p>
                       </div>
                     </div>
-                    <span className="text-sm text-gray-500">3 days ago</span>
+                    <span className="text-sm text-gray-500 text-center sm:text-right">3 days ago</span>
                   </div>
                 </div>
               </CardContent>
@@ -857,7 +856,7 @@ export default function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">{stats.jobApplications}</div>
                     <div className="text-sm text-gray-600">Job Applications</div>
@@ -883,8 +882,8 @@ export default function DashboardPage() {
 
       {/* Profile Picture Modal */}
       {showProfileModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Profile Picture</h3>
             
             {userProfile?.careerProfilePicture && (
@@ -908,7 +907,7 @@ export default function DashboardPage() {
               
               <Button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full"
+                className="w-full h-12"
               >
                 Upload New Picture
               </Button>
@@ -917,7 +916,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   onClick={handleDeleteProfilePicture}
-                  className="w-full"
+                  className="w-full h-12"
                 >
                   Remove Picture
                 </Button>
@@ -926,7 +925,7 @@ export default function DashboardPage() {
               <Button
                 variant="outline"
                 onClick={() => setShowProfileModal(false)}
-                className="w-full"
+                className="w-full h-12"
               >
                 Cancel
               </Button>

@@ -13,7 +13,7 @@
     line-height: 1.4;
     color: #333;
     background: white;
-    font-size: 11pt !important;
+    font-size: 11.5pt !important;
   }
 
   /* Hide non-printable elements */
@@ -38,25 +38,25 @@
   .profile-header h2,
   .profile-header-regular h2 {
     color: black !important;
-    font-size: 16pt !important;
+    font-size: 17pt !important;
     font-weight: bold !important;
-    margin-bottom: 12pt !important;
+    margin-bottom: 15pt !important;
   }
 
   .profile-header .contact-info,
   .profile-header-regular .contact-info {
     color: #374151 !important;
-    font-size: 11pt !important;
+    font-size: 10.5pt !important;
   }
 
   /* Section headings - Black for better readability */
   h3 {
     color: #000000 !important;
-    font-size: 14pt !important;
+    font-size: 13.5pt !important;
     font-weight: bold !important;
     margin: 15pt 0 10pt 0 !important;
     border-bottom: 2px solid #000000 !important;
-    padding-bottom: 6pt !important;
+    padding-bottom: 8pt !important;
     text-transform: uppercase !important;
   }
 
@@ -70,9 +70,9 @@
 
   .work-experience-item h4 {
     color: #111827 !important;
-    font-size: 13pt !important;
+    font-size: 12pt !important;
     font-weight: bold !important;
-    margin-bottom: 6pt !important;
+    margin-bottom: 8pt !important;
   }
 
   .work-experience-item .position {
@@ -91,9 +91,9 @@
 
   .education-item h4 {
     color: #111827 !important;
-    font-size: 13pt !important;
+    font-size: 12pt !important;
     font-weight: bold !important;
-    margin-bottom: 6pt !important;
+    margin-bottom: 8pt !important;
   }
 
   .education-item .course {
@@ -125,7 +125,7 @@
     padding: 15pt !important;
     margin: 12pt 0 !important;
     border-radius: 8px !important;
-    font-size: 11pt !important;
+    font-size: 11.5pt !important;
   }
 
   /* NYSC status */
@@ -161,7 +161,7 @@
   p {
     margin-bottom: 10pt !important;
     line-height: 1.4 !important;
-    font-size: 11pt !important;
+    font-size: 11.5pt !important;
   }
 
   /* Company names in black */

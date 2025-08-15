@@ -64,7 +64,7 @@ export default function ProfessionalCareerProfilePage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-4 sm:p-6">
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
@@ -76,7 +76,7 @@ export default function ProfessionalCareerProfilePage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -87,7 +87,7 @@ export default function ProfessionalCareerProfilePage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Return to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900">Professional Career Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Professional Career Profile</h1>
           <p className="text-gray-600 mt-2">Manage your professional career information</p>
         </div>
 
@@ -96,7 +96,7 @@ export default function ProfessionalCareerProfilePage() {
             {/* Profile Overview */}
             <Card className="mb-6">
               <CardHeader>
-                <div className="flex justify-between items-start">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                   <div>
                     <CardTitle className="flex items-center">
                       <User className="mr-2 h-5 w-5" />
@@ -110,34 +110,34 @@ export default function ProfessionalCareerProfilePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                   {profile.profilePicture ? (
                     <img
                       src={profile.profilePicture}
                       alt="Profile"
-                      className="w-20 h-20 object-cover rounded-lg"
+                      className="w-20 h-20 object-cover rounded-lg mx-auto sm:mx-0"
                     />
                   ) : (
-                    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center mx-auto sm:mx-0">
                       <User className="w-10 h-10 text-gray-400" />
                     </div>
                   )}
-                  <div className="flex-1">
+                  <div className="flex-1 text-center sm:text-left">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">{profile.fullName}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                      <div className="flex items-center">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                      <div className="flex items-center justify-center sm:justify-start">
                         <Briefcase className="mr-2 h-4 w-4" />
                         {profile.workExperiences?.length || 0} Work Experience{profile.workExperiences?.length !== 1 ? 's' : ''}
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center sm:justify-start">
                         <GraduationCap className="mr-2 h-4 w-4" />
                         {profile.higherEducations?.length || 0} Education{profile.higherEducations?.length !== 1 ? 's' : ''}
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center sm:justify-start">
                         <Award className="mr-2 h-4 w-4" />
                         {profile.trainingCertifications?.length || 0} Certification{profile.trainingCertifications?.length !== 1 ? 's' : ''}
                       </div>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center sm:justify-start">
                         <Users className="mr-2 h-4 w-4" />
                         {profile.referenceDetails?.length || 0} Reference{profile.referenceDetails?.length !== 1 ? 's' : ''}
                       </div>
@@ -148,15 +148,15 @@ export default function ProfessionalCareerProfilePage() {
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <Link href="/dashboard/professional-career-profile/view" className="flex-1">
-                <Button className="w-full" variant="outline">
+                <Button className="w-full h-12" variant="outline">
                   <Eye className="mr-2 h-4 w-4" />
                   View Profile
                 </Button>
               </Link>
               <Link href="/dashboard/professional-career-profile/edit" className="flex-1">
-                <Button className="w-full">
+                <Button className="w-full h-12">
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Profile
                 </Button>
@@ -164,7 +164,7 @@ export default function ProfessionalCareerProfilePage() {
             </div>
 
             {/* Profile Sections Status */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-lg">Personal Information</CardTitle>
@@ -297,17 +297,17 @@ export default function ProfessionalCareerProfilePage() {
         ) : (
           /* No Profile Found */
           <Card>
-            <CardContent className="p-8">
+            <CardContent className="p-6 sm:p-8">
               <div className="text-center">
-                <div className="mx-auto w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                  <User className="w-12 h-12 text-gray-400" />
+                <div className="mx-auto w-16 h-16 sm:w-24 sm:h-24 bg-gray-200 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+                  <User className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
                 </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">No Professional Career Profile</h2>
-                <p className="text-gray-600 mb-6">
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">No Professional Career Profile</h2>
+                <p className="text-gray-600 mb-6 text-sm sm:text-base">
                   You haven&apos;t created your professional career profile yet. Create one to showcase your skills, experience, and qualifications.
                 </p>
                 <Link href="/dashboard/professional-career-profile/edit">
-                  <Button>
+                  <Button className="h-12">
                     <Plus className="mr-2 h-4 w-4" />
                     Create Profile
                   </Button>

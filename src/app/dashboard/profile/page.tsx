@@ -155,10 +155,10 @@ export default function ProfilePage() {
   const profileCompletion = userService.getProfileCompletionPercentage(user)
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-6 sm:py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link 
             href="/dashboard" 
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
@@ -166,14 +166,14 @@ export default function ProfilePage() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Link>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile</h1>
               <p className="text-gray-600 mt-2">
                 Complete your profile to unlock all features and improve your match potential
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-center sm:text-right">
               <p className="text-sm text-gray-600">Profile Completion</p>
               <p className="text-2xl font-bold text-blue-600">{profileCompletion}%</p>
             </div>
@@ -192,11 +192,11 @@ export default function ProfilePage() {
             ) : (
               <AlertCircle className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
             )}
-            <div className="whitespace-pre-line">{message}</div>
+            <div className="whitespace-pre-line text-sm sm:text-base">{message}</div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
           {/* Section 1: Basic Information */}
           <Card>
             <CardHeader>
@@ -206,7 +206,7 @@ export default function ProfilePage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <Label htmlFor="realName">Real Name *</Label>
                   <Input
@@ -215,6 +215,7 @@ export default function ProfilePage() {
                     onChange={(e) => handleInputChange('realName', e.target.value)}
                     placeholder="Enter your real name"
                     required
+                    className="h-12"
                   />
                 </div>
                 <div>
@@ -225,7 +226,7 @@ export default function ProfilePage() {
                     onChange={(e) => handleInputChange('username', e.target.value)}
                     placeholder="Choose a unique username"
                     required
-                    className={formData.username && !isValidUsername(formData.username) ? 'border-red-500' : ''}
+                    className={`h-12 ${formData.username && !isValidUsername(formData.username) ? 'border-red-500' : ''}`}
                   />
                   {formData.username && !isValidUsername(formData.username) && (
                     <p className="text-xs text-red-500 mt-1">
@@ -263,20 +264,20 @@ export default function ProfilePage() {
               </div>
               
               <div>
-                                  <Label htmlFor="loveLanguage">Your Love Language</Label>
-                  <Select value={formData.loveLanguage || 'not-selected'} onValueChange={(value) => handleInputChange('loveLanguage', value === 'not-selected' ? '' : value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your love language" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="not-selected">None selected</SelectItem>
-                      <SelectItem value="words-of-affirmation">Words of Affirmation</SelectItem>
-                      <SelectItem value="quality-time">Quality Time</SelectItem>
-                      <SelectItem value="receiving-gifts">Receiving Gifts</SelectItem>
-                      <SelectItem value="acts-of-service">Acts of Service</SelectItem>
-                      <SelectItem value="physical-touch">Physical Touch</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <Label htmlFor="loveLanguage">Your Love Language</Label>
+                <Select value={formData.loveLanguage || 'not-selected'} onValueChange={(value) => handleInputChange('loveLanguage', value === 'not-selected' ? '' : value)}>
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Select your love language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="not-selected">None selected</SelectItem>
+                    <SelectItem value="words-of-affirmation">Words of Affirmation</SelectItem>
+                    <SelectItem value="quality-time">Quality Time</SelectItem>
+                    <SelectItem value="receiving-gifts">Receiving Gifts</SelectItem>
+                    <SelectItem value="acts-of-service">Acts of Service</SelectItem>
+                    <SelectItem value="physical-touch">Physical Touch</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </CardContent>
           </Card>
@@ -298,10 +299,11 @@ export default function ProfilePage() {
                   value={formData.profilePicture}
                   onChange={(e) => handleInputChange('profilePicture', e.target.value)}
                   placeholder="Enter URL to your profile picture"
+                  className="h-12"
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <Label htmlFor="dateOfBirth">Date of Birth *</Label>
                   <Input
@@ -310,12 +312,13 @@ export default function ProfilePage() {
                     value={formData.dateOfBirth}
                     onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                     required
+                    className="h-12"
                   />
                 </div>
                 <div>
                   <Label htmlFor="gender">Gender *</Label>
                   <Select value={formData.gender || 'not-selected'} onValueChange={(value) => handleInputChange('gender', value === 'not-selected' ? '' : value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-12">
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
@@ -328,11 +331,11 @@ export default function ProfilePage() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <Label htmlFor="maritalStatus">Marital Status *</Label>
                   <Select value={formData.maritalStatus || 'not-selected'} onValueChange={(value) => handleInputChange('maritalStatus', value === 'not-selected' ? '' : value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-12">
                       <SelectValue placeholder="Select marital status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -352,15 +355,16 @@ export default function ProfilePage() {
                     onChange={(e) => handleInputChange('height', e.target.value)}
                     placeholder="e.g., 5'8 or 173cm"
                     required
+                    className="h-12"
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <Label htmlFor="complexion">Complexion *</Label>
                   <Select value={formData.complexion || 'not-selected'} onValueChange={(value) => handleInputChange('complexion', value === 'not-selected' ? '' : value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-12">
                       <SelectValue placeholder="Select complexion" />
                     </SelectTrigger>
                     <SelectContent>
@@ -377,7 +381,7 @@ export default function ProfilePage() {
                 <div>
                   <Label htmlFor="bodySize">Body Size *</Label>
                   <Select value={formData.bodySize || 'not-selected'} onValueChange={(value) => handleInputChange('bodySize', value === 'not-selected' ? '' : value)}>
-                    <SelectTrigger>
+                    <SelectTrigger className="h-12">
                       <SelectValue placeholder="Select body size" />
                     </SelectTrigger>
                     <SelectContent>
@@ -400,10 +404,11 @@ export default function ProfilePage() {
                   onChange={(e) => handleInputChange('occupation', e.target.value)}
                   placeholder="Enter your profession or occupation"
                   required
+                  className="h-12"
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 <div>
                   <Label htmlFor="country">Country *</Label>
                   <Input
@@ -412,6 +417,7 @@ export default function ProfilePage() {
                     onChange={(e) => handleInputChange('country', e.target.value)}
                     placeholder="Enter country"
                     required
+                    className="h-12"
                   />
                 </div>
                 <div>
@@ -422,9 +428,10 @@ export default function ProfilePage() {
                     onChange={(e) => handleInputChange('state', e.target.value)}
                     placeholder="Enter state or province"
                     required
+                    className="h-12"
                   />
                 </div>
-                <div>
+                <div className="sm:col-span-2 lg:col-span-1">
                   <Label htmlFor="lga">LGA/Local Council *</Label>
                   <Input
                     id="lga"
@@ -432,6 +439,7 @@ export default function ProfilePage() {
                     onChange={(e) => handleInputChange('lga', e.target.value)}
                     placeholder="Enter LGA or local council"
                     required
+                    className="h-12"
                   />
                 </div>
               </div>
@@ -444,6 +452,7 @@ export default function ProfilePage() {
                   value={formData.contactNumber}
                   onChange={(e) => handleInputChange('contactNumber', e.target.value)}
                   placeholder="Your phone number (will not be displayed to other users)"
+                  className="h-12"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   Your phone number will not be displayed to other users
@@ -461,11 +470,11 @@ export default function ProfilePage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   type="submit" 
                   disabled={isSaving}
-                  className="flex items-center"
+                  className="flex items-center h-12"
                 >
                   {isSaving ? (
                     <>
@@ -480,7 +489,7 @@ export default function ProfilePage() {
                   )}
                 </Button>
                 <Link href="/dashboard">
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" className="h-12 w-full sm:w-auto">
                     Cancel
                   </Button>
                 </Link>

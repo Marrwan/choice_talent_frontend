@@ -147,7 +147,7 @@ export default function LoginPage() {
 
   if (checkingProfile) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Checking your profile...</p>
@@ -157,11 +157,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-gray-900">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">
               Welcome Back
             </CardTitle>
             <CardDescription>
@@ -187,7 +187,7 @@ export default function LoginPage() {
                       variant="outline" 
                       size="sm"
                       onClick={handleResendActivation}
-                      className="w-full"
+                      className="w-full h-12"
                     >
                       Resend Activation Email
                     </Button>
@@ -203,7 +203,7 @@ export default function LoginPage() {
                   placeholder="Enter your email"
                   autoComplete="email"
                   {...register('email')}
-                  className={errors.email ? 'border-red-500' : ''}
+                  className={`h-12 ${errors.email ? 'border-red-500' : ''}`}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -227,7 +227,7 @@ export default function LoginPage() {
                     placeholder="Enter your password"
                     autoComplete="current-password"
                     {...register('password')}
-                    className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                    className={`h-12 pr-12 ${errors.password ? 'border-red-500' : ''}`}
                   />
                   <button
                     type="button"
@@ -248,7 +248,7 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full h-12"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Signing In...' : 'Sign In'}

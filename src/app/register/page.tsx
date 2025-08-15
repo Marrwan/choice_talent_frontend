@@ -80,14 +80,14 @@ export default function RegisterPage() {
   // If registration was successful, show success message
   if (registrationSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-6 sm:space-y-8">
           <Card>
             <CardHeader className="text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                 <CheckCircle2 className="h-6 w-6 text-green-600" />
               </div>
-              <CardTitle className="text-2xl font-bold text-gray-900">
+              <CardTitle className="text-xl sm:text-2xl font-bold text-gray-900">
                 Check Your Email
               </CardTitle>
               <CardDescription>
@@ -108,7 +108,7 @@ export default function RegisterPage() {
                 </p>
                 
                 <div className="space-y-2">
-                  <Button asChild className="w-full">
+                  <Button asChild className="w-full h-12">
                     <Link href="/login">
                       Go to Login
                     </Link>
@@ -116,7 +116,7 @@ export default function RegisterPage() {
                   
                   <Button 
                     variant="outline" 
-                    className="w-full"
+                    className="w-full h-12"
                     onClick={() => {
                       setRegistrationSuccess(null)
                       setSubmitError(null)
@@ -134,11 +134,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-8 px-4 sm:py-12 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold text-gray-900">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">
               Create Account
             </CardTitle>
             <CardDescription>
@@ -161,7 +161,7 @@ export default function RegisterPage() {
                   placeholder="Enter your email"
                   autoComplete="email"
                   {...register('email')}
-                  className={errors.email ? 'border-red-500' : ''}
+                  className={`h-12 ${errors.email ? 'border-red-500' : ''}`}
                 />
                 {errors.email && (
                   <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -174,10 +174,10 @@ export default function RegisterPage() {
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Create a strong password"
+                    placeholder="Create a password"
                     autoComplete="new-password"
                     {...register('password')}
-                    className={errors.password ? 'border-red-500 pr-10' : 'pr-10'}
+                    className={`h-12 pr-12 ${errors.password ? 'border-red-500' : ''}`}
                   />
                   <button
                     type="button"
@@ -205,7 +205,7 @@ export default function RegisterPage() {
                     placeholder="Confirm your password"
                     autoComplete="new-password"
                     {...register('confirmPassword')}
-                    className={errors.confirmPassword ? 'border-red-500 pr-10' : 'pr-10'}
+                    className={`h-12 pr-12 ${errors.confirmPassword ? 'border-red-500' : ''}`}
                   />
                   <button
                     type="button"
@@ -224,35 +224,34 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              <div className="flex items-start space-x-3">
+              <div className="flex items-start space-x-2">
                 <Checkbox
                   id="acceptTerms"
                   checked={acceptTerms}
                   onCheckedChange={(checked) => {
-                    const isChecked = !!checked;
-                    setAcceptTerms(isChecked);
-                    setValue('acceptTerms', isChecked);
+                    setAcceptTerms(checked as boolean)
+                    setValue('acceptTerms', checked as boolean)
                   }}
-                  className={`h-5 w-5 mt-0.5 ${errors.acceptTerms ? 'border-red-500' : ''}`}
+                  className="mt-1"
                 />
-                <Label 
-                  htmlFor="acceptTerms" 
-                  className="text-sm leading-relaxed cursor-pointer"
-                  onClick={() => {
-                    const newValue = !acceptTerms;
-                    setAcceptTerms(newValue);
-                    setValue('acceptTerms', newValue);
-                  }}
-                >
-                  I agree to the{' '}
-                  <Link href="/terms" className="text-[#0044CC] hover:underline">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" className="text-[#0044CC] hover:underline">
-                    Privacy Policy
-                  </Link>
-                </Label>
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor="acceptTerms"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    I accept the terms and conditions
+                  </label>
+                  <p className="text-sm text-gray-600">
+                    By creating an account, you agree to our{' '}
+                    <Link href="/terms" className="text-[#0044CC] hover:underline">
+                      Terms of Service
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" className="text-[#0044CC] hover:underline">
+                      Privacy Policy
+                    </Link>
+                  </p>
+                </div>
               </div>
               {errors.acceptTerms && (
                 <p className="text-sm text-red-600">{errors.acceptTerms.message}</p>
@@ -260,7 +259,7 @@ export default function RegisterPage() {
 
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full h-12"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Creating Account...' : 'Create Account'}
@@ -271,7 +270,7 @@ export default function RegisterPage() {
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}
                 <Link href="/login" className="font-medium text-[#0044CC] hover:underline">
-                  Sign in
+                  Sign in here
                 </Link>
               </p>
             </div>

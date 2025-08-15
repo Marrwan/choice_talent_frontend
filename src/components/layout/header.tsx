@@ -50,11 +50,11 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
           {/* Logo */}
           <Link href={isAuthenticated ? "/dashboard" : "/"} className="flex items-center space-x-2">
             <img src="/company%20logo.png" alt="My Job Hunting" className="w-8 h-8 rounded-lg object-cover" />
-            <span className="text-xl font-semibold text-[#0044CC]">My Job Hunting</span>
+            <span className="text-lg sm:text-xl font-semibold text-[#0044CC]">My Job Hunting</span>
           </Link>
 
           {/* Navigation */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {isAuthenticated && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -73,8 +73,8 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-medium leading-none">{user.name || 'User'}</p>
-                    <p className="text-xs leading-none text-gray-600">{user.email || ''}</p>
+                    <p className="text-sm font-medium leading-none truncate">{user.name || 'User'}</p>
+                    <p className="text-xs leading-none text-gray-600 truncate">{user.email || ''}</p>
                     <div className="flex items-center mt-1">
                       {user.subscriptionStatus === 'premium' ? (
                         <div className="flex items-center text-xs text-yellow-600">
@@ -131,13 +131,13 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 {/* Desktop navigation */}
                 <div className="hidden md:flex items-center space-x-3">
-                  <Button asChild variant="ghost">
+                  <Button asChild variant="ghost" className="h-10 px-4">
                     <Link href="/login">Sign In</Link>
                   </Button>
-                  <Button asChild>
+                  <Button asChild className="h-10 px-4">
                     <Link href="/register">Get Started</Link>
                   </Button>
                 </div>
@@ -146,18 +146,19 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                 <div className="md:hidden">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        Menu
+                      <Button variant="outline" size="sm" className="h-10 px-3">
+                        <span className="hidden sm:inline">Menu</span>
+                        <span className="sm:hidden">Menu</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem asChild>
-                        <Link href="/login" className="cursor-pointer">
+                        <Link href="/login" className="cursor-pointer h-12 flex items-center">
                           Sign In
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href="/register" className="cursor-pointer">
+                        <Link href="/register" className="cursor-pointer h-12 flex items-center">
                           Get Started
                         </Link>
                       </DropdownMenuItem>
