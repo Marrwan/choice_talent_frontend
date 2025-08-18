@@ -311,15 +311,18 @@ export default function ProfileForwardingPage() {
               <p className="text-muted-foreground">
                 Choose the plan that best fits your career goals and start getting noticed by employers.
               </p>
-              <div className="flex gap-3 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link href="/dashboard">
-                  <Button variant="outline">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     <Users className="mr-2 h-4 w-4" />
                     Back to Career Dashboard
                   </Button>
                 </Link>
                 {currentPlan !== 'premium' && (
-                  <Button onClick={() => router.push('/dashboard/profile-forwarding/payment')}>
+                  <Button 
+                    onClick={() => router.push('/dashboard/profile-forwarding/payment')}
+                    className="w-full sm:w-auto"
+                  >
                     <Crown className="mr-2 h-4 w-4" />
                     Upgrade to Premium
                   </Button>

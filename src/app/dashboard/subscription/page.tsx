@@ -330,7 +330,7 @@ export default function SubscriptionPage() {
                   ) : (
                     'Upgrade to Premium'
                   )}
-                </Button>
+              </Button>
               </CardContent>
             </Card>
           </div>

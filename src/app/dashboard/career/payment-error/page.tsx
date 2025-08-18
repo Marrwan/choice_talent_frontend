@@ -66,14 +66,14 @@ export default function PaymentErrorPage() {
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <Link href="/dashboard/career/resume-payment">
-                  <Button variant="outline" className="w-full">
+                  <Button variant="outline" className="w-full sm:w-auto">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Payment
                   </Button>
                 </Link>
-                <Button className="w-full">
+                <Button className="w-full sm:w-auto">
                   <Building2 className="mr-2 h-4 w-4" />
                   Use Bank Transfer
                 </Button>

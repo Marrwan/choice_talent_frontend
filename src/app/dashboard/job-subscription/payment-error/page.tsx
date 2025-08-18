@@ -85,17 +85,18 @@ export default function PaymentErrorPage() {
         </Card>
 
         {/* Actions */}
-        <div className="flex gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4" />
             Go Back
           </Button>
           <Button
             onClick={() => router.push('/dashboard/job-subscription')}
+            className="w-full sm:w-auto"
           >
             View Subscriptions
           </Button>

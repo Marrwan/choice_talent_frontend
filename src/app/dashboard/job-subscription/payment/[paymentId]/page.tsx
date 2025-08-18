@@ -380,15 +380,17 @@ export default function PaymentDetailsPage() {
         </Card>
 
         {/* Actions */}
-        <div className="flex gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             variant="outline"
             onClick={() => router.push('/dashboard/job-subscription')}
+            className="w-full sm:w-auto"
           >
             Back to Subscriptions
           </Button>
           <Button
             onClick={() => router.push('/dashboard')}
+            className="w-full sm:w-auto"
           >
             Career Dashboard
           </Button>
