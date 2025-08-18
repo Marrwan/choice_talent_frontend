@@ -395,7 +395,7 @@ export default function DashboardPage() {
                 <Link href="/dashboard/career/settings" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Settings className="mr-2 h-4 w-4" />
-                    Career Settings
+                    Settings
                   </Button>
                 </Link>
                 

@@ -119,7 +119,7 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      <span>Career Settings</span>
+                      <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
 

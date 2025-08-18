@@ -108,7 +108,7 @@ export default function CareerSettingsPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Career Dashboard
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">Career Settings</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
             <p className="text-gray-600 mt-2">
               Manage your career account settings and preferences
             </p>
@@ -283,7 +283,7 @@ export default function CareerSettingsPage() {
             {/* Career Settings */}
             <Card>
               <CardHeader>
-                <CardTitle>Career Settings</CardTitle>
+                <CardTitle>Settings</CardTitle>
                 <CardDescription>
                   Manage your career-related preferences and settings
                 </CardDescription>
