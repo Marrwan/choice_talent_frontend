@@ -79,7 +79,7 @@ export default function CareerSettingsPage() {
   const handleDeactivateAccount = async () => {
     if (window.confirm('Are you sure you want to deactivate your account? This action can be reversed by contacting support.')) {
       try {
-        await userService.deleteAccount()
+        await userService.deactivateAccount()
         logout()
         router.push('/')
       } catch (error) {
