@@ -113,11 +113,11 @@ export const userService = {
     return { message: response.message }
   },
 
-  // Delete account
-  async deleteAccount(): Promise<{ message: string }> {
+  // Deactivate account
+  async deactivateAccount(): Promise<{ message: string }> {
     const response = await apiClient.request<{ success: boolean; message: string }>({
-      method: 'DELETE',
-      endpoint: '/user/account',
+      method: 'POST',
+      endpoint: '/user/deactivate-account',
       requiresAuth: true
     })
     return { message: response.message }

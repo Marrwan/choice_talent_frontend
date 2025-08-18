@@ -75,15 +75,15 @@ export default function SettingsPage() {
     }
   }
 
-  const handleDeleteAccount = async () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+  const handleDeactivateAccount = async () => {
+    if (window.confirm('Are you sure you want to deactivate your account? You can reactivate it later by contacting support.')) {
       try {
-        await userService.deleteAccount()
+        await userService.deactivateAccount()
         logout()
         router.push('/')
       } catch (error) {
-        console.error('Account deletion error:', error)
-        setMessage(error instanceof Error ? error.message : 'Failed to delete account')
+        console.error('Account deactivation error:', error)
+        setMessage(error instanceof Error ? error.message : 'Failed to deactivate account')
         setMessageType('error')
       }
     }
@@ -323,17 +323,17 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-red-200 rounded-lg gap-4">
                   <div>
-                    <h4 className="font-medium text-red-600">Delete Account</h4>
+                    <h4 className="font-medium text-red-600">Deactivate Account</h4>
                     <p className="text-sm text-gray-500">
-                      Permanently delete your account and all associated data. This action cannot be undone.
+                      Temporarily deactivate your account. You can reactivate it later by contacting support.
                     </p>
                   </div>
                   <Button
                     variant="outline"
                     className="text-red-600 border-red-200 hover:bg-red-50 h-10 w-full sm:w-auto"
-                    onClick={handleDeleteAccount}
+                    onClick={handleDeactivateAccount}
                   >
-                    Delete Account
+                    Deactivate Account
                   </Button>
                 </div>
               </div>
