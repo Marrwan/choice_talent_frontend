@@ -185,94 +185,97 @@ export class PDFService {
       // Create a clone of the element to avoid modifying the original
       const clonedElement = element.cloneNode(true) as HTMLElement;
       
-      // Apply optimized styles for PDF generation
+      // Apply basic styles for PDF generation without breaking layout
       clonedElement.style.cssText = `
         background: white !important;
         color: black !important;
         box-shadow: none !important;
         border: none !important;
         margin: 0 !important;
-        padding: 15px !important;
-        font-size: 11px !important;
-        line-height: 1.3 !important;
+        padding: 20px !important;
+        font-size: 12px !important;
+        line-height: 1.4 !important;
         font-family: Arial, sans-serif !important;
         max-width: 100% !important;
         width: 100% !important;
-        position: absolute !important;
-        left: -9999px !important;
+        position: fixed !important;
+        left: 0 !important;
         top: 0 !important;
+        z-index: -1 !important;
+        visibility: hidden !important;
         overflow: visible !important;
       `;
 
-      // Hide the clone and add it to the document
+      // Add the clone to the document
       document.body.appendChild(clonedElement);
 
-      // Apply comprehensive print styles to the cloned element
+      // Apply print-specific styles
       const styleElement = document.createElement('style');
       styleElement.textContent = `
-        .pdf-content * {
-          font-size: 11px !important;
-          line-height: 1.3 !important;
-          font-family: Arial, sans-serif !important;
+        .pdf-content {
+          background: white !important;
           color: black !important;
+          font-family: Arial, sans-serif !important;
+          font-size: 12px !important;
+          line-height: 1.4 !important;
         }
         .pdf-content h1, .pdf-content h2, .pdf-content h3, .pdf-content h4, .pdf-content h5, .pdf-content h6 {
           font-weight: bold !important;
-          margin-top: 12px !important;
-          margin-bottom: 8px !important;
           color: black !important;
+          margin-top: 15px !important;
+          margin-bottom: 10px !important;
         }
-        .pdf-content h1 { font-size: 18px !important; }
-        .pdf-content h2 { font-size: 16px !important; }
-        .pdf-content h3 { font-size: 14px !important; }
-        .pdf-content h4 { font-size: 12px !important; }
-        .pdf-content h5 { font-size: 11px !important; }
-        .pdf-content h6 { font-size: 10px !important; }
+        .pdf-content h1 { font-size: 20px !important; }
+        .pdf-content h2 { font-size: 18px !important; }
+        .pdf-content h3 { font-size: 16px !important; }
+        .pdf-content h4 { font-size: 14px !important; }
+        .pdf-content h5 { font-size: 12px !important; }
+        .pdf-content h6 { font-size: 11px !important; }
         .pdf-content p { 
-          margin-bottom: 8px !important; 
-          font-size: 11px !important;
-          line-height: 1.3 !important;
+          margin-bottom: 10px !important; 
+          font-size: 12px !important;
+          line-height: 1.4 !important;
           color: black !important;
         }
         .pdf-content .profile-header { 
-          padding: 15px !important; 
-          margin-bottom: 15px !important;
+          padding: 20px !important; 
+          margin-bottom: 20px !important;
           background: white !important;
         }
         .pdf-content .contact-info { 
-          font-size: 10px !important; 
-          margin-bottom: 12px !important;
+          font-size: 11px !important; 
+          margin-bottom: 15px !important;
         }
         .pdf-content .work-experience-item, .pdf-content .education-item, 
         .pdf-content .membership-item, .pdf-content .certification-item, 
         .pdf-content .reference-item {
-          margin-bottom: 12px !important;
-          padding: 12px !important;
+          margin-bottom: 15px !important;
+          padding: 15px !important;
           background: #f9f9f9 !important;
-          border-left: 3px solid #333 !important;
+          border-left: 4px solid #333 !important;
         }
         .pdf-content .work-experience-item h4, .pdf-content .education-item h4,
         .pdf-content .membership-item h4, .pdf-content .certification-item h4,
         .pdf-content .reference-item h4,
         .pdf-content .work-experience-item p {
-          font-size: 12px !important;
-          margin-bottom: 6px !important;
+          font-size: 13px !important;
+          margin-bottom: 8px !important;
           color: black !important;
           font-weight: bold !important;
         }
         .pdf-content .skill-badge {
-          font-size: 9px !important;
-          padding: 3px 6px !important;
+          font-size: 10px !important;
+          padding: 4px 8px !important;
           background: #e5e5e5 !important;
           color: black !important;
-          border-radius: 3px !important;
+          border-radius: 4px !important;
           display: inline-block !important;
-          margin: 1px !important;
+          margin: 2px !important;
         }
         .pdf-content .content-section {
-          font-size: 11px !important;
-          padding: 12px !important;
-          margin: 12px 0 !important;
+          font-size: 12px !important;
+          padding: 15px !important;
+          margin: 15px 0 !important;
           background: #f9f9f9 !important;
         }
         .pdf-content .no-print { display: none !important; }
@@ -285,9 +288,9 @@ export class PDFService {
           border-collapse: collapse !important;
         }
         .pdf-content td, .pdf-content th {
-          padding: 6px !important;
+          padding: 8px !important;
           border: 1px solid #ddd !important;
-          font-size: 11px !important;
+          font-size: 12px !important;
         }
         .pdf-content span {
           color: black !important;
@@ -305,13 +308,13 @@ export class PDFService {
           color: #555 !important;
         }
         .pdf-content .text-sm {
-          font-size: 10px !important;
-        }
-        .pdf-content .text-base {
           font-size: 11px !important;
         }
-        .pdf-content .text-lg {
+        .pdf-content .text-base {
           font-size: 12px !important;
+        }
+        .pdf-content .text-lg {
+          font-size: 13px !important;
         }
         .pdf-content .text-xl {
           font-size: 14px !important;
@@ -327,46 +330,46 @@ export class PDFService {
         }
         .pdf-content .profile-header-regular {
           background: white !important;
-          padding: 15px !important;
+          padding: 20px !important;
         }
         .pdf-content .profile-header-regular img {
-          width: 60px !important;
-          height: 60px !important;
+          width: 80px !important;
+          height: 80px !important;
         }
         .pdf-content .profile-header-regular h2 {
-          font-size: 16px !important;
-          margin-bottom: 8px !important;
+          font-size: 18px !important;
+          margin-bottom: 10px !important;
         }
         .pdf-content .profile-header-regular .contact-info {
-          font-size: 9px !important;
+          font-size: 11px !important;
         }
         .pdf-content .profile-header-regular .contact-info span {
-          font-size: 9px !important;
+          font-size: 11px !important;
         }
         .pdf-content .mb-6, .pdf-content .mb-8 {
-          margin-bottom: 12px !important;
+          margin-bottom: 15px !important;
         }
         .pdf-content .p-4, .pdf-content .p-6, .pdf-content .p-8 {
-          padding: 12px !important;
+          padding: 15px !important;
         }
         .pdf-content .gap-2, .pdf-content .gap-3, .pdf-content .gap-4 {
-          gap: 6px !important;
+          gap: 8px !important;
         }
         .pdf-content .space-y-4 {
-          margin-top: 12px !important;
+          margin-top: 15px !important;
         }
         .pdf-content .space-y-4 > * + * {
-          margin-top: 12px !important;
+          margin-top: 15px !important;
         }
       `;
       document.head.appendChild(styleElement);
 
-      // Wait a bit for styles to apply
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for styles to apply
+      await new Promise(resolve => setTimeout(resolve, 200));
 
-      // Generate PDF with optimized settings
+      // Generate PDF with proper settings
       const canvas = await html2canvas(clonedElement, {
-        scale: 1.2, // Reduced scale to fit more content
+        scale: 1.5, // Balanced scale for quality and performance
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
@@ -374,7 +377,7 @@ export class PDFService {
         height: clonedElement.scrollHeight,
         scrollX: 0,
         scrollY: 0,
-        logging: false,
+        logging: true, // Enable logging to debug issues
         imageTimeout: 15000,
         onclone: (clonedDoc) => {
           // Ensure all images are loaded in the cloned document
@@ -384,8 +387,14 @@ export class PDFService {
               img.crossOrigin = 'anonymous';
             }
           });
+          
+          // Log the cloned element for debugging
+          console.log('Cloned element:', clonedDoc.getElementById('career-profile-content'));
+          console.log('Cloned element height:', clonedDoc.getElementById('career-profile-content')?.scrollHeight);
         }
       });
+
+      console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
 
       // Convert canvas to image with high quality
       const imgData = canvas.toDataURL('image/png', 1.0);
@@ -395,11 +404,13 @@ export class PDFService {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
 
+      console.log('PDF dimensions:', pdfWidth, 'x', pdfHeight, 'mm');
+
       // Calculate image dimensions to fit PDF properly
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
       
-      const margin = 8; // Reduced margin for more content space
+      const margin = 10; // 10mm margin for better spacing
       const maxWidth = pdfWidth - (margin * 2);
       const maxHeight = pdfHeight - (margin * 2);
       
@@ -413,6 +424,9 @@ export class PDFService {
       const finalWidth = imgWidth * ratio;
       const finalHeight = imgHeight * ratio;
       
+      console.log('Final image dimensions:', finalWidth, 'x', finalHeight, 'mm');
+      console.log('Scaling ratio:', ratio);
+
       // Center the image on the page
       const imgX = (pdfWidth - finalWidth) / 2;
       const imgY = margin;
