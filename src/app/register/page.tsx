@@ -41,12 +41,12 @@ export default function RegisterPage() {
     }
   })
 
-  // Redirect if already authenticated
-  React.useEffect(() => {
-    // Temporarily disable public registration
-    toast.showInfo('New registrations are temporarily disabled. Please log in.', 'Registration Disabled')
-    router.replace('/login')
-  }, [router, toast])
+  // Temporarily disable registration: redirect to login
+  // React.useEffect(() => {
+  //   try {
+  //     router.replace('/login')
+  //   } catch {}
+  // }, [router])
 
   React.useEffect(() => {
     if (isInitialized && isAuthenticated) {
@@ -56,34 +56,34 @@ export default function RegisterPage() {
   }, [isAuthenticated, isInitialized, router])
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsSubmitting(true)
-    setSubmitError(null)
-    setRegistrationSuccess(null)
-
+    // Temporarily disabled: show toast and do nothing
     try {
-      const response = await authService.register({
-        email: data.email,
-        password: data.password,
-        name: data.email.split('@')[0],
-        role: 'professional'
-      })
+      toast.showInfo('New registrations are temporarily disabled. Please log in.', 'Registration Disabled')
+    } catch {}
+    return
 
-      // Show success message
-      setRegistrationSuccess(response.message || 'Registration successful! Please check your email to activate your account.')
-
-    } catch (error: unknown) {
-      let errorMessage = 'Registration failed. Please try again.'
-      
-      if (error instanceof ApiRequestError) {
-        errorMessage = error.message
-      } else if (error instanceof Error) {
-        errorMessage = error.message
-      }
-      
-      setSubmitError(errorMessage)
-    } finally {
-      setIsSubmitting(false)
-    }
+    // setIsSubmitting(true)
+    // setSubmitError(null)
+    // setRegistrationSuccess(null)
+    // try {
+    //   const response = await authService.register({
+    //     email: data.email,
+    //     password: data.password,
+    //     name: data.email.split('@')[0],
+    //     role: 'professional'
+    //   })
+    //   setRegistrationSuccess(response.message || 'Registration successful! Please check your email to activate your account.')
+    // } catch (error: unknown) {
+    //   let errorMessage = 'Registration failed. Please try again.'
+    //   if (error instanceof ApiRequestError) {
+    //     errorMessage = error.message
+    //   } else if (error instanceof Error) {
+    //     errorMessage = error.message
+    //   }
+    //   setSubmitError(errorMessage)
+    // } finally {
+    //   setIsSubmitting(false)
+    // }
   }
 
   // If registration was successful, show success message
@@ -157,8 +157,12 @@ export default function RegisterPage() {
           <CardContent>
             <Button asChild className="w-full h-12">
               <Link href="/login">Go to Login</Link>
-            </Button>
-           
+              </Button>
+            {/* Temporary submit to show toast only */}
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+              <Button type="submit" className="w-full h-12" variant="outline">Submit</Button>
+            </form>
+
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{' '}

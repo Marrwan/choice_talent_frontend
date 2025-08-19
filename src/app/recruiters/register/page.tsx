@@ -17,16 +17,17 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useToast } from '@/lib/useToast'
 
 export default function RecruiterRegisterPage() {
-  const toast = useToast()
-  React.useEffect(() => {
-    toast.showInfo('Recruiter registrations are temporarily disabled. Please log in.', 'Registration Disabled')
-    window.location.replace('/login')
-  }, [toast])
+  // React.useEffect(() => {
+  //   try {
+  //     window.location.replace('/login')
+  //   } catch {}
+  // }, [])
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [registrationSuccess, setRegistrationSuccess] = useState<string | null>(null)
+  const toast = useToast()
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -34,29 +35,32 @@ export default function RecruiterRegisterPage() {
   })
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsSubmitting(true)
-    setSubmitError(null)
-    setRegistrationSuccess(null)
-
     try {
-      const response = await authService.register({
-        email: data.email,
-        password: data.password,
-        name: data.email.split('@')[0],
-        role: 'recruiter'
-      })
-      setRegistrationSuccess(response.message || 'Registration successful! Please check your email to activate your account.')
-    } catch (error: unknown) {
-      let errorMessage = 'Registration failed. Please try again.'
-      if (error instanceof ApiRequestError) {
-        errorMessage = error.message
-      } else if (error instanceof Error) {
-        errorMessage = error.message
-      }
-      setSubmitError(errorMessage)
-    } finally {
-      setIsSubmitting(false)
-    }
+      toast.showInfo('Recruiter registrations are temporarily disabled. Please log in.', 'Registration Disabled')
+    } catch {}
+    return
+    // setIsSubmitting(true)
+    // setSubmitError(null)
+    // setRegistrationSuccess(null)
+    // try {
+    //   const response = await authService.register({
+    //     email: data.email,
+    //     password: data.password,
+    //     name: data.email.split('@')[0],
+    //     role: 'recruiter'
+    //   })
+    //   setRegistrationSuccess(response.message || 'Registration successful! Please check your email to activate your account.')
+    // } catch (error: unknown) {
+    //   let errorMessage = 'Registration failed. Please try again.'
+    //   if (error instanceof ApiRequestError) {
+    //     errorMessage = error.message
+    //   } else if (error instanceof Error) {
+    //     errorMessage = error.message
+    //   }
+    //   setSubmitError(errorMessage)
+    // } finally {
+    //   setIsSubmitting(false)
+    // }
   }
 
   if (registrationSuccess) {
@@ -100,6 +104,9 @@ export default function RecruiterRegisterPage() {
             <Button asChild className="w-full h-12">
               <Link href="/login">Go to Login</Link>
             </Button>
+            <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+              <Button type="submit" className="w-full h-12" variant="outline">Submit</Button>
+            </form>
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account? <Link href="/login" className="font-medium text-[#0044CC] hover:underline">Sign in here</Link>
