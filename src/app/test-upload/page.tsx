@@ -4,12 +4,14 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/store'
 import { apiClient } from '@/lib/api'
+import { useToast } from '@/lib/useToast'
 
 export default function TestUploadPage() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const { isAuthenticated } = useAuth()
+  const { showError } = useToast()
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0]
@@ -25,7 +27,7 @@ export default function TestUploadPage() {
 
   const handleTestUpload = async () => {
     if (!file) {
-      alert('Please select a file first')
+      showError('Please select a file first', 'Missing file')
       return
     }
 
@@ -61,7 +63,7 @@ export default function TestUploadPage() {
 
   const handleCareerUpload = async () => {
     if (!file) {
-      alert('Please select a file first')
+      showError('Please select a file first', 'Missing file')
       return
     }
 

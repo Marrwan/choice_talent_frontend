@@ -16,10 +16,12 @@ import { ApiRequestError, tokenManager } from '@/lib/api'
 import { useAuth } from '@/lib/store'
 import { loginSchema, type LoginFormData } from '@/lib/validations'
 import { professionalCareerProfileService } from '@/services/professionalCareerProfileService';
+import { useToast } from '@/lib/useToast'
 
 export default function LoginPage() {
   const router = useRouter()
   const { login, isAuthenticated, isInitialized, user } = useAuth()
+  const { showSuccess, showError } = useToast()
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -139,7 +141,7 @@ export default function LoginPage() {
       setNeedsActivation(false)
       
       // Show success message
-      alert('Activation email sent! Please check your inbox.')
+      showSuccess('Activation email sent! Please check your inbox.', 'Email Sent')
       
     } catch (error: unknown) {
       let errorMessage = 'Failed to send activation email. Please try again.'
@@ -151,6 +153,7 @@ export default function LoginPage() {
       }
       
       setSubmitError(errorMessage)
+      showError(errorMessage, 'Error')
     }
   }
 

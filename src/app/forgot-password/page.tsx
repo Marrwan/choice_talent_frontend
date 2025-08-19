@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
     setSuccessMessage(null)
 
     try {
-      const response = await authService.forgotPassword(data.email)
+      const response = await authService.forgotPassword({ email: data.email })
       setSuccessMessage(response.message || 'Password reset email sent successfully!')
     } catch (error: unknown) {
       let errorMessage = 'Failed to send reset email. Please try again.'

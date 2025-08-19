@@ -314,13 +314,6 @@ export default function ConversationsPage() {
     return null
   }
 
-  // Test navigation function
-  const testNavigation = () => {
-    console.log('Test navigation button clicked');
-    const testConversationId = conversations.length > 0 ? conversations[0].id : 'test-id';
-    console.log('Navigating to conversation:', testConversationId);
-    window.location.href = `/dashboard/chat/${testConversationId}`;
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-6 sm:py-8">
@@ -335,12 +328,6 @@ export default function ConversationsPage() {
               <MessageSquare className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Link>
-            <button 
-              onClick={testNavigation}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition-colors w-full sm:w-auto h-10"
-            >
-              Test Navigation
-            </button>
           </div>
           
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

@@ -31,6 +31,7 @@ import {
   XCircle,
   AlertTriangle
 } from 'lucide-react';
+import { MessageSquare } from 'lucide-react'
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -382,6 +383,13 @@ export default function DashboardPage() {
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Search className="mr-2 h-4 w-4" />
                     Job Hunting
+                  </Button>
+                </Link>
+
+                <Link href="/dashboard/chat" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Messaging
                   </Button>
                 </Link>
                 

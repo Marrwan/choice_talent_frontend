@@ -9,10 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CheckCircle2, XCircle, ArrowLeft } from 'lucide-react'
 import { authService } from '@/services/authService'
 import { ApiRequestError } from '@/lib/api'
+import { useToast } from '@/lib/useToast'
 
 export default function ActivateAccountPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { showSuccess, showError } = useToast()
   const [isActivating, setIsActivating] = useState(true)
   const [activationSuccess, setActivationSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,9 +56,11 @@ export default function ActivateAccountPage() {
     try {
       // This would need to be implemented in the auth service
       // For now, we'll show a message
-      alert('Please check your email for the activation link.')
+      showSuccess('Please check your email for the activation link.', 'Email Sent')
     } catch (error) {
-      setError('Failed to resend activation email. Please try again.')
+      const msg = 'Failed to resend activation email. Please try again.'
+      setError(msg)
+      showError(msg, 'Error')
     }
   }
 
