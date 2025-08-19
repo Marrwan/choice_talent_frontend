@@ -51,19 +51,11 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
     }
   }
 
-  const isGroup = conversation.type === 'group';
+  const isGroup = false;
   return (
     <div onClick={onClick} className="cursor-pointer p-4 bg-white rounded-lg shadow hover:bg-gray-50 flex items-center space-x-3">
       <Avatar className="h-12 w-12 flex-shrink-0">
-        {isGroup ? (
-          conversation.groupAvatar ? (
-            <AuthenticatedImage src={conversation.groupAvatar} alt={conversation.groupName} className="w-full h-full object-cover rounded-full" />
-          ) : (
-            <div className="w-full h-full bg-blue-200 flex items-center justify-center rounded-full">
-              <span className="font-bold text-lg text-blue-700">G</span>
-            </div>
-          )
-        ) : (
+        {
           conversation.otherParticipant.profilePicture ? (
             <AuthenticatedImage src={conversation.otherParticipant.profilePicture} alt={conversation.otherParticipant.name} className="w-full h-full object-cover rounded-full" />
           ) : (
@@ -71,13 +63,12 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
               <UserIcon className="h-4 w-4 text-gray-400" />
             </div>
           )
-        )}
+        }
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-base">
-            {isGroup ? conversation.groupName : (conversation.otherParticipant.realName || conversation.otherParticipant.name)}
-            {isGroup && <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Group</span>}
+            {conversation.otherParticipant.realName || conversation.otherParticipant.name}
           </h3>
           <div className="flex items-center space-x-2 flex-shrink-0">
             {conversation.lastMessage && (
@@ -86,7 +77,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
           </div>
         </div>
         <div className="truncate text-gray-600 text-sm">
-          {isGroup ? (conversation.lastMessage ? `${conversation.lastMessage.sender?.realName || conversation.lastMessage.sender?.name}: ${conversation.lastMessage.content}` : 'No messages yet') : (conversation.lastMessage ? conversation.lastMessage.content : 'No messages yet')}
+          {conversation.lastMessage ? conversation.lastMessage.content : 'No messages yet'}
         </div>
       </div>
     </div>
@@ -115,6 +106,8 @@ export default function ConversationsPage() {
         if (res.success) setConversations(res.data);
       } catch (error) {
         console.error('Error fetching conversations:', error)
+      } finally {
+        setLoading(false)
       }
     }
     fetchConversations();

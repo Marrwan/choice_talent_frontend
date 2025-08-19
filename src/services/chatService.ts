@@ -44,39 +44,9 @@ export interface Message {
   replyToMessage?: Message
 }
 
-export interface GroupMember {
-  id: string;
-  user: User;
-  role: string;
-  joined_at: string;
-  added_by: User;
-  can_add_members?: boolean;
-  can_edit_group_info?: boolean;
-}
-
-export interface Group {
-  id: string;
-  name: string;
-  description?: string;
-  avatar_url?: string;
-  created_by: string;
-  max_members: number;
-  member_count: number;
-  creator: User;
-  conversation_id: string;
-  members: GroupMember[];
-  created_at: string;
-  updated_at: string;
-}
-
 export interface Conversation {
   id: string;
-  type?: 'direct' | 'group';
-  groupName?: string;
-  groupAvatar?: string;
-  groupId?: string;
-  memberCount?: number;
-  members?: User[];
+  type?: 'direct';
   otherParticipant?: User;
   lastMessage?: Message;
   lastMessageAt?: string;
@@ -249,71 +219,4 @@ export const chatService = {
     return response
   },
 
-  // Create a group
-  async createGroup(data: { name: string; description?: string; members: string[] }): Promise<{ success: boolean; data: Group }> {
-    const response = await apiClient.request<{ success: boolean; data: Group }>({
-      method: 'POST',
-      endpoint: '/groups',
-      data,
-      requiresAuth: true
-    })
-    return response
-  },
-
-  // Get all groups for the user
-  async getGroups(): Promise<{ success: boolean; data: Group[] }> {
-    const response = await apiClient.request<{ success: boolean; data: Group[] }>({
-      method: 'GET',
-      endpoint: '/groups',
-      requiresAuth: true
-    })
-    return response
-  },
-
-  // Get group details
-  async getGroup(groupId: string): Promise<{ success: boolean; data: Group }> {
-    const response = await apiClient.request<{ success: boolean; data: Group }>({
-      method: 'GET',
-      endpoint: `/groups/${groupId}`,
-      requiresAuth: true
-    })
-    return response
-  },
-
-  // Send a group message
-  async sendGroupMessage(conversationId: string, messageData: SendMessageRequest): Promise<SendMessageResponse> {
-    // Use the same endpoint as sendMessage, backend will route based on conversation type
-    return this.sendMessage(conversationId, messageData)
-  },
-
-  // Add members to group
-  async addGroupMembers(groupId: string, members: string[]): Promise<{ success: boolean; data: Group }> {
-    const response = await apiClient.request<{ success: boolean; data: Group }>({
-      method: 'POST',
-      endpoint: `/groups/${groupId}/members`,
-      data: { members },
-      requiresAuth: true
-    })
-    return response
-  },
-
-  // Remove member from group
-  async removeGroupMember(groupId: string, memberId: string): Promise<{ success: boolean; data: Group }> {
-    const response = await apiClient.request<{ success: boolean; data: Group }>({
-      method: 'DELETE',
-      endpoint: `/groups/${groupId}/members/${memberId}`,
-      requiresAuth: true
-    })
-    return response
-  },
-
-  // Leave group
-  async leaveGroup(groupId: string): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.request<{ success: boolean; message: string }>({
-      method: 'POST',
-      endpoint: `/groups/${groupId}/leave`,
-      requiresAuth: true
-    })
-    return response
-  },
 } 

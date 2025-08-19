@@ -519,19 +519,7 @@ export default function ChatPage() {
             <ArrowLeft className="h-5 w-5 text-gray-600" />
           </button>
           <Avatar className="h-10 w-10 mr-3">
-            {conversation?.type === 'group' ? (
-              conversation.groupAvatar ? (
-                <AuthenticatedImage
-                  src={conversation.groupAvatar}
-                  alt={conversation.groupName || 'Group'}
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <div className="w-full h-full bg-blue-200 flex items-center justify-center rounded-full">
-                  <Users className="h-5 w-5 text-blue-700" />
-                </div>
-              )
-            ) : (
+            {
               conversation?.otherParticipant?.profilePicture ? (
                 <AuthenticatedImage
                   src={conversation.otherParticipant.profilePicture}
@@ -543,20 +531,14 @@ export default function ChatPage() {
                   <UserIcon className="h-5 w-5 text-gray-400" />
                 </div>
               )
-            )}
+            }
           </Avatar>
           <div>
             <h2 className="font-semibold text-gray-900">
-              {conversation?.type === 'group' 
-                ? conversation.groupName 
-                : (conversation?.otherParticipant?.realName || conversation?.otherParticipant?.name || 'Chat')
-              }
+              {conversation?.otherParticipant?.realName || conversation?.otherParticipant?.name || 'Chat'}
             </h2>
             <p className="text-sm text-gray-500">
-              {conversation?.type === 'group' 
-                ? `${conversation.memberCount || 0} members`
-                : (conversation?.otherParticipant?.isOnline ? 'Online' : 'Offline')
-              }
+              {conversation?.otherParticipant?.isOnline ? 'Online' : 'Offline'}
             </p>
           </div>
         </div>

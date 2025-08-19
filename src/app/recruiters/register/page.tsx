@@ -14,8 +14,14 @@ import { authService } from '@/services/authService'
 import { ApiRequestError } from '@/lib/api'
 import { registerSchema, type RegisterFormData } from '@/lib/validations'
 import { Checkbox } from '@/components/ui/checkbox'
+import { useToast } from '@/lib/useToast'
 
 export default function RecruiterRegisterPage() {
+  const toast = useToast()
+  React.useEffect(() => {
+    toast.showInfo('Recruiter registrations are temporarily disabled. Please log in.', 'Registration Disabled')
+    window.location.replace('/login')
+  }, [toast])
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -87,50 +93,13 @@ export default function RecruiterRegisterPage() {
       <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">Recruiter Registration</CardTitle>
-            <CardDescription>Create a recruiter account to access the recruiter dashboard</CardDescription>
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">Registration Disabled</CardTitle>
+            <CardDescription>Recruiter registrations are temporarily disabled. Please log in instead.</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {submitError && (
-                <Alert variant="destructive">
-                  <AlertDescription>{submitError}</AlertDescription>
-                </Alert>
-              )}
-              <div className="space-y-2">
-                <Label htmlFor="email">Work Email</Label>
-                <Input id="email" type="email" placeholder="Enter your work email" autoComplete="email" {...register('email')} className={`h-12 ${errors.email ? 'border-red-500' : ''}`} />
-                {errors.email && (<p className="text-sm text-red-600">{errors.email.message}</p>)}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="Create a password" autoComplete="new-password" {...register('password')} className={`h-12 pr-12 ${errors.password ? 'border-red-500' : ''}`} />
-                  <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
-                  </button>
-                </div>
-                {errors.password && (<p className="text-sm text-red-600">{errors.password.message}</p>)}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <div className="relative">
-                  <Input id="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm your password" autoComplete="new-password" {...register('confirmPassword')} className={`h-12 pr-12 ${errors.confirmPassword ? 'border-red-500' : ''}`} />
-                  <button type="button" className="absolute inset-y-0 right-0 pr-3 flex items-center" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
-                  </button>
-                </div>
-                {errors.confirmPassword && (<p className="text-sm text-red-600">{errors.confirmPassword.message}</p>)}
-              </div>
-              <div className="flex items-start space-x-2">
-                <Checkbox id="acceptTerms" checked={watch('acceptTerms')} onCheckedChange={(checked) => setValue('acceptTerms', Boolean(checked))} className="mt-1" />
-                <div className="grid gap-1.5 leading-none">
-                  <label htmlFor="acceptTerms" className="text-sm font-medium leading-none">I accept the terms and conditions</label>
-                </div>
-              </div>
-              {errors.acceptTerms && (<p className="text-sm text-red-600">{errors.acceptTerms.message}</p>)}
-              <Button type="submit" className="w-full h-12" disabled={isSubmitting}>{isSubmitting ? 'Creating Account...' : 'Create Account'}</Button>
-            </form>
+            <Button asChild className="w-full h-12">
+              <Link href="/login">Go to Login</Link>
+            </Button>
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account? <Link href="/login" className="font-medium text-[#0044CC] hover:underline">Sign in here</Link>
