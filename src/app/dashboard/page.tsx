@@ -595,8 +595,8 @@ export default function DashboardPage() {
                     <div className="mx-auto w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-3">
                       <Search className="w-6 h-6 text-gray-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Job Preferences Set</h3>
-                    <p className="text-gray-600 mb-4">Configure your job hunting preferences to get relevant opportunities.</p>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Preferences Set</h3>
+                    <p className="text-gray-600 mb-4">Configure your preferences to get relevant opportunities.</p>
                     <Link href="/dashboard/job-hunting-settings">
                       <Button className="h-12 px-6">
                         <Settings className="mr-2 h-4 w-4" />
@@ -614,7 +614,7 @@ export default function DashboardPage() {
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <CardTitle className="flex items-center">
                     <Crown className="mr-2 h-5 w-5" />
-                    Subscription Status
+                    Premium Subscription
                   </CardTitle>
                   {subscriptionEligibility && (
                     <Link href="/dashboard/job-subscription">
@@ -747,7 +747,7 @@ export default function DashboardPage() {
                       <div>
                         <h3 className="font-semibold text-red-700">Not Eligible</h3>
                         <p className="text-sm text-gray-600">
-                          Complete requirements to access job subscription
+                          Complete requirements to access subscription
                         </p>
                       </div>
                     </div>
@@ -772,7 +772,7 @@ export default function DashboardPage() {
                             <XCircle className="h-3 w-3 text-red-500" />
                           )}
                           <span className={jobSettings ? 'text-gray-600' : 'text-red-600'}>
-                            Set job hunting preferences
+                            Set opportunity preferences
                           </span>
                         </li>
                       </ul>
