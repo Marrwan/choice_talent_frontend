@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Avatar } from '@/components/ui/avatar'
 import { AuthenticatedImage } from '@/components/ui/authenticated-image'
 import { useAuth } from '@/lib/store'
-import { chatService, Conversation, Group } from '@/services/chatService'
+import { chatService, Conversation } from '@/services/chatService'
 import { socketService, setupSocketServiceReference } from '@/services/socketService'
 import { 
   MessageSquare, 
   User as UserIcon,
   Plus
 } from 'lucide-react'
-import CreateGroupModal from '@/components/CreateGroupModal';
+// Group chats removed
 
 interface Message {
   id: string;
@@ -98,8 +98,7 @@ export default function ConversationsPage() {
   const { user: currentUser, isAuthenticated } = useAuth()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  // Groups removed
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -120,15 +119,7 @@ export default function ConversationsPage() {
     }
     fetchConversations();
     
-    async function fetchGroups() {
-      try {
-        const res = await chatService.getGroups();
-        if (res.success) setGroups(res.data);
-      } catch (error) {
-        console.error('Error fetching groups:', error)
-      }
-    }
-    fetchGroups();
+    // Groups removed
     
     // Connect to socket for real-time updates
     const token = localStorage.getItem('jobhunting_token') || localStorage.getItem('choice_talent_token')
@@ -302,13 +293,7 @@ export default function ConversationsPage() {
     }
   }
 
-  const handleCreateGroup = async (name: string, description: string, members: string[]) => {
-    const res = await chatService.createGroup({ name, description, members });
-    if (res.success) {
-      setGroups(prev => [...prev, res.data]);
-      setShowCreateGroup(false);
-    }
-  };
+  // Groups removed
 
   if (!isAuthenticated || !currentUser) {
     return null
@@ -346,35 +331,7 @@ export default function ConversationsPage() {
           </div>
         </div>
 
-        {/* My Groups Section */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-            <h2 className="text-lg sm:text-xl font-bold">My Groups</h2>
-            <Button onClick={() => setShowCreateGroup(true)} className="w-full sm:w-auto h-12">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Group
-            </Button>
-          </div>
-          <div className="space-y-2 mb-6 sm:mb-8">
-            {groups.map(group => (
-              <div key={group.id} className="p-3 bg-white rounded shadow flex items-center cursor-pointer hover:bg-blue-50" onClick={() => router.push(`/dashboard/chat/${group.conversation_id}`)}>
-                <Avatar className="h-10 w-10 flex-shrink-0">
-                  {group.avatar_url ? (
-                    <AuthenticatedImage src={group.avatar_url} alt={group.name} className="w-full h-full object-cover rounded-full" />
-                  ) : (
-                    <div className="w-full h-full bg-blue-200 flex items-center justify-center rounded-full">
-                      <span className="font-bold text-lg text-blue-700">G</span>
-                    </div>
-                  )}
-                </Avatar>
-                <div className="ml-3 flex-1 min-w-0">
-                  <div className="font-semibold text-gray-900 truncate">{group.name}</div>
-                  <div className="text-xs text-gray-500">{group.member_count} members</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Groups removed */}
 
         {/* Conversations */}
         {loading ? (
@@ -423,10 +380,7 @@ export default function ConversationsPage() {
           </div>
         )}
       </div>
-      {/* Create Group Modal */}
-      {showCreateGroup && (
-        <CreateGroupModal onClose={() => setShowCreateGroup(false)} onCreate={handleCreateGroup} />
-      )}
+      {/* Groups removed */}
     </div>
   )
 } 

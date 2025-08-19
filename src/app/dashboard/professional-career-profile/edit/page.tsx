@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/lib/useToast';
 import { professionalCareerProfileService, ProfessionalCareerProfile, WorkExperience, HigherEducation, BasicEducation, ProfessionalMembership, TrainingCertification, ReferenceDetail } from '@/services/professionalCareerProfileService';
-import { Plus, Trash2, Save, User, Briefcase, GraduationCap, School, Award, Users, FileText, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Save, User, Briefcase, GraduationCap, School, Award, Users, FileText, ArrowLeft, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/store';
 
@@ -55,6 +55,8 @@ export default function ProfessionalCareerProfilePage() {
 
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string>('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<any | null>(null);
 
   // Load existing profile on component mount
   useEffect(() => {
@@ -522,8 +524,9 @@ export default function ProfessionalCareerProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="professionalSummary">Professional Summary</Label>
+              <div className="flex items-start gap-2">
+                <div className="flex-1">
+                  <Label htmlFor="professionalSummary">Professional Summary</Label>
                 <Textarea
                   id="professionalSummary"
                   value={profile.professionalSummary || ''}
@@ -531,6 +534,21 @@ export default function ProfessionalCareerProfilePage() {
                   placeholder="Describe your professional background or personal summary..."
                   rows={4}
                 />
+                </div>
+                <Button type="button" size="sm" variant="outline" onClick={async () => {
+                  try {
+                    setAiLoading(true);
+                    const res = await professionalCareerProfileService.aiAssistProfile();
+                    if ((res as any).success) setAiSuggestions((res as any).data);
+                    toast.showSuccess('AI suggestions generated', 'AI Assist');
+                  } catch (e: any) {
+                    toast.showError(e?.message || 'AI Assist failed', 'Error');
+                  } finally {
+                    setAiLoading(false);
+                  }
+                }} className="mt-6 flex items-center gap-1">
+                  <Sparkles className="h-4 w-4" /> {aiLoading ? 'Thinking…' : 'AI Assist'}
+                </Button>
               </div>
               <div>
                 <Label htmlFor="persona">Persona</Label>
@@ -741,6 +759,16 @@ export default function ProfessionalCareerProfilePage() {
                       onChange={(e) => updateWorkExperience(index, 'jobDescription', e.target.value)}
                       rows={3}
                     />
+                    {aiSuggestions?.suggestions?.experiences?.find((ex: any) => ex.id === (experience as any).id)?.jobDescription && (
+                      <div className="mt-2 p-2 border rounded bg-gray-50">
+                        <div className="text-xs text-gray-500 mb-1">AI suggestion</div>
+                        <div className="text-sm">{aiSuggestions.suggestions.experiences.find((ex: any) => ex.id === (experience as any).id).jobDescription}</div>
+                        <div className="mt-2 flex gap-2">
+                          <Button type="button" size="sm" onClick={() => updateWorkExperience(index, 'jobDescription', aiSuggestions.suggestions.experiences.find((ex: any) => ex.id === (experience as any).id).jobDescription)}>Accept</Button>
+                          <Button type="button" size="sm" variant="outline" onClick={() => setAiSuggestions((prev: any) => ({ ...prev, suggestions: { ...prev.suggestions, experiences: prev.suggestions.experiences.filter((ex: any) => ex.id !== (experience as any).id) } }))}>Dismiss</Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -750,6 +778,22 @@ export default function ProfessionalCareerProfilePage() {
                       onChange={(e) => updateWorkExperience(index, 'achievements', e.target.value)}
                       rows={3}
                     />
+                    {aiSuggestions?.suggestions?.experiences?.find((ex: any) => ex.id === (experience as any).id)?.achievements?.length > 0 && (
+                      <div className="mt-2 p-2 border rounded bg-gray-50">
+                        <div className="text-xs text-gray-500 mb-1">AI suggestions</div>
+                        <ul className="list-disc pl-5">
+                          {aiSuggestions.suggestions.experiences.find((ex: any) => ex.id === (experience as any).id).achievements.map((a: string, aiIdx: number) => (
+                            <li key={aiIdx} className="text-sm flex items-center justify-between gap-2">
+                              <span>{a}</span>
+                              <Button type="button" size="sm" variant="outline" onClick={() => updateWorkExperience(index, 'achievements', a)}>Use</Button>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="mt-2">
+                          <Button type="button" size="sm" variant="outline" onClick={() => setAiSuggestions((prev: any) => ({ ...prev, suggestions: { ...prev.suggestions, experiences: prev.suggestions.experiences.filter((ex: any) => ex.id !== (experience as any).id) } }))}>Dismiss</Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Optional Reference Fields */}

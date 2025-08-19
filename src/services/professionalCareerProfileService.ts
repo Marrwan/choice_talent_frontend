@@ -94,6 +94,9 @@ export interface ProfileResponse {
 }
 
 export const professionalCareerProfileService = {
+  async aiAssistProfile(): Promise<{ success: boolean; data: { suggestions: any; optimized_fields: any } }> {
+    return apiClient.request({ method: 'POST', endpoint: '/ai/assist/profile', requiresAuth: true })
+  },
   // Get professional career profile
   async getProfile(): Promise<ProfileResponse> {
     const response = await apiClient.get<ProfileResponse>('/professional-career-profile', true);
