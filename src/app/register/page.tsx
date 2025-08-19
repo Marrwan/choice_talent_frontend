@@ -56,7 +56,8 @@ export default function RegisterPage() {
       const response = await authService.register({
         email: data.email,
         password: data.password,
-        name: data.email.split('@')[0] // Use part before @ as default name
+        name: data.email.split('@')[0],
+        role: 'professional'
       })
 
       // Show success message

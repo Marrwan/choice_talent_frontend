@@ -14,15 +14,24 @@ import jobSubscriptionService, {
   JobSubscription 
 } from '@/services/jobSubscriptionService';
 import { CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/lib/store';
 
 export default function JobSubscriptionPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [eligibility, setEligibility] = useState<EligibilityResponse | null>(null);
   const [packages, setPackages] = useState<SubscriptionPackage[]>([]);
   const [subscriptions, setSubscriptions] = useState<JobSubscription[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<SubscriptionPackage | null>(null);
+
+  // Guard recruiters from professional subscription page
+  useEffect(() => {
+    if (user?.role === 'recruiter') {
+      router.replace('/recruiters/dashboard');
+    }
+  }, [user, router]);
 
   useEffect(() => {
     loadData();
@@ -97,6 +106,10 @@ export default function JobSubscriptionPage() {
         return pkg.name;
     }
   };
+
+  if (user?.role === 'recruiter') {
+    return null;
+  }
 
   if (loading) {
     return (

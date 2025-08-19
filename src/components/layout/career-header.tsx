@@ -97,6 +97,12 @@ export function CareerHeader({ isAuthenticated = false, user, onLogout }: Career
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link href="/dashboard/chat" className="cursor-pointer">
+                      <Home className="mr-2 h-4 w-4" />
+                      <span>Messaging</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
                       <FileText className="mr-2 h-4 w-4" />
                       <span>Professional Profile</span>

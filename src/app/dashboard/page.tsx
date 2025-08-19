@@ -51,6 +51,13 @@ export default function DashboardPage() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Guard: redirect recruiters to recruiters dashboard
+  useEffect(() => {
+    if (user?.role === 'recruiter') {
+      router.replace('/recruiters/dashboard');
+    }
+  }, [user, router]);
+
   useEffect(() => {
     loadDashboardData();
   }, [user]);

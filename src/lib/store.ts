@@ -172,7 +172,7 @@ export const useAuthStore = create<AuthState>()(
           }
         } catch (error) {
           console.error('[AuthStore] Auth initialization failed:', error)
-          // Clear invalid token
+          // Clear invalid token and redirect to login if it's an auth error
           tokenManager.remove()
           set({
             user: null,
@@ -180,6 +180,16 @@ export const useAuthStore = create<AuthState>()(
             isInitialized: true,
             token: null
           })
+          
+          // If we're on an authenticated page, redirect to login
+          if (typeof window !== 'undefined') {
+            const currentPath = window.location.pathname
+            const isAuthPage = currentPath.startsWith('/login') || currentPath.startsWith('/register') || currentPath === '/'
+            if (!isAuthPage) {
+              console.log('[AuthStore] Redirecting to login due to auth initialization failure')
+              window.location.href = '/login'
+            }
+          }
         } finally {
           set({ isLoading: false })
         }

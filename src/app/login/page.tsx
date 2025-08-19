@@ -19,7 +19,7 @@ import { professionalCareerProfileService } from '@/services/professionalCareerP
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, isAuthenticated, isInitialized } = useAuth()
+  const { login, isAuthenticated, isInitialized, user } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -39,10 +39,13 @@ export default function LoginPage() {
   // Redirect if already authenticated
   React.useEffect(() => {
     if (isInitialized && isAuthenticated) {
-      console.log('[LoginPage] User is authenticated, redirecting to career dashboard')
-      router.replace('/dashboard/career')
+      if (user?.role === 'recruiter') {
+        router.replace('/recruiters/dashboard')
+      } else {
+        router.replace('/dashboard')
+      }
     }
-  }, [isAuthenticated, isInitialized, router])
+  }, [isAuthenticated, isInitialized, user, router])
 
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true)
@@ -57,7 +60,13 @@ export default function LoginPage() {
       tokenManager.set(response.token)
       login(response.user, response.token)
       
-      // After login, check career profile completion
+      // After login, route by role
+      if (response.user.role === 'recruiter') {
+        router.replace('/recruiters/dashboard')
+        return
+      }
+
+      // For professionals, check career profile completion
       setCheckingProfile(true)
       const profileRes = await professionalCareerProfileService.getProfile();
       setCheckingProfile(false)

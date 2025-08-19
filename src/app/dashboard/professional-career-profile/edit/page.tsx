@@ -14,10 +14,20 @@ import { useToast } from '@/lib/useToast';
 import { professionalCareerProfileService, ProfessionalCareerProfile, WorkExperience, HigherEducation, BasicEducation, ProfessionalMembership, TrainingCertification, ReferenceDetail } from '@/services/professionalCareerProfileService';
 import { Plus, Trash2, Save, User, Briefcase, GraduationCap, School, Award, Users, FileText, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/store';
 
 export default function ProfessionalCareerProfilePage() {
   const router = useRouter();
   const toast = useToast();
+  const { user } = useAuth();
+
+  // Guard: redirect recruiters
+  useEffect(() => {
+    if (user?.role === 'recruiter') {
+      router.replace('/recruiters/profile');
+    }
+  }, [user, router]);
+
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<ProfessionalCareerProfile>({
@@ -157,7 +167,9 @@ export default function ProfessionalCareerProfilePage() {
         achievements: '',
         employerOrSupervisorName: '',
         officialPhone: '',
-        officialEmail: ''
+        officialEmail: '',
+        referenceDisplayPdf: 'hide',
+        referenceDisplayOnline: 'hide'
       }]
     }));
   };
@@ -770,6 +782,34 @@ export default function ProfessionalCareerProfilePage() {
                         onChange={(e) => updateWorkExperience(index, 'officialEmail', e.target.value)}
                         placeholder="Official email address"
                       />
+                    </div>
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Reference display in PDF</Label>
+                        <Select value={experience.referenceDisplayPdf || 'hide'} onValueChange={(val) => updateWorkExperience(index, 'referenceDisplayPdf', val)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="show">Show full details in PDF</SelectItem>
+                            <SelectItem value="available">Show "Available on request" in PDF</SelectItem>
+                            <SelectItem value="hide">Hide in PDF</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label>Reference display online</Label>
+                        <Select value={experience.referenceDisplayOnline || 'hide'} onValueChange={(val) => updateWorkExperience(index, 'referenceDisplayOnline', val)}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="show">Show full details online</SelectItem>
+                            <SelectItem value="available">Show "Available on request" online</SelectItem>
+                            <SelectItem value="hide">Hide online</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 </div>

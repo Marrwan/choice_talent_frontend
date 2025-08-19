@@ -13,6 +13,8 @@ export interface WorkExperience {
   employerOrSupervisorName?: string;
   officialPhone?: string;
   officialEmail?: string;
+  referenceDisplayPdf?: 'show' | 'available' | 'hide';
+  referenceDisplayOnline?: 'show' | 'available' | 'hide';
 }
 
 export interface HigherEducation {

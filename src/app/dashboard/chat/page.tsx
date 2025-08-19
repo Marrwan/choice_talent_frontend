@@ -13,9 +13,7 @@ import { socketService, setupSocketServiceReference } from '@/services/socketSer
 import { 
   MessageSquare, 
   User as UserIcon,
-  Plus,
-  Phone,
-  Video
+  Plus
 } from 'lucide-react'
 import CreateGroupModal from '@/components/CreateGroupModal';
 
@@ -82,13 +80,6 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
             {isGroup && <span className="ml-2 px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded">Group</span>}
           </h3>
           <div className="flex items-center space-x-2 flex-shrink-0">
-            {/* Call icons for direct only */}
-            {!isGroup && (
-              <>
-                <button onClick={e => { e.stopPropagation(); router.push(`/dashboard/chat/${conversation.id}?call=audio`) }} className="p-1 hover:bg-gray-100 rounded-full transition-colors" title="Audio Call"><Phone className="h-4 w-4 text-gray-600 hover:text-blue-600" /></button>
-                <button onClick={e => { e.stopPropagation(); router.push(`/dashboard/chat/${conversation.id}?call=video`) }} className="p-1 hover:bg-gray-100 rounded-full transition-colors" title="Video Call"><Video className="h-4 w-4 text-gray-600 hover:text-blue-600" /></button>
-              </>
-            )}
             {conversation.lastMessage && (
               <span className="text-xs text-gray-500">{formatTime(conversation.lastMessage.createdAt)}</span>
             )}

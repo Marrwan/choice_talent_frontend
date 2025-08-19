@@ -156,7 +156,8 @@ export const apiClient = {
         console.log('[API] Adding auth header for:', endpoint)
       } else {
         console.error('[API] No token found for authenticated request:', endpoint)
-        throw new ApiRequestError('No authentication token found', 401)
+        // Don't throw error here, let the server handle it
+        console.log('[API] Continuing without token, server will handle auth')
       }
     }
     

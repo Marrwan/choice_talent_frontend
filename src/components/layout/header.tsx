@@ -20,6 +20,7 @@ interface UserData {
   isEmailVerified?: boolean
   subscriptionStatus?: 'free' | 'premium'
   isPremium?: boolean
+  role?: 'professional' | 'recruiter'
 }
 
 interface HeaderProps {
@@ -90,34 +91,47 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer">
-                      <Briefcase className="mr-2 h-4 w-4" />
-                      <span>Career Dashboard</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  {user.role === 'recruiter' ? (
+                    <DropdownMenuItem asChild>
+                      <Link href="/recruiters/dashboard" className="cursor-pointer">
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        <span>Recruiter Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer">
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        <span>Career Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
+                  {user.role !== 'recruiter' && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/profile-forwarding" className="cursor-pointer">
+                          <FileText className="mr-2 h-4 w-4" />
+                          <span>Profile Forwarding</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/subscription" className="cursor-pointer">
+                          <Crown className="mr-2 h-4 w-4" />
+                          <span>Subscription</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
+                          <FileText className="mr-2 h-4 w-4" />
+                          <span>Professional Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
 
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile-forwarding" className="cursor-pointer">
-                      <FileText className="mr-2 h-4 w-4" />
-                      <span>Profile Forwarding</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/subscription" className="cursor-pointer">
-                      <Crown className="mr-2 h-4 w-4" />
-                      <span>Subscription</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
-                      <FileText className="mr-2 h-4 w-4" />
-                      <span>Professional Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/settings" className="cursor-pointer">
+                    <Link href={user.role === 'recruiter' ? '/recruiters/settings' : '/dashboard/settings'} className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </Link>
@@ -137,9 +151,23 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                   <Button asChild variant="ghost" className="h-10 px-4">
                     <Link href="/login">Sign In</Link>
                   </Button>
-                  <Button asChild className="h-10 px-4">
-                    <Link href="/register">Get Started</Link>
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button className="h-10 px-4">Get Started</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem asChild>
+                        <Link href="/register" className="cursor-pointer">
+                          Career Professionals
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/recruiters/register" className="cursor-pointer">
+                          Recruiters
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
                 
                 {/* Mobile navigation dropdown */}
@@ -159,7 +187,12 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href="/register" className="cursor-pointer h-12 flex items-center">
-                          Get Started
+                          Get Started (Career)
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/recruiters/register" className="cursor-pointer h-12 flex items-center">
+                          Recruiters
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>

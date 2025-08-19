@@ -11,6 +11,7 @@ export interface RegisterRequest {
   email: string
   password: string
   name: string
+  role?: 'professional' | 'recruiter'
 }
 
 export interface LoginResponse {
