@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { tokenManager } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar } from '@/components/ui/avatar'
@@ -57,18 +58,21 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, onDelete,
 
   const downloadFile = async (fileUrl: string, fileName: string) => {
     try {
-      const token = localStorage.getItem('choice_talent_token')
-      if (!token) {
-        console.error('No authentication token found')
-        return
+      // Build absolute URL
+      const isAbsolute = /^https?:\/\//i.test(fileUrl)
+      const backendUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api').replace('/api','')
+      const url = isAbsolute ? fileUrl : `${backendUrl}${fileUrl}`
+
+      // Attach auth header only for our API domain
+      const sameOrigin = !isAbsolute || url.startsWith(backendUrl)
+      const headers: Record<string,string> = {}
+      // Ensure auth header is present for protected chat file routes regardless of origin match
+      if (sameOrigin || url.includes('/api/chat/')) {
+        const token = tokenManager.get()
+        if (token) headers['Authorization'] = `Bearer ${token}`
       }
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-      const response = await fetch(`${backendUrl}${fileUrl}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      const response = await fetch(url, { headers })
 
       if (!response.ok) {
         throw new Error(`Failed to download file: ${response.status} ${response.statusText}`)
@@ -217,9 +221,9 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = ({ isTyping, user }) => 
     <div className="flex items-center space-x-2 mb-4">
       <Avatar className="h-6 w-6">
         {user.profilePicture ? (
-          <img 
-            src={user.profilePicture} 
-            alt={user.name} 
+          <AuthenticatedImage
+            src={user.profilePicture}
+            alt={user.name}
             className="w-full h-full object-cover rounded-full"
           />
         ) : (
@@ -242,7 +246,8 @@ const TypingIndicator: React.FC<TypingIndicatorProps> = ({ isTyping, user }) => 
 
 export default function ChatPage() {
   const router = useRouter()
-  const { conversationId } = useParams()
+  const params = useParams<{ conversationId: string }>()
+  const conversationId = params?.conversationId
   const { user: currentUser } = useAuth()
   const toast = useToast()
   
@@ -259,7 +264,7 @@ export default function ChatPage() {
     // Set up socket service reference for auth store
     setupSocketServiceReference()
     
-    const token = localStorage.getItem('choice_talent_token')
+    const token = tokenManager.get()
     if (token && currentUser && !socketService.isConnected()) {
       socketService.connect(token)
     }
@@ -472,7 +477,20 @@ export default function ChatPage() {
       updatedAt: new Date().toISOString(),
       isRead: false,
       isDeleted: false,
-      sender: currentUser!,
+      sender: {
+        id: currentUser?.id || '',
+        name: (currentUser as any)?.name || 'User',
+        realName: (currentUser as any)?.realName || (currentUser as any)?.name || 'User',
+        username: (currentUser as any)?.username || 'user',
+        profilePicture: (currentUser as any)?.profilePicture,
+        interests: (currentUser as any)?.interests,
+        hobbies: (currentUser as any)?.hobbies,
+        occupation: (currentUser as any)?.occupation,
+        country: (currentUser as any)?.country,
+        state: (currentUser as any)?.state,
+        isOnline: true,
+        createdAt: (currentUser as any)?.createdAt || new Date().toISOString()
+      },
       attachments: []
     }
 
@@ -581,7 +599,7 @@ export default function ChatPage() {
                 message={msg}
                 isOwn={msg.senderId === currentUser?.id}
                 onDelete={handleDeleteMessage}
-                showSender={conversation?.type === 'group'}
+                showSender={false}
               />
             ))}
             <div ref={messagesEndRef} />

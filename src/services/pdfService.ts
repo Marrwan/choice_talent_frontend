@@ -197,9 +197,6 @@ export class PDFService {
         border: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        font-size: 12px !important;
-        line-height: 1.45 !important;
-        font-family: Arial, sans-serif !important;
         width: ${targetWidthPx}px !important;
         max-width: ${targetWidthPx}px !important;
         position: absolute !important;
@@ -211,16 +208,12 @@ export class PDFService {
       // Hide the clone and add it to the document
       document.body.appendChild(clonedElement);
 
-      // Apply print styles to ensure readable typography
+      // Apply print styles to ensure readable typography while preserving on-screen hierarchy
       const styleElement = document.createElement('style');
       styleElement.textContent = `
-        .pdf-content * { font-size: 12px !important; line-height: 1.45 !important; font-family: Arial, sans-serif !important; color: black !important; }
+        .pdf-content * { font-family: Arial, sans-serif !important; color: black !important; }
         .pdf-content h1, .pdf-content h2, .pdf-content h3, .pdf-content h4, .pdf-content h5, .pdf-content h6 { font-weight: 700 !important; color: black !important; margin: 10px 0 8px 0 !important; }
-        .pdf-content h1 { font-size: 16px !important; }
-        .pdf-content h2 { font-size: 15px !important; }
-        .pdf-content h3 { font-size: 14px !important; }
-        .pdf-content h4 { font-size: 13px !important; }
-        .pdf-content p, .pdf-content li, .pdf-content span { font-size: 12px !important; }
+        .pdf-content h1 { text-align: center; }
         .pdf-content .no-print { display: none !important; }
         .pdf-content img { max-width: 100% !important; height: auto !important; }
       `;

@@ -3,6 +3,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/a
 
 // Token management
 const TOKEN_KEY = 'choice_talent_token'
+const LEGACY_TOKEN_KEYS = ['jobhunting_token'] as const
 
 // Import browser utilities
 import { browserUtils } from './utils'
@@ -21,7 +22,19 @@ export const tokenManager = {
     }
     
     try {
-      const token = storage.getItem(TOKEN_KEY)
+      let token = storage.getItem(TOKEN_KEY)
+      // Migrate from any legacy keys if present
+      if (!token) {
+        for (const legacyKey of LEGACY_TOKEN_KEYS) {
+          const legacyToken = storage.getItem(legacyKey)
+          if (legacyToken) {
+            storage.setItem(TOKEN_KEY, legacyToken)
+            try { storage.removeItem(legacyKey) } catch {}
+            token = legacyToken
+            break
+          }
+        }
+      }
       const browserName = browserUtils.getBrowserName()
       console.log(`[TokenManager] Getting token from ${browserName}:`, token ? `Found (${token.substring(0, 20)}...)` : 'Not found')
       return token
@@ -47,6 +60,10 @@ export const tokenManager = {
       const browserName = browserUtils.getBrowserName()
       console.log(`[TokenManager] Setting token in ${browserName}:`, token ? `Token set (${token.substring(0, 20)}...)` : 'No token')
       storage.setItem(TOKEN_KEY, token)
+      // Clean up legacy keys
+      for (const legacyKey of LEGACY_TOKEN_KEYS) {
+        try { storage.removeItem(legacyKey) } catch {}
+      }
     } catch (error) {
       console.error('[TokenManager] Error setting token:', error)
     }
@@ -68,6 +85,10 @@ export const tokenManager = {
       const browserName = browserUtils.getBrowserName()
       console.log(`[TokenManager] Removing token from ${browserName}`)
       storage.removeItem(TOKEN_KEY)
+      // Clean up legacy keys
+      for (const legacyKey of LEGACY_TOKEN_KEYS) {
+        try { storage.removeItem(legacyKey) } catch {}
+      }
     } catch (error) {
       console.error('[TokenManager] Error removing token:', error)
     }

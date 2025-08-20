@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { tokenManager } from '@/lib/api'
 
 interface AuthenticatedImageProps {
   src: string
@@ -15,7 +16,7 @@ export const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({
   alt,
   className,
   onClick,
-  fallback = '/default-image.png'
+  fallback = '/file.svg'
 }) => {
   const [imageSrc, setImageSrc] = useState<string>(fallback)
   const [isLoading, setIsLoading] = useState(true)
@@ -27,20 +28,23 @@ export const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({
         setIsLoading(true)
         setError(false)
 
-        // Check if it's a local file URL that needs authentication
-        if (src.startsWith('/api/chat/')) {
-          const token = localStorage.getItem('choice_talent_token')
+        // Check if it's a backend-protected URL that needs authentication
+        const needsAuth = src.startsWith('/api/chat/') || src.includes('/api/chat/') || src.startsWith('/api/uploads/') || src.includes('/api/uploads/')
+        if (needsAuth) {
+          const token = tokenManager.get()
           if (!token) {
             setError(true)
             setImageSrc(fallback)
             return
           }
 
-          // Get the API base URL and remove /api suffix if present
+          // Build URL (supports both relative and absolute)
+          const isAbsolute = /^https?:\/\//i.test(src)
           const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
           const backendUrl = apiBaseUrl.replace('/api', '')
-          
-          const response = await fetch(`${backendUrl}${src}`, {
+          const fetchUrl = isAbsolute ? src : `${backendUrl}${src}`
+
+          const response = await fetch(fetchUrl, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -79,7 +83,7 @@ export const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({
   }, [src, fallback])
 
   return (
-    <div className={`relative ${className}`}>
+    <div className="relative">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>

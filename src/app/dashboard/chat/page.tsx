@@ -10,6 +10,7 @@ import { AuthenticatedImage } from '@/components/ui/authenticated-image'
 import { useAuth } from '@/lib/store'
 import { chatService, Conversation } from '@/services/chatService'
 import { socketService, setupSocketServiceReference } from '@/services/socketService'
+import { tokenManager } from '@/lib/api'
 import { 
   MessageSquare, 
   User as UserIcon,
@@ -118,7 +119,7 @@ export default function ConversationsPage() {
     // Groups removed
     
     // Connect to socket for real-time updates
-    const token = localStorage.getItem('jobhunting_token') || localStorage.getItem('choice_talent_token')
+    const token = tokenManager.get()
     if (token) {
       console.log('[Chat] Connecting to socket with token')
       socketService.connect(token)
