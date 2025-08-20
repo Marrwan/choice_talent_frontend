@@ -130,23 +130,23 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, onDelete,
           {message.attachments && message.attachments.length > 0 && (
             <div className="mt-2 space-y-2">
               {message.attachments.map((attachment) => {
-                const FileIcon = getFileIcon(attachment.mimeType)
+                const FileIcon = getFileIcon(attachment.fileType)
                 
-                if (attachment.mimeType.startsWith('image/')) {
+                if (attachment.fileType.startsWith('image/')) {
                   return (
                     <div key={attachment.id} className="relative">
                       <AuthenticatedImage
-                        src={attachment.thumbnailUrl || attachment.fileUrl}
-                        alt={attachment.originalName}
+                        src={attachment.thumbnail_url || attachment.fileUrl}
+                        alt={attachment.original_name}
                         className="max-w-full h-auto rounded cursor-pointer"
-                        onClick={() => downloadFile(attachment.fileUrl, attachment.originalName)}
+                        onClick={() => downloadFile(attachment.fileUrl, attachment.original_name)}
                       />
                       <div className="absolute top-2 right-2">
                         <Button
                           size="sm"
                           variant="outline"
                           className="h-8 w-8 p-0 bg-white/80 hover:bg-white"
-                          onClick={() => downloadFile(attachment.fileUrl, attachment.originalName)}
+                          onClick={() => downloadFile(attachment.fileUrl, attachment.original_name)}
                         >
                           <Download className="h-4 w-4" />
                         </Button>
@@ -158,12 +158,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwn, onDelete,
                   <div 
                     key={attachment.id} 
                     className="flex items-center space-x-2 p-2 rounded border border-gray-200 bg-white/10 cursor-pointer hover:bg-white/20"
-                    onClick={() => downloadFile(attachment.fileUrl, attachment.originalName)}
+                    onClick={() => downloadFile(attachment.fileUrl, attachment.original_name)}
                   >
                     <FileIcon className="h-4 w-4" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm truncate">{attachment.originalName}</p>
-                      <p className="text-xs opacity-75">{formatFileSize(attachment.fileSize)}</p>
+                      <p className="text-sm truncate">{attachment.original_name}</p>
+                      <p className="text-xs opacity-75">{formatFileSize(attachment.size)}</p>
                     </div>
                     <Download className="h-4 w-4" />
                   </div>
@@ -405,12 +405,31 @@ export default function ChatPage() {
       }
     }
 
+    const handleUserStatusChanged = (...args: unknown[]) => {
+      const data = args[0] as { userId: string; isOnline: boolean }
+      setConversation(prev => {
+        if (!prev || !prev.otherParticipant) return prev
+        if (prev.otherParticipant.id !== data.userId) return prev
+        return {
+          ...prev,
+          otherParticipant: { ...prev.otherParticipant, isOnline: data.isOnline }
+        }
+      })
+    }
+
+    const handleMessageReadStatus = (...args: unknown[]) => {
+      const data = args[0] as { messageId: string; status: 'read' | 'delivered' | 'sent' }
+      setMessages(prev => prev.map(m => m.id === data.messageId ? { ...m, isRead: data.status === 'read' } : m))
+    }
+
     const eventListeners = [
       { event: 'new_message', handler: handleNewMessage },
       { event: 'user_typing', handler: handleTyping },
       { event: 'user_stopped_typing', handler: handleStopTyping },
       { event: 'message_sent', handler: handleMessageSent },
       { event: 'message_error', handler: handleMessageError },
+      { event: 'message_status', handler: handleMessageReadStatus },
+      { event: 'user_status_changed', handler: handleUserStatusChanged },
     ]
 
     eventListeners.forEach(({ event, handler }) => {
@@ -579,9 +598,22 @@ export default function ChatPage() {
           <input
             type="file"
             ref={fileInputRef}
-            onChange={(e) => {
-              // Handle file upload
-              console.log('File selected:', e.target.files)
+            onChange={async (e) => {
+              const files = e.target.files
+              if (!files || !conversationId) return
+              try {
+                const res = await chatService.sendMessage(conversationId as string, {
+                  messageType: 'file',
+                  attachments: files
+                })
+                if (res.success) {
+                  setMessages((prev) => [...prev, res.data])
+                }
+              } catch (err) {
+                toast.showError('Failed to upload file', 'Error')
+              } finally {
+                if (fileInputRef.current) fileInputRef.current.value = ''
+              }
             }}
             accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
             multiple

@@ -248,6 +248,12 @@ class SocketService {
       // Optionally, trigger a UI update or notification here
     })
 
+    // Online/offline status updates
+    this.socket.on('user_status_changed', (data) => {
+      console.log('🟢🔴 User status changed:', data)
+      this.emitToHandlers('user_status_changed', data)
+    })
+
     this.socket.on('user_typing', (data) => {
       console.log('⌨️ User typing:', data)
       this.emitToHandlers('user_typing', data)

@@ -452,11 +452,11 @@ export default function JobHuntingSettingsPage() {
 
             {/* Save Button */}
             <div className="flex justify-between items-center">
-                      <Link href="/dashboard">
-          <Button variant="outline">
-            Cancel
-          </Button>
-        </Link>
+              <Link href="/dashboard/subscription">
+                <Button variant="outline">
+                  Activate
+                </Button>
+              </Link>
               <Button 
                 onClick={handleSave} 
                 disabled={saving || profileCompletion < 50}

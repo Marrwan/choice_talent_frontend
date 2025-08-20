@@ -54,7 +54,7 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
   const isGroup = false;
   return (
     <div onClick={onClick} className="cursor-pointer p-4 bg-white rounded-lg shadow hover:bg-gray-50 flex items-center space-x-3">
-      <Avatar className="h-12 w-12 flex-shrink-0">
+      <Avatar className="h-12 w-12 flex-shrink-0 relative">
         {
           conversation.otherParticipant.profilePicture ? (
             <AuthenticatedImage src={conversation.otherParticipant.profilePicture} alt={conversation.otherParticipant.name} className="w-full h-full object-cover rounded-full" />
@@ -64,6 +64,9 @@ const ConversationCard: React.FC<ConversationCardProps> = ({ conversation, curre
             </div>
           )
         }
+        {typeof conversation.otherParticipant.isOnline !== 'undefined' && (
+          <span className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-2 border-white ${conversation.otherParticipant.isOnline ? 'bg-green-500' : 'bg-gray-400'}`}></span>
+        )}
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">

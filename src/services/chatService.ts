@@ -17,12 +17,11 @@ export interface User {
 
 export interface MessageAttachment {
   id: string
-  fileName: string
-  originalName: string
-  mimeType: string
-  fileSize: number
+  original_name: string
+  fileType: string
+  size: number
   fileUrl: string
-  thumbnailUrl?: string
+  thumbnail_url?: string
 }
 
 export interface Message {

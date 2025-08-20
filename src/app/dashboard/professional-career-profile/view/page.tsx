@@ -202,15 +202,15 @@ export default function ProfessionalCareerProfileViewPage() {
                   <img
                     src={profile.profilePicture}
                     alt="Profile"
-                    className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full border-4 border-black shadow-lg mx-auto sm:mx-0"
+                    className="w-32 h-32 sm:w-40 sm:h-40 object-cover rounded-full mx-auto sm:mx-0"
                   />
                 ) : (
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 bg-white rounded-full flex items-center justify-center border-4 border-black shadow-lg mx-auto sm:mx-0">
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 bg-white rounded-full flex items-center justify-center mx-auto sm:mx-0">
                     <User className="w-16 h-16 sm:w-20 sm:h-20 text-black" />
                   </div>
                 )}
-                <div className="flex-1 text-center sm:text-left">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-black">{profile.fullName}</h2>
+                <div className="flex-1 text-center">
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 text-black">{profile.fullName}</h2>
                   <div className="contact-info grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-black">
                     {profile.emailAddress && (
                       <div className="flex items-center justify-center sm:justify-start">
@@ -222,12 +222,6 @@ export default function ProfessionalCareerProfileViewPage() {
                       <div className="flex items-center justify-center sm:justify-start">
                         <Phone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
                         <span className="text-sm sm:text-lg truncate">{profile.phoneNumber}</span>
-                      </div>
-                    )}
-                    {profile.dateOfBirth && (
-                      <div className="flex items-center justify-center sm:justify-start">
-                        <Calendar className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
-                        <span className="text-sm sm:text-lg truncate">{formatDate(profile.dateOfBirth)}</span>
                       </div>
                     )}
                     {profile.stateOfResidence && profile.lgaOfResidence && (
@@ -250,7 +244,7 @@ export default function ProfessionalCareerProfileViewPage() {
                   PROFESSIONAL SUMMARY
                 </h3>
                 <div className="content-section bg-white p-4 sm:p-6">
-                  <p className="text-black leading-relaxed text-base sm:text-lg">{profile.professionalSummary}</p>
+                  <p className="text-black leading-relaxed text-base">{profile.professionalSummary}</p>
                 </div>
               </div>
               )}
@@ -263,7 +257,7 @@ export default function ProfessionalCareerProfileViewPage() {
                   PERSONA
                 </h3>
                 <div className="content-section bg-white p-4 sm:p-6">
-                  <p className="text-black leading-relaxed text-base sm:text-lg">{profile.persona}</p>
+                  <p className="text-black leading-relaxed text-base">{profile.persona}</p>
                 </div>
               </div>
               )}
@@ -276,7 +270,7 @@ export default function ProfessionalCareerProfileViewPage() {
                     <div>
                       <h3 className="text-xl sm:text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
                         <Code className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                        TECHNICAL SKILLS
+                        AREA OF EXPERTISE
                       </h3>
                       <div className="content-section bg-white p-4 sm:p-6">
                         <div className="flex flex-wrap gap-2">
@@ -295,7 +289,7 @@ export default function ProfessionalCareerProfileViewPage() {
                     <div>
                       <h3 className="text-xl sm:text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
                         <Settings className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                        DEVELOPMENT SKILLS
+                        SOFT & TECHNICAL SKILLS
                       </h3>
                       <div className="content-section bg-white p-4 sm:p-6">
                         <div className="flex flex-wrap gap-2">
@@ -399,16 +393,21 @@ export default function ProfessionalCareerProfileViewPage() {
                   </h3>
                   <div className="space-y-4">
                     {profile.higherEducations.map((education: any) => (
-                      <div key={education.id} className="education-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                      <div key={education.id} className="bg-white p-4 sm:p-6">
+                        <div className="flex flex-col gap-3 mb-3">
                           <div className="flex-1">
-                            <h4 className="text-lg sm:text-xl font-bold text-black mb-2">
+                            <span className="text-xl sm:text-2xl font-bold text-black mb-1">
                               {education.institutionName}{education.location ? `, ${education.location}` : ''}
-                            </h4>
-                            <p className="text-base sm:text-lg font-semibold text-black mb-1">{education.courseOfStudy}</p>
-                            <p className="text-black text-sm sm:text-base">{education.qualification}</p>
+                            </span>
                           </div>
-                          <div className="text-left sm:text-right sm:ml-4">
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                          <div className="flex-1">
+                            <span className="text-xl sm:text-2xl font-bold text-black">
+                              {education.courseOfStudy} | <span className="text-base sm:text-lg font-bold text-black">{education.qualification}</span>
+                            </span>
+                          </div>
+                          <div className="text-left sm:text-right">
                             <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
                               {education.entryYear} - {education.graduationYear}
                             </span>
@@ -452,16 +451,21 @@ export default function ProfessionalCareerProfileViewPage() {
                   </h3>
                   <div className="space-y-4">
                     {profile.basicEducations.map((education: any) => (
-                      <div key={education.id} className="education-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                      <div key={education.id} className="bg-white p-4 sm:p-6">
+                        <div className="flex flex-col gap-3 mb-3">
                           <div className="flex-1">
-                            <h4 className="text-lg sm:text-xl font-bold text-black mb-2">
+                            <span className="text-xl sm:text-2xl font-bold text-black mb-1">
                               {education.schoolName}
-                            </h4>
-                            <p className="text-base sm:text-lg font-semibold text-black mb-1">{education.certification}</p>
-                            <p className="text-black text-sm sm:text-base">{education.educationType}</p>
+                            </span>
                           </div>
-                          <div className="text-left sm:text-right sm:ml-4">
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                          <div className="flex-1">
+                            <span className="text-xl sm:text-2xl font-bold text-black">
+                              {education.certification} | <span className="text-base sm:text-lg font-bold text-black">{education.educationType}</span>
+                            </span>
+                          </div>
+                          <div className="text-left sm:text-right">
                             <span className="bg-white text-black px-3 py-1 rounded-full text-xs sm:text-sm">
                               {education.year}
                             </span>
