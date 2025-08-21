@@ -110,6 +110,14 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
 
                   {user.role !== 'recruiter' && (
                     <>
+                      {/* Professional Profile */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
+                          <Briefcase className="mr-2 h-4 w-4" />
+                          <span>Professional Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+
                       {/* Subscription */}
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/subscription" className="cursor-pointer">
