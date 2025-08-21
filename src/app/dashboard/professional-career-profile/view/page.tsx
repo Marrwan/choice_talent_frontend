@@ -29,6 +29,21 @@ import { useRouter } from 'next/navigation'
 import { AuthenticatedImage } from '@/components/ui/authenticated-image'
 import { useAuth } from '@/lib/store'
 
+// Custom styles for profile image
+const profileImageStyles = `
+  .profile-image-container {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  .profile-image-container img {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+`
+
 export default function ProfessionalCareerProfileViewPage() {
   const toast = useToast();
   const [loading, setLoading] = useState(true);
@@ -160,6 +175,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style dangerouslySetInnerHTML={{ __html: profileImageStyles }} />
       <div className="container mx-auto p-4 sm:p-6">
         <div className="max-w-5xl mx-auto">
           {/* Header Navigation */}
@@ -203,11 +219,12 @@ export default function ProfessionalCareerProfileViewPage() {
               </div>
               <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
                 {profile.profilePicture ? (
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto sm:mx-0 overflow-hidden rounded-full bg-gray-100">
+                  <div className="profile-image-container w-32 h-32 sm:w-40 sm:h-40 mx-auto sm:mx-0 overflow-hidden rounded-full bg-white">
                     <AuthenticatedImage
                       src={profile.profilePicture}
                       alt="Profile"
                       className="w-full h-full object-cover object-center"
+                      style={{ border: 'none', outline: 'none', filter: 'none' }}
                     />
                   </div>
                 ) : (
@@ -244,7 +261,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Professional Summary */}
               {profile.professionalSummary && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <FileText className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL SUMMARY
                 </h3>
@@ -257,7 +274,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Persona */}
               {profile.persona && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <User className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PERSONA
                 </h3>
@@ -273,7 +290,7 @@ export default function ProfessionalCareerProfileViewPage() {
                 {/* Expertise & Competencies */}
                   {profile.expertiseCompetencies && profile.expertiseCompetencies.length > 0 && (
                 <div>
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                     <Code className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                         AREA OF EXPERTISE
                   </h3>
@@ -292,7 +309,7 @@ export default function ProfessionalCareerProfileViewPage() {
                 {/* Software Skills */}
                   {profile.softwareSkills && profile.softwareSkills.length > 0 && (
                 <div>
-                      <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                      <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                     <Settings className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                         SOFT & TECHNICAL SKILLS
                   </h3>
@@ -313,7 +330,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Work Experience - Latest First */}
               {profile.workExperiences && profile.workExperiences.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <Briefcase className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   WORK EXPERIENCE
                 </h3>
@@ -392,7 +409,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Education */}
               {profile.higherEducations && profile.higherEducations.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   EDUCATION
                 </h3>
@@ -427,7 +444,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* NYSC Status */}
               {profile.nyscStatus && profile.nyscStatus.trim() !== '' && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   NYSC STATUS
                 </h3>
@@ -450,7 +467,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Basic Education */}
               {profile.basicEducations && profile.basicEducations.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   BASIC EDUCATION
                 </h3>
@@ -485,7 +502,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Professional Memberships */}
               {profile.professionalMemberships && profile.professionalMemberships.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL MEMBERSHIPS 
                 </h3>
@@ -520,7 +537,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Training & Certifications */}
               {profile.trainingCertifications && profile.trainingCertifications.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   TRAINING & CERTIFICATIONS
                 </h3>
@@ -555,7 +572,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Reference Details */}
               {profile.referenceDetails && profile.referenceDetails.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center border-b-2 border-black pb-2">
+                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   REFERENCES
                 </h3>

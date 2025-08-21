@@ -25,7 +25,23 @@
 .pdf-content .profile-header-regular img {
   object-fit: cover;
   border-radius: 50%;
-  border: none;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.pdf-content .profile-image-container {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.pdf-content .profile-image-container img {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  filter: none !important;
 }
 
 .pdf-content h1, .pdf-content h2, .pdf-content h3, .pdf-content h4 {
@@ -81,9 +97,9 @@
   margin-bottom: 12px;
   padding: 12px;
   background: white;
-  border: 1px solid #e5e7eb;
+  border: none !important;
   border-radius: 6px;
-  border-left: 3px solid #111827;
+  border-left: none !important;
 }
 
 .pdf-content .work-experience-item h4,
@@ -136,8 +152,14 @@
   padding: 16px;
   margin: 12px 0;
   background: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: none !important;
   border-radius: 6px;
+}
+
+/* Remove borders from section headers */
+.pdf-content h3 {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
 }
 
 /* Print-specific styles */
@@ -158,6 +180,8 @@
   
   .pdf-content h3 {
     font-size: 18px !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
   }
   
   .pdf-content h4 {
@@ -177,6 +201,12 @@
   .pdf-content .education-item {
     margin-bottom: 12px !important;
     padding: 12px !important;
+    border: none !important;
+    border-left: none !important;
+  }
+  
+  .pdf-content .content-section {
+    border: none !important;
   }
   
   .no-print {

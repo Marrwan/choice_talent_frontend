@@ -9,6 +9,7 @@ interface AuthenticatedImageProps {
   className?: string
   onClick?: () => void
   fallback?: string
+  style?: React.CSSProperties
 }
 
 export const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({
@@ -16,7 +17,8 @@ export const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({
   alt,
   className,
   onClick,
-  fallback = '/file.svg'
+  fallback = '/file.svg',
+  style
 }) => {
   const [imageSrc, setImageSrc] = useState<string>(fallback)
   const [isLoading, setIsLoading] = useState(true)
@@ -94,6 +96,7 @@ export const AuthenticatedImage: React.FC<AuthenticatedImageProps> = ({
         src={imageSrc}
         alt={alt}
         className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200`}
+        style={style}
         onClick={onClick}
         onLoad={() => setIsLoading(false)}
         onError={() => {
