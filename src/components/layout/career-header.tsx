@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
-import { User, LogOut, Settings, Crown, AlertCircle, Briefcase, FileText, Home } from 'lucide-react'
+import { LogOut, Settings, Crown, AlertTriangle, Briefcase, Activity, AlertCircle } from 'lucide-react'
 
 interface UserData {
   id: string
@@ -90,43 +90,45 @@ export function CareerHeader({ isAuthenticated = false, user, onLogout }: Career
                     </div>
                   </div>
                   <DropdownMenuSeparator />
+                  {/* Career Dashboard */}
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="cursor-pointer">
                       <Briefcase className="mr-2 h-4 w-4" />
-                      <span>Dashboard</span>
+                      <span>Career Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
+
+                  {/* Subscription */}
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/chat" className="cursor-pointer">
-                      <Home className="mr-2 h-4 w-4" />
-                      <span>Messaging</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
-                      <FileText className="mr-2 h-4 w-4" />
-                      <span>Professional Profile</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/job-hunting-settings" className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Job Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard/job-subscription" className="cursor-pointer">
+                    <Link href="/dashboard/subscription" className="cursor-pointer">
                       <Crown className="mr-2 h-4 w-4" />
-                      <span>Job Subscription</span>
+                      <span>Subscription</span>
                     </Link>
                   </DropdownMenuItem>
+
+                  {/* Track Activities */}
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/settings" className="cursor-pointer">
+                    <Link href="/dashboard/career/activities" className="cursor-pointer">
+                      <Activity className="mr-2 h-4 w-4" />
+                      <span>Track Activities</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  {/* Report Abuse */}
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/report-abuse" className="cursor-pointer">
+                      <AlertTriangle className="mr-2 h-4 w-4" />
+                      <span>Report Abuse</span>
+                    </Link>
+                  </DropdownMenuItem>
+
+                  {/* Settings */}
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/career/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
 
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onLogout} className="cursor-pointer">

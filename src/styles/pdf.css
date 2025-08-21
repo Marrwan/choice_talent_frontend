@@ -102,7 +102,7 @@
   border-left: none !important;
 }
 
-/* Horizontal separation between repeated items for cleaner sectioning */
+
 .pdf-content .work-experience-item + .work-experience-item,
 .pdf-content .education-item + .education-item,
 .pdf-content .membership-item + .membership-item,

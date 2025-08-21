@@ -29,7 +29,8 @@ import {
   Plus,
   CheckCircle,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
+  Mail
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react'
 import Link from 'next/link';
@@ -367,18 +368,60 @@ export default function DashboardPage() {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
+                {/* Career Profile */}
                 <Link href="/dashboard/professional-career-profile" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <FileText className="mr-2 h-4 w-4" />
                     Career Profile
                   </Button>
                 </Link>
-                
+
+                {/* Download Profile */}
                 <Button variant="outline" className="w-full justify-start h-12" onClick={handleDownloadProfile}>
                   <Download className="mr-2 h-4 w-4" />
                   Download Profile
                 </Button>
-                
+
+                {/* AppAI (placeholder) */}
+                <Button
+                  variant="outline"
+                  className="w-full justify-start h-12"
+                  onClick={() => toast.showInfo('AppAI is coming soon', 'Coming soon')}
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  AppAI
+                </Button>
+
+                {/* Email */}
+                <Link href="/dashboard/email-campaigns" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <Mail className="mr-2 h-4 w-4" />
+                    Email
+                  </Button>
+                </Link>
+
+                {/* Messaging */}
+                <Link href="/dashboard/chat" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Messaging
+                  </Button>
+                </Link>
+
+                {/* Earn (placeholder) */}
+                <Button
+                  variant="outline"
+                  className="w-full justify-start h-12"
+                  onClick={() => toast.showInfo('Earn is coming soon', 'Coming soon')}
+                >
+                  <TrendingUp className="mr-2 h-4 w-4" />
+                  Earn
+                </Button>
+
+                {/* Divider */}
+                <div className="border-t pt-2" />
+
+                {/* Additional quick actions preserved */}
                 <Link href="/dashboard/job-hunting-settings" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Search className="mr-2 h-4 w-4" />
@@ -386,34 +429,27 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
 
-                <Link href="/dashboard/chat" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Messaging
-                  </Button>
-                </Link>
-                
                 <Link href="/dashboard/subscription" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Crown className="mr-2 h-4 w-4" />
                     Subscription
                   </Button>
                 </Link>
-                
+
                 <Link href="/dashboard/career/activities" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Activity className="mr-2 h-4 w-4" />
                     Track Activities
                   </Button>
                 </Link>
-                
+
                 <Link href="/dashboard/career/settings" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </Button>
                 </Link>
-                
+
                 <Link href="/dashboard/report-abuse" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <AlertTriangle className="mr-2 h-4 w-4" />

@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
-import { User, LogOut, Settings, Crown, AlertCircle, Briefcase, FileText } from '@/lib/icons'
+import { LogOut, Settings, Crown, AlertCircle, Briefcase } from '@/lib/icons'
+import { Activity, AlertTriangle } from 'lucide-react'
 
 interface UserData {
   id: string
@@ -109,33 +110,48 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
 
                   {user.role !== 'recruiter' && (
                     <>
-                      <DropdownMenuItem asChild>
-                        <Link href="/dashboard/profile-forwarding" className="cursor-pointer">
-                          <FileText className="mr-2 h-4 w-4" />
-                          <span>Profile Forwarding</span>
-                        </Link>
-                      </DropdownMenuItem>
+                      {/* Subscription */}
                       <DropdownMenuItem asChild>
                         <Link href="/dashboard/subscription" className="cursor-pointer">
                           <Crown className="mr-2 h-4 w-4" />
                           <span>Subscription</span>
                         </Link>
                       </DropdownMenuItem>
+
+                      {/* Track Activities */}
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard/professional-career-profile" className="cursor-pointer">
-                          <FileText className="mr-2 h-4 w-4" />
-                          <span>Professional Profile</span>
+                        <Link href="/dashboard/career/activities" className="cursor-pointer">
+                          <Activity className="mr-2 h-4 w-4" />
+                          <span>Track Activities</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Report Abuse */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/report-abuse" className="cursor-pointer">
+                          <AlertTriangle className="mr-2 h-4 w-4" />
+                          <span>Report Abuse</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Settings */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/career/settings" className="cursor-pointer">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
                         </Link>
                       </DropdownMenuItem>
                     </>
                   )}
 
-                  <DropdownMenuItem asChild>
-                    <Link href={user.role === 'recruiter' ? '/recruiters/settings' : '/dashboard/settings'} className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  {user.role === 'recruiter' && (
+                    <DropdownMenuItem asChild>
+                      <Link href={'/recruiters/settings'} className="cursor-pointer">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
 
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onLogout} className="cursor-pointer">

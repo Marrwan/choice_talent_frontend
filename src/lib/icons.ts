@@ -8,6 +8,8 @@ export {
   Briefcase,
   FileText,
   Home,
+  Activity,
+  AlertTriangle,
   Menu,
   Phone,
   PhoneOff,
