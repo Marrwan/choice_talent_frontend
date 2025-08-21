@@ -12,6 +12,7 @@ export interface JobHuntingSettings {
   minimumSalaryExpectation?: string;
   workWithProposedPay: boolean;
   salaryExpectationNegotiable?: string;
+  searchScope?: 'country_only' | 'global';
   createdAt: string;
   updatedAt: string;
 }
@@ -25,6 +26,7 @@ export interface CreateJobHuntingSettingsData {
   minimumSalaryExpectation?: string;
   workWithProposedPay: boolean;
   salaryExpectationNegotiable?: string;
+  searchScope?: 'country_only' | 'global';
 }
 
 // API Response types

@@ -382,15 +382,13 @@ export default function DashboardPage() {
                   Download Profile
                 </Button>
 
-                {/* AppAI (placeholder) */}
-                <Button
-                  variant="outline"
-                  className="w-full justify-start h-12"
-                  onClick={() => toast.showInfo('AppAI is coming soon', 'Coming soon')}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  AppAI
-                </Button>
+                {/* AppAI */}
+                <Link href="/dashboard/appai" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <Settings className="mr-2 h-4 w-4" />
+                    AppAI
+                  </Button>
+                </Link>
 
                 {/* Email */}
                 <Link href="/dashboard/email-campaigns" className="block">
@@ -663,6 +661,17 @@ export default function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
+                {/* AppAI Active status banner */}
+                {subscriptionEligibility?.hasActiveSubscription && subscriptionEligibility?.activeSubscription?.subscriptionType === 'appai_30_days' && (
+                  <div className="mb-4 p-3 rounded-lg border border-blue-200 bg-blue-50">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-blue-800">AppAI Subscription Active</div>
+                        <div className="text-sm text-blue-700">{`Start: ${new Date(subscriptionEligibility.activeSubscription.startDate).toLocaleDateString()}  •  End: ${new Date(subscriptionEligibility.activeSubscription.endDate).toLocaleDateString()}`}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {subscriptionEligibility?.hasActiveSubscription ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">

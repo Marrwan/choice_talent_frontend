@@ -43,7 +43,8 @@ export default function JobHuntingSettingsPage() {
     preferredLocations: [],
     minimumSalaryExpectation: '',
     workWithProposedPay: false,
-    salaryExpectationNegotiable: ''
+    salaryExpectationNegotiable: '',
+    searchScope: 'country_only'
   });
 
   // Load existing settings and check profile completion
@@ -99,7 +100,8 @@ export default function JobHuntingSettingsPage() {
           preferredLocations: settingsData.preferredLocations || [],
           minimumSalaryExpectation: settingsData.minimumSalaryExpectation || '',
           workWithProposedPay: settingsData.workWithProposedPay || false,
-          salaryExpectationNegotiable: settingsData.salaryExpectationNegotiable || ''
+          salaryExpectationNegotiable: settingsData.salaryExpectationNegotiable || '',
+          searchScope: settingsData.searchScope || 'country_only'
         });
       }
     } catch (error) {
@@ -244,9 +246,31 @@ export default function JobHuntingSettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Job Preferences</CardTitle>
+            <CardTitle>Job Preferences (AppAI)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Search Scope */}
+            <div>
+              <Label className="text-base font-medium">Search Scope</Label>
+              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={settings.searchScope === 'country_only' ? 'default' : 'outline'}
+                  className="justify-start"
+                  onClick={() => setSettings(prev => ({ ...prev, searchScope: 'country_only' }))}
+                >
+                  Only within my country
+                </Button>
+                <Button
+                  type="button"
+                  variant={settings.searchScope === 'global' ? 'default' : 'outline'}
+                  className="justify-start"
+                  onClick={() => setSettings(prev => ({ ...prev, searchScope: 'global' }))}
+                >
+                  Global opportunities
+                </Button>
+              </div>
+            </div>
             {/* Job Types */}
             <div>
               <Label className="text-base font-medium">Job Type (Multi-select)</Label>
@@ -390,7 +414,7 @@ export default function JobHuntingSettingsPage() {
                   id="salaryExpectation"
                   value={settings.minimumSalaryExpectation}
                   onChange={(e) => setSettings(prev => ({ ...prev, minimumSalaryExpectation: e.target.value }))}
-                  placeholder="e.g., ₦500,000 per month"
+                  placeholder="e.g., ₦xxxx per month"
                   className="mt-2"
                   disabled={settings.workWithProposedPay}
                 />
@@ -416,13 +440,14 @@ export default function JobHuntingSettingsPage() {
                 <Select 
                   value={settings.salaryExpectationNegotiable} 
                   onValueChange={(value) => setSettings(prev => ({ ...prev, salaryExpectationNegotiable: value }))}
+                  disabled={settings.workWithProposedPay}
                 >
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Select option" />
                   </SelectTrigger>
                   <SelectContent>
                     {SALARY_NEGOTIABLE_OPTIONS.map((option) => (
-                      <SelectItem key={option} value={option}>
+                      <SelectItem key={option} value={option} disabled={settings.workWithProposedPay && option === 'Yes'}>
                         {option}
                       </SelectItem>
                     ))}
@@ -450,11 +475,11 @@ export default function JobHuntingSettingsPage() {
               </Card>
             )}
 
-            {/* Save Button */}
+            {/* Save & Activate */}
             <div className="flex justify-between items-center">
-              <Link href="/dashboard/subscription">
+              <Link href="/dashboard/appai/activate">
                 <Button variant="outline">
-                  Activate
+                  Activate AppAI
                 </Button>
               </Link>
               <Button 
