@@ -49,20 +49,20 @@
     font-size: 10.5pt !important;
   }
 
-  /* Section headings - Black for better readability */
+  /* Section headings - Black with subtle horizontal rule */
   h3 {
     color: #000000 !important;
     font-size: 13.5pt !important;
     font-weight: bold !important;
     margin: 15pt 0 10pt 0 !important;
-    border-bottom: 2px solid #000000 !important;
+    border-bottom: 2px solid #e5e7eb !important;
     padding-bottom: 8pt !important;
     text-transform: uppercase !important;
   }
 
-  /* Work experience items */
+  /* Work experience items - no left border, use spacing and top rules */
   .work-experience-item {
-    border-left: 4px solid #000000 !important;
+    border-left: none !important;
     padding: 15pt !important;
     margin: 12pt 0 !important;
     background: #f9fafb !important;
@@ -81,12 +81,23 @@
     margin-bottom: 8px !important;
   }
 
-  /* Education items */
+  /* Education items - no left border */
   .education-item {
-    border-left: 4px solid #000000 !important;
+    border-left: none !important;
     padding: 15pt !important;
     margin: 12pt 0 !important;
     background: #f9fafb !important;
+  }
+
+  /* Horizontal separation between repeated items for cleaner sectioning */
+  .work-experience-item + .work-experience-item,
+  .education-item + .education-item,
+  .membership-item + .membership-item,
+  .certification-item + .certification-item,
+  .reference-item + .reference-item,
+  .space-y-4 > div + div,
+  .space-y-6 > div + div {
+    border-top: 2px solid #e5e7eb !important;
   }
 
   .education-item h4 {

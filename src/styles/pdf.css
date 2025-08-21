@@ -102,6 +102,17 @@
   border-left: none !important;
 }
 
+/* Horizontal separation between repeated items for cleaner sectioning */
+.pdf-content .work-experience-item + .work-experience-item,
+.pdf-content .education-item + .education-item,
+.pdf-content .membership-item + .membership-item,
+.pdf-content .certification-item + .certification-item,
+.pdf-content .reference-item + .reference-item,
+.pdf-content .space-y-4 > div + div,
+.pdf-content .space-y-6 > div + div {
+  border-top: 1px solid #e5e7eb !important;
+}
+
 .pdf-content .work-experience-item h4,
 .pdf-content .education-item h4,
 .pdf-content .membership-item h4,
@@ -156,10 +167,10 @@
   border-radius: 6px;
 }
 
-/* Remove borders from section headers */
+/* Subtle horizontal rule under section headers */
 .pdf-content h3 {
-  border-bottom: none !important;
-  padding-bottom: 0 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding-bottom: 6px !important;
 }
 
 /* Print-specific styles */
