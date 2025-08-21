@@ -110,7 +110,7 @@
 .pdf-content .reference-item + .reference-item,
 .pdf-content .space-y-4 > div + div,
 .pdf-content .space-y-6 > div + div {
-  border-top: 1px solid #e5e7eb !important;
+  border-top: 2px solid #e5e7eb !important;
 }
 
 .pdf-content .work-experience-item h4,
