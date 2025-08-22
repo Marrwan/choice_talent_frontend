@@ -217,14 +217,14 @@ export default function MeetingRoomPage() {
                         <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
                           <span className="text-white text-sm">
                             {participant.user ? 
-                              `${participant.user.firstName[0]}${participant.user.lastName[0]}` : 
+                              participant.user.name[0].toUpperCase() : 
                               participant.email[0].toUpperCase()
                             }
                           </span>
                         </div>
                         <span className="text-white">
                           {participant.user ? 
-                            `${participant.user.firstName} ${participant.user.lastName}` : 
+                            participant.user.name : 
                             participant.email
                           }
                         </span>

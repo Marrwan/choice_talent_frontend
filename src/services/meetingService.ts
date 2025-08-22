@@ -13,8 +13,7 @@ export interface Meeting {
   updatedAt: string;
   recruiter: {
     id: string;
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     profilePicture?: string;
   };
@@ -32,8 +31,7 @@ export interface MeetingParticipant {
   updatedAt: string;
   user?: {
     id: string;
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     profilePicture?: string;
   };

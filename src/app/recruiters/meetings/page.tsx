@@ -370,7 +370,7 @@ export default function MeetingsPage() {
                           {meeting.participants.map((participant) => (
                             <Badge key={participant.id} variant="outline">
                               {participant.user ? 
-                                `${participant.user.firstName} ${participant.user.lastName}` : 
+                                participant.user.name : 
                                 participant.email
                               }
                               <span className="ml-1 text-xs">
