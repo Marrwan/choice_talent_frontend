@@ -21,7 +21,8 @@ import {
   Loader2,
   MoreHorizontal,
   Edit,
-  Trash2
+  Trash2,
+  Smile
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 // Using native Date methods instead of date-fns
 
 export default function PostsPage() {
@@ -52,8 +54,6 @@ export default function PostsPage() {
     try {
       setLoading(true);
       const response = await postService.getPosts(page);
-      
-
       
       if (append) {
         setPosts(prev => [...prev, ...response.data.posts]);
@@ -207,13 +207,20 @@ export default function PostsPage() {
     }
   };
 
+  // Get user's current reaction for a post
+  const getUserReaction = (post: Post) => {
+    // This would need to be implemented based on your backend response
+    // For now, we'll return null as the backend doesn't seem to include user's reaction
+    return null;
+  };
+
   useEffect(() => {
     loadPosts();
   }, []);
 
   if (loading && posts.length === 0) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
         <div className="flex items-center justify-center h-64">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
@@ -222,30 +229,30 @@ export default function PostsPage() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         {/* Create Post Card */}
         <Card>
-          <CardHeader>
-            <CardTitle>Create a Post</CardTitle>
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="text-lg sm:text-xl">Create a Post</CardTitle>
           </CardHeader>
           <CardContent>
             {!showCreateForm ? (
               <Button 
                 onClick={() => setShowCreateForm(true)}
-                className="w-full"
+                className="w-full h-12 sm:h-14 text-base"
                 variant="outline"
               >
                 What's on your mind?
               </Button>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <Textarea
                   placeholder="Share your thoughts, achievements, or updates..."
                   value={newPost.content}
                   onChange={(e) => setNewPost(prev => ({ ...prev, content: e.target.value }))}
                   maxLength={1500}
-                  className="min-h-[100px]"
+                  className="min-h-[100px] text-sm sm:text-base"
                 />
                 
                 {imagePreview && (
@@ -266,7 +273,7 @@ export default function PostsPage() {
                   </div>
                 )}
                 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-2">
                     <input
                       type="file"
@@ -276,7 +283,7 @@ export default function PostsPage() {
                       id="image-upload"
                     />
                     <label htmlFor="image-upload">
-                      <Button variant="outline" size="sm" asChild>
+                      <Button variant="outline" size="sm" asChild className="text-sm">
                         <span>
                           <ImageIcon className="h-4 w-4 mr-2" />
                           Add Image
@@ -285,14 +292,15 @@ export default function PostsPage() {
                     </label>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">
+                  <div className="flex items-center space-x-2 w-full sm:w-auto">
+                    <span className="text-sm text-gray-500 flex-shrink-0">
                       {newPost.content.length}/1500
                     </span>
                     <Button
                       onClick={() => setShowCreateForm(false)}
                       variant="outline"
                       size="sm"
+                      className="text-sm"
                     >
                       Cancel
                     </Button>
@@ -300,6 +308,7 @@ export default function PostsPage() {
                       onClick={handleCreatePost}
                       disabled={creating || !newPost.content.trim()}
                       size="sm"
+                      className="text-sm"
                     >
                       {creating ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -315,23 +324,23 @@ export default function PostsPage() {
         </Card>
 
         {/* Posts Feed */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {posts && posts.length > 0 ? posts.map((post) => post && post.author ? (
             <Card key={post.id}>
-              <CardHeader>
+              <CardHeader className="pb-3 sm:pb-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <Avatar>
+                  <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                       <AvatarImage src={post.author.profilePicture} />
-                      <AvatarFallback>
+                      <AvatarFallback className="text-sm">
                         {post.author.name[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <div className="font-semibold">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold text-sm sm:text-base truncate">
                         {post.author.name}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-xs sm:text-sm text-gray-500">
                         {new Date(post.created_at).toLocaleDateString()}
                       </div>
                     </div>
@@ -340,7 +349,7 @@ export default function PostsPage() {
                   {user?.id === post.userId && (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="flex-shrink-0">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -355,9 +364,9 @@ export default function PostsPage() {
                 </div>
               </CardHeader>
               
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+              <CardContent className="pt-0">
+                <div className="space-y-3 sm:space-y-4">
+                  <p className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base">{post.content}</p>
                   
                   {post.imageUrl && (
                     <img 
@@ -369,21 +378,21 @@ export default function PostsPage() {
                   
                   <Separator />
                   
-                  {/* Reactions */}
+                  {/* Reactions Summary */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
                       {Object.entries(post.reactionCounts).map(([type, count]) => (
                         count > 0 && (
                           <div key={type} className="flex items-center space-x-1">
                             {getReactionIcon(type)}
-                            <span className="text-sm text-gray-600">{count}</span>
+                            <span className="text-xs sm:text-sm text-gray-600">{count}</span>
                           </div>
                         )
                       ))}
                       {post.commentCount > 0 && (
                         <div className="flex items-center space-x-1">
                           <MessageCircle className="h-4 w-4" />
-                          <span className="text-sm text-gray-600">{post.commentCount}</span>
+                          <span className="text-xs sm:text-sm text-gray-600">{post.commentCount}</span>
                         </div>
                       )}
                     </div>
@@ -391,21 +400,42 @@ export default function PostsPage() {
                   
                   <Separator />
                   
-                  {/* Action Buttons */}
+                  {/* Action Buttons - Single React Button with Dropdown */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      {(['like', 'love', 'insightful', 'celebrate'] as const).map((type) => (
-                        <Button
-                          key={type}
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleReaction(post.id, type)}
-                          className={getReactionColor(type)}
-                        >
-                          {getReactionIcon(type)}
-                          <span className="ml-1 capitalize">{type}</span>
-                        </Button>
-                      ))}
+                    <div className="flex items-center space-x-2 sm:space-x-4">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="flex items-center space-x-1 text-sm"
+                          >
+                            <Smile className="h-4 w-4" />
+                            <span>React</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48">
+                          {(['like', 'love', 'insightful', 'celebrate'] as const).map((type) => (
+                            <DropdownMenuItem
+                              key={type}
+                              onClick={() => handleReaction(post.id, type)}
+                              className={`flex items-center space-x-2 ${getReactionColor(type)}`}
+                            >
+                              {getReactionIcon(type)}
+                              <span className="capitalize">{type}</span>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center space-x-1 text-sm"
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        <span className="hidden sm:inline">Comment</span>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -413,7 +443,7 @@ export default function PostsPage() {
             </Card>
           ) : null) : (
             <div className="text-center py-8">
-              <p className="text-gray-500">No posts found</p>
+              <p className="text-gray-500 text-sm sm:text-base">No posts found</p>
             </div>
           )}
           
@@ -424,6 +454,7 @@ export default function PostsPage() {
                 onClick={loadMore}
                 disabled={loading}
                 variant="outline"
+                className="w-full sm:w-auto"
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
