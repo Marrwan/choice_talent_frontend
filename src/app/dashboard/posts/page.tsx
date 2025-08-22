@@ -486,7 +486,7 @@ export default function PostsPage() {
                   {/* Reactions Summary */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
-                      {Object.entries(post.reactionCounts).map(([type, count]) => (
+                      {post.reactionCounts && Object.entries(post.reactionCounts).map(([type, count]) => (
                         count > 0 && (
                           <div key={type} className="flex items-center space-x-1">
                             {getReactionIcon(type)}
@@ -498,6 +498,12 @@ export default function PostsPage() {
                         <div className="flex items-center space-x-1">
                           <MessageCircle className="h-4 w-4" />
                           <span className="text-xs sm:text-sm text-gray-600">{post.commentCount}</span>
+                        </div>
+                      )}
+                      {post.comments && post.comments.length > 0 && (
+                        <div className="flex items-center space-x-1">
+                          <MessageCircle className="h-4 w-4" />
+                          <span className="text-xs sm:text-sm text-gray-600">{post.comments.length}</span>
                         </div>
                       )}
                     </div>
@@ -591,6 +597,10 @@ export default function PostsPage() {
                       {/* Comments List */}
                       {post.comments && post.comments.length > 0 ? (
                         <div className="space-y-3">
+                          {/* Debug: Show comment count */}
+                          <div className="text-xs text-gray-500">
+                            {post.comments.length} comments total, {post.comments.filter(comment => comment && comment.author).length} with author data
+                          </div>
                           {post.comments
                             .filter(comment => comment && comment.author) // Filter out comments without author data
                             .map((comment) => (

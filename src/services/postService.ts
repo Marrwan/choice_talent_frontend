@@ -141,7 +141,7 @@ class PostService {
 
   // Delete a comment
   async deleteComment(commentId: string): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.delete<{ success: boolean; message: string }>(`/comments/${commentId}`, true);
+    const response = await apiClient.delete<{ success: boolean; message: string }>(`/posts/comments/${commentId}`, true);
     return response;
   }
 
