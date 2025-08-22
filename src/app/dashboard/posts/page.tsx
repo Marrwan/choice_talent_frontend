@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/store';
-import { postService, Post, CreatePostData } from '@/services/postService';
+import { postService, Post, CreatePostData, Comment, CreateCommentData } from '@/services/postService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,7 +22,9 @@ import {
   MoreHorizontal,
   Edit,
   Trash2,
-  Smile
+  Smile,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -48,6 +50,12 @@ export default function PostsPage() {
   });
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  
+  // Comments state
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [submittingComments, setSubmittingComments] = useState<Set<string>>(new Set());
+  const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
 
   // Load posts
   const loadPosts = async (page: number = 1, append: boolean = false) => {
@@ -182,6 +190,99 @@ export default function PostsPage() {
     } catch (error) {
       console.error('Error deleting post:', error);
       showError("Failed to delete post", "Error");
+    }
+  };
+
+  // Toggle comments section
+  const toggleComments = (postId: string) => {
+    setExpandedComments(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(postId)) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+  };
+
+  // Handle comment input change
+  const handleCommentInputChange = (postId: string, value: string) => {
+    setCommentInputs(prev => ({
+      ...prev,
+      [postId]: value
+    }));
+  };
+
+  // Submit comment
+  const handleSubmitComment = async (postId: string) => {
+    const content = commentInputs[postId]?.trim();
+    if (!content) {
+      showError("Comment content is required", "Error");
+      return;
+    }
+
+    try {
+      setSubmittingComments(prev => new Set(prev).add(postId));
+      
+      const commentData: CreateCommentData = { content };
+      const response = await postService.addComment(postId, commentData);
+      
+      // Update post with new comment
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: [...post.comments, response.data],
+            commentCount: post.commentCount + 1
+          };
+        }
+        return post;
+      }));
+      
+      // Clear comment input
+      setCommentInputs(prev => {
+        const newInputs = { ...prev };
+        delete newInputs[postId];
+        return newInputs;
+      });
+      
+      showSuccess("Comment added successfully", "Success");
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      showError("Failed to add comment", "Error");
+    } finally {
+      setSubmittingComments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+    }
+  };
+
+  // Delete comment
+  const handleDeleteComment = async (postId: string, commentId: string) => {
+    if (!confirm('Are you sure you want to delete this comment?')) return;
+
+    try {
+      await postService.deleteComment(commentId);
+      
+      // Update post by removing the comment
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: post.comments.filter(comment => comment.id !== commentId),
+            commentCount: Math.max(0, post.commentCount - 1)
+          };
+        }
+        return post;
+      }));
+      
+      showSuccess("Comment deleted successfully", "Success");
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      showError("Failed to delete comment", "Error");
     }
   };
 
@@ -432,12 +533,106 @@ export default function PostsPage() {
                         variant="ghost"
                         size="sm"
                         className="flex items-center space-x-1 text-sm"
+                        onClick={() => toggleComments(post.id)}
                       >
                         <MessageCircle className="h-4 w-4" />
                         <span className="hidden sm:inline">Comment</span>
+                        {expandedComments.has(post.id) ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
+
+                  {/* Comments Section */}
+                  {expandedComments.has(post.id) && (
+                    <div className="space-y-3 pt-3 border-t">
+                      {/* Comment Input */}
+                      <div className="flex items-start space-x-2">
+                        <Avatar className="h-8 w-8 flex-shrink-0">
+                          <AvatarImage src={user?.profilePicture} />
+                          <AvatarFallback className="text-sm">
+                            {user?.name?.[0] || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 space-y-2">
+                          <Textarea
+                            placeholder="Write a comment..."
+                            value={commentInputs[post.id] || ''}
+                            onChange={(e) => handleCommentInputChange(post.id, e.target.value)}
+                            className="min-h-[60px] text-sm resize-none"
+                            maxLength={500}
+                          />
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-500">
+                              {(commentInputs[post.id] || '').length}/500
+                            </span>
+                            <Button
+                              size="sm"
+                              onClick={() => handleSubmitComment(post.id)}
+                              disabled={submittingComments.has(post.id) || !commentInputs[post.id]?.trim()}
+                            >
+                              {submittingComments.has(post.id) ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Send className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Comments List */}
+                      {post.comments && post.comments.length > 0 ? (
+                        <div className="space-y-3">
+                          {post.comments.map((comment) => (
+                            <div key={comment.id} className="flex items-start space-x-2">
+                              <Avatar className="h-8 w-8 flex-shrink-0">
+                                <AvatarImage src={comment.author.profilePicture} />
+                                <AvatarFallback className="text-sm">
+                                  {comment.author.name[0]}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <div className="bg-gray-50 rounded-lg p-3">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="font-medium text-sm text-gray-900">
+                                      {comment.author.name}
+                                    </span>
+                                    <span className="text-xs text-gray-500">
+                                      {new Date(comment.created_at).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                                    {comment.content}
+                                  </p>
+                                </div>
+                                {user?.id === comment.userId && (
+                                  <div className="mt-1 flex items-center space-x-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-xs text-gray-500 hover:text-red-600"
+                                      onClick={() => handleDeleteComment(post.id, comment.id)}
+                                    >
+                                      <Trash2 className="h-3 w-3 mr-1" />
+                                      Delete
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <p className="text-sm text-gray-500">No comments yet. Be the first to comment!</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

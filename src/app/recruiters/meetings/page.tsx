@@ -58,9 +58,19 @@ export default function MeetingsPage() {
       setLoading(true);
       const response = await meetingService.getMeetings();
       setMeetings(response.data.meetings);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading meetings:', error);
-      showError("Failed to load meetings", "Error");
+      
+      // Handle specific error types
+      if (error?.status === 401) {
+        showError("Please log in to view meetings", "Authentication Error");
+      } else if (error?.status === 403) {
+        showError("You don't have permission to view meetings", "Permission Error");
+      } else if (error?.status >= 500) {
+        showError("Server error. Please try again later.", "Server Error");
+      } else {
+        showError(error?.message || "Failed to load meetings", "Error");
+      }
     } finally {
       setLoading(false);
     }
@@ -70,6 +80,21 @@ export default function MeetingsPage() {
   const handleCreateMeeting = async () => {
     if (!newMeeting.title.trim() || !newMeeting.startTime || !newMeeting.endTime) {
       showError("Please fill in all required fields", "Error");
+      return;
+    }
+
+    // Client-side validation
+    const startTime = new Date(newMeeting.startTime);
+    const endTime = new Date(newMeeting.endTime);
+    const now = new Date();
+
+    if (startTime <= now) {
+      showError("Start time must be in the future", "Validation Error");
+      return;
+    }
+
+    if (endTime <= startTime) {
+      showError("End time must be after start time", "Validation Error");
       return;
     }
 
@@ -91,9 +116,17 @@ export default function MeetingsPage() {
       setShowCreateDialog(false);
       
       showSuccess("Meeting created successfully", "Success");
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating meeting:', error);
-      showError("Failed to create meeting", "Error");
+      
+      // Handle specific validation errors
+      if (error?.status === 400) {
+        showError(error.message || "Invalid meeting data", "Validation Error");
+      } else if (error?.status >= 500) {
+        showError("Server error. Please try again later.", "Server Error");
+      } else {
+        showError(error?.message || "Failed to create meeting", "Error");
+      }
     } finally {
       setCreating(false);
     }
