@@ -1,0 +1,393 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/lib/store';
+import { meetingService, Meeting, CreateMeetingData } from '@/services/meetingService';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/lib/useToast';
+import { 
+  Calendar,
+  Clock,
+  Users,
+  Plus,
+  Edit,
+  Trash2,
+  Video,
+  Mail,
+  Loader2,
+  MoreHorizontal
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+// Using native Date methods instead of date-fns
+
+export default function MeetingsPage() {
+  const { user } = useAuth();
+  const { showError, showSuccess } = useToast();
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [newMeeting, setNewMeeting] = useState<CreateMeetingData>({
+    title: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    participants: []
+  });
+
+  // Load meetings
+  const loadMeetings = async () => {
+    try {
+      setLoading(true);
+      const response = await meetingService.getMeetings();
+      setMeetings(response.data.meetings);
+    } catch (error) {
+      console.error('Error loading meetings:', error);
+      showError("Failed to load meetings", "Error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create meeting
+  const handleCreateMeeting = async () => {
+    if (!newMeeting.title.trim() || !newMeeting.startTime || !newMeeting.endTime) {
+      showError("Please fill in all required fields", "Error");
+      return;
+    }
+
+    try {
+      setCreating(true);
+      const response = await meetingService.createMeeting(newMeeting);
+      
+      // Add new meeting to the list
+      setMeetings(prev => [response.data, ...prev]);
+      
+      // Reset form
+      setNewMeeting({
+        title: '',
+        description: '',
+        startTime: '',
+        endTime: '',
+        participants: []
+      });
+      setShowCreateDialog(false);
+      
+      showSuccess("Meeting created successfully", "Success");
+    } catch (error) {
+      console.error('Error creating meeting:', error);
+      showError("Failed to create meeting", "Error");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // Delete meeting
+  const handleDeleteMeeting = async (meetingId: string) => {
+    if (!confirm('Are you sure you want to delete this meeting?')) return;
+
+    try {
+      await meetingService.deleteMeeting(meetingId);
+      setMeetings(prev => prev.filter(meeting => meeting.id !== meetingId));
+      showSuccess("Meeting deleted successfully", "Success");
+    } catch (error) {
+      console.error('Error deleting meeting:', error);
+      showError("Failed to delete meeting", "Error");
+    }
+  };
+
+  // Join meeting
+  const handleJoinMeeting = async (meeting: Meeting) => {
+    try {
+      const response = await meetingService.generateMeetingToken(meeting.id);
+      // In a real implementation, this would open the meeting room
+      window.open(meeting.meetingLink, '_blank');
+    } catch (error) {
+      console.error('Error joining meeting:', error);
+      showError("Failed to join meeting", "Error");
+    }
+  };
+
+  // Get meeting status badge
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return <Badge variant="secondary">Scheduled</Badge>;
+      case 'in_progress':
+        return <Badge variant="default">In Progress</Badge>;
+      case 'completed':
+        return <Badge variant="outline">Completed</Badge>;
+      case 'cancelled':
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  // Get meeting date display
+  const getMeetingDate = (date: string) => {
+    const meetingDate = new Date(date);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    if (meetingDate.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (meetingDate.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
+    } else {
+      return meetingDate.toLocaleDateString();
+    }
+  };
+
+  // Get meeting time display
+  const getMeetingTime = (startTime: string, endTime: string) => {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    return `${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${end.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+  };
+
+  useEffect(() => {
+    loadMeetings();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Meetings</h1>
+            <p className="text-gray-600 mt-2">Schedule and manage your meetings</p>
+          </div>
+          
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Schedule Meeting
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Schedule New Meeting</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Title *</label>
+                  <Input
+                    placeholder="Meeting title"
+                    value={newMeeting.title}
+                    onChange={(e) => setNewMeeting(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium">Description</label>
+                  <Textarea
+                    placeholder="Meeting description"
+                    value={newMeeting.description}
+                    onChange={(e) => setNewMeeting(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium">Start Time *</label>
+                    <Input
+                      type="datetime-local"
+                      value={newMeeting.startTime}
+                      onChange={(e) => setNewMeeting(prev => ({ ...prev, startTime: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium">End Time *</label>
+                    <Input
+                      type="datetime-local"
+                      value={newMeeting.endTime}
+                      onChange={(e) => setNewMeeting(prev => ({ ...prev, endTime: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end space-x-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCreateDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateMeeting}
+                    disabled={creating}
+                  >
+                    {creating ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      'Create Meeting'
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Meetings List */}
+        <div className="space-y-4">
+          {meetings.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Calendar className="h-12 w-12 text-gray-400 mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No meetings scheduled</h3>
+                <p className="text-gray-600 text-center mb-4">
+                  Get started by scheduling your first meeting with candidates or team members.
+                </p>
+                <Button onClick={() => setShowCreateDialog(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Schedule Meeting
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            meetings.map((meeting) => (
+              <Card key={meeting.id}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {meeting.title}
+                        </h3>
+                        {getStatusBadge(meeting.status)}
+                      </div>
+                      
+                      {meeting.description && (
+                        <p className="text-gray-600 mb-3">{meeting.description}</p>
+                      )}
+                      
+                      <div className="flex items-center space-x-6 text-sm text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="h-4 w-4" />
+                          <span>{getMeetingDate(meeting.startTime)}</span>
+                        </div>
+                        
+                        <div className="flex items-center space-x-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{getMeetingTime(meeting.startTime, meeting.endTime)}</span>
+                        </div>
+                        
+                        <div className="flex items-center space-x-1">
+                          <Users className="h-4 w-4" />
+                          <span>{meeting.participants.length} participants</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3">
+                        <p className="text-xs text-gray-500">
+                          Created {new Date(meeting.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      {meeting.status === 'scheduled' && (
+                        <Button
+                          size="sm"
+                          onClick={() => handleJoinMeeting(meeting)}
+                        >
+                          <Video className="h-4 w-4 mr-2" />
+                          Join
+                        </Button>
+                      )}
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleJoinMeeting(meeting)}>
+                            <Video className="h-4 w-4 mr-2" />
+                            Join Meeting
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Send Invites
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteMeeting(meeting.id)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                  
+                  {/* Participants */}
+                  {meeting.participants.length > 0 && (
+                    <>
+                      <Separator className="my-4" />
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-900 mb-2">Participants</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {meeting.participants.map((participant) => (
+                            <Badge key={participant.id} variant="outline">
+                              {participant.user ? 
+                                `${participant.user.firstName} ${participant.user.lastName}` : 
+                                participant.email
+                              }
+                              <span className="ml-1 text-xs">
+                                ({participant.status})
+                              </span>
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

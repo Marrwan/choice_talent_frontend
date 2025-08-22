@@ -64,6 +64,15 @@ export default function RecruiterDashboardPage() {
             <Link href="/recruiters/inmail" className="text-blue-600 underline">Open</Link>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Meetings</CardTitle>
+            <CardDescription>Schedule and manage video meetings</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/recruiters/meetings" className="text-blue-600 underline">Open</Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

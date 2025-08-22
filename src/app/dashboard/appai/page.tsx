@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, Settings, Mail, Rocket } from 'lucide-react';
+import { CheckCircle, ArrowRight, Settings, Mail, Rocket, ArrowLeft } from 'lucide-react';
 
 export default function AppAIIntroPage() {
   const benefits = [
@@ -20,6 +20,16 @@ export default function AppAIIntroPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-4xl mx-auto space-y-6">
+        {/* Back Button */}
+        <div className="flex justify-start">
+          <Link href="/dashboard">
+            <Button variant="ghost" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </Link>
+        </div>
+
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 mb-2">
             <Rocket className="w-7 h-7 text-blue-600" />

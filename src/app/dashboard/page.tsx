@@ -406,6 +406,14 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
 
+                {/* Posts */}
+                <Link href="/dashboard/posts" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Posts
+                  </Button>
+                </Link>
+
                 {/* Earn (placeholder) */}
                 <Button
                   variant="outline"

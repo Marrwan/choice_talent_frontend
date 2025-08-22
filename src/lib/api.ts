@@ -269,6 +269,10 @@ export const apiClient = {
     return this.request<T>({ method: 'PUT', endpoint, data, requiresAuth })
   },
 
+  async patch<T = unknown>(endpoint: string, data?: FormData | object, requiresAuth = false): Promise<T> {
+    return this.request<T>({ method: 'PATCH', endpoint, data, requiresAuth })
+  },
+
   async delete<T = unknown>(endpoint: string, requiresAuth = false): Promise<T> {
     return this.request<T>({ method: 'DELETE', endpoint, requiresAuth })
   }

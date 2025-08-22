@@ -118,48 +118,32 @@ export default function JobHuntingSettingsPage() {
       const response = await jobHuntingSettingsService.createOrUpdateSettings(settings);
       
       if (response.success) {
-        // Refresh user data to get the most up-to-date subscription status
-        await refreshUser();
-        
-        // Check user's subscription status from auth context
-        const userSubscriptionStatus = user?.subscriptionStatus;
-        const isUserPremium = user?.isPremium;
-        
-        console.log('User subscription status:', userSubscriptionStatus);
-        console.log('User is premium:', isUserPremium);
-        
-        // Primary check: Use auth context
-        if (userSubscriptionStatus === 'premium' || isUserPremium) {
-          // If user has premium subscription, redirect to Dashboard
-          toast.showSuccess('Job hunting settings saved successfully! Redirecting to dashboard...', 'Success');
-          router.push('/dashboard');
-          return;
-        }
-        
-        // Secondary check: Make API call to verify subscription status
-        try {
-          const eligibilityResponse = await jobSubscriptionService.checkEligibility();
-          console.log('Eligibility response:', eligibilityResponse);
-          
-          if (eligibilityResponse.hasActiveSubscription) {
-            // If user has active subscription, redirect to Dashboard
-            toast.showSuccess('Job hunting settings saved successfully! Redirecting to dashboard...', 'Success');
-            router.push('/dashboard');
-          } else {
-            // If user doesn't have active subscription, redirect to subscription page
-            toast.showSuccess('Job hunting settings saved! You need a subscription to access job hunting features.', 'Success');
-            router.push('/dashboard/subscription');
-          }
-        } catch (error) {
-          console.error('Error checking subscription status:', error);
-          // If there's an error checking subscription, redirect to subscription page
-          toast.showSuccess('Job hunting settings saved! You need a subscription to access job hunting features.', 'Success');
-          router.push('/dashboard/subscription');
-        }
+        toast.showSuccess('Job hunting settings saved successfully!', 'Success');
       }
     } catch (error) {
       console.error('Error saving job hunting settings:', error);
       toast.showError('Failed to save job hunting settings', 'Error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleActivateAppAI = async () => {
+    try {
+      setSaving(true);
+      const response = await jobHuntingSettingsService.createOrUpdateSettings(settings);
+      
+      if (response.success) {
+        toast.showSuccess('Settings saved! Redirecting to AppAI activation...', 'Success');
+        
+        // Redirect to activation page after a brief delay
+        setTimeout(() => {
+          router.push('/dashboard/appai/activate');
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Error saving job hunting settings:', error);
+      toast.showError('Failed to save settings. Please try again.', 'Error');
     } finally {
       setSaving(false);
     }
@@ -477,11 +461,13 @@ export default function JobHuntingSettingsPage() {
 
             {/* Save & Activate */}
             <div className="flex justify-between items-center">
-              <Link href="/dashboard/appai/activate">
-                <Button variant="outline">
-                  Activate AppAI
-                </Button>
-              </Link>
+              <Button 
+                variant="outline"
+                onClick={handleActivateAppAI}
+                disabled={saving || profileCompletion < 50}
+              >
+                {saving ? 'Saving...' : 'Activate AppAI'}
+              </Button>
               <Button 
                 onClick={handleSave} 
                 disabled={saving || profileCompletion < 50}
