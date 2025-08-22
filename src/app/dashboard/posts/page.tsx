@@ -426,44 +426,48 @@ export default function PostsPage() {
 
         {/* Posts Feed */}
         <div className="space-y-4 sm:space-y-6">
-          {posts && posts.length > 0 ? posts.map((post) => post && post.author ? (
-            <Card key={post.id}>
-              <CardHeader className="pb-3 sm:pb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
-                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
-                      <AvatarImage src={post.author.profilePicture} />
-                      <AvatarFallback className="text-sm">
-                        {post.author.name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-sm sm:text-base truncate">
-                        {post.author.name}
-                      </div>
-                      <div className="text-xs sm:text-sm text-gray-500">
-                        {new Date(post.created_at).toLocaleDateString()}
+          {posts && posts.length > 0 ? posts
+            .filter(post => post && post.author) // Filter out posts without author data
+            .map((post) => {
+            
+            return (
+              <Card key={post.id}>
+                <CardHeader className="pb-3 sm:pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
+                        <AvatarImage src={post.author.profilePicture} />
+                        <AvatarFallback className="text-sm">
+                          {post.author.name?.[0] || '?'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-semibold text-sm sm:text-base truncate">
+                          {post.author.name}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-500">
+                          {new Date(post.created_at).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
+                    
+                    {user?.id === post.userId && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="flex-shrink-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleDeletePost(post.id)}>
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
-                  
-                  {user?.id === post.userId && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="flex-shrink-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleDeletePost(post.id)}>
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </div>
-              </CardHeader>
+                </CardHeader>
               
               <CardContent className="pt-0">
                 <div className="space-y-3 sm:space-y-4">
@@ -587,14 +591,16 @@ export default function PostsPage() {
                       {/* Comments List */}
                       {post.comments && post.comments.length > 0 ? (
                         <div className="space-y-3">
-                          {post.comments.map((comment) => (
-                            <div key={comment.id} className="flex items-start space-x-2">
-                              <Avatar className="h-8 w-8 flex-shrink-0">
-                                <AvatarImage src={comment.author.profilePicture} />
-                                <AvatarFallback className="text-sm">
-                                  {comment.author.name[0]}
-                                </AvatarFallback>
-                              </Avatar>
+                          {post.comments
+                            .filter(comment => comment && comment.author) // Filter out comments without author data
+                            .map((comment) => (
+                              <div key={comment.id} className="flex items-start space-x-2">
+                                <Avatar className="h-8 w-8 flex-shrink-0">
+                                  <AvatarImage src={comment.author.profilePicture} />
+                                  <AvatarFallback className="text-sm">
+                                    {comment.author.name?.[0] || '?'}
+                                  </AvatarFallback>
+                                </Avatar>
                               <div className="flex-1 min-w-0">
                                 <div className="bg-gray-50 rounded-lg p-3">
                                   <div className="flex items-center justify-between mb-1">
@@ -636,7 +642,8 @@ export default function PostsPage() {
                 </div>
               </CardContent>
             </Card>
-          ) : null) : (
+          );
+          }) : (
             <div className="text-center py-8">
               <p className="text-gray-500 text-sm sm:text-base">No posts found</p>
             </div>

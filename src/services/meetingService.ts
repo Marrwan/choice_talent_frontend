@@ -77,18 +77,20 @@ export interface MeetingTokenResponse {
   };
 }
 
+export interface MeetingsData {
+  meetings: Meeting[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalMeetings: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
 export interface MeetingsResponse {
   success: boolean;
-  data: {
-    meetings: Meeting[];
-    pagination: {
-      currentPage: number;
-      totalPages: number;
-      totalMeetings: number;
-      hasNextPage: boolean;
-      hasPrevPage: boolean;
-    };
-  };
+  data: MeetingsData;
 }
 
 export interface SingleMeetingResponse {
@@ -104,7 +106,7 @@ class MeetingService {
   }
 
   // Get recruiter's meetings
-  async getMeetings(page: number = 1, limit: number = 10, status?: string): Promise<MeetingsResponse> {
+  async getMeetings(page: number = 1, limit: number = 10, status?: string): Promise<MeetingsData> {
     const params: Record<string, string | number> = {
       page,
       limit,
@@ -114,7 +116,7 @@ class MeetingService {
       params.status = status;
     }
 
-    const response = await apiClient.get('/meetings', true, params);
+    const response = await apiClient.get<MeetingsResponse>('/meetings', true, params) as MeetingsResponse;
     return response.data;
   }
 

@@ -57,7 +57,7 @@ export default function MeetingsPage() {
     try {
       setLoading(true);
       const response = await meetingService.getMeetings();
-      setMeetings(response.data.meetings);
+      setMeetings(response.meetings);
     } catch (error: any) {
       console.error('Error loading meetings:', error);
       
@@ -103,7 +103,7 @@ export default function MeetingsPage() {
       const response = await meetingService.createMeeting(newMeeting);
       
       // Add new meeting to the list
-      setMeetings(prev => [response.data, ...prev]);
+      setMeetings(prev => [response, ...prev]);
       
       // Reset form
       setNewMeeting({
