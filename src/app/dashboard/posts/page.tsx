@@ -494,12 +494,6 @@ export default function PostsPage() {
                           </div>
                         )
                       ))}
-                      {post.commentCount > 0 && (
-                        <div className="flex items-center space-x-1">
-                          <MessageCircle className="h-4 w-4" />
-                          <span className="text-xs sm:text-sm text-gray-600">{post.commentCount}</span>
-                        </div>
-                      )}
                       {post.comments && post.comments.length > 0 && (
                         <div className="flex items-center space-x-1">
                           <MessageCircle className="h-4 w-4" />
