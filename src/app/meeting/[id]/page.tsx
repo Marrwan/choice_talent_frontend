@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuth } from '@/lib/store';
 import { meetingService } from '@/services/meetingService';
+import { useWebRTC } from '@/hooks/useWebRTC';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,9 @@ import {
   MessageSquare,
   Share,
   Settings,
-  Loader2
+  Loader2,
+  Monitor,
+  MonitorOff
 } from 'lucide-react';
 
 export default function MeetingRoomPage() {
@@ -27,10 +30,34 @@ export default function MeetingRoomPage() {
   const { showError, showSuccess } = useToast();
   const [meeting, setMeeting] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [videoEnabled, setVideoEnabled] = useState(true);
-  const [audioEnabled, setAudioEnabled] = useState(true);
   const [isJoined, setIsJoined] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<any[]>([]);
+  const [chatInput, setChatInput] = useState('');
+  
+  // WebRTC hooks
+  const {
+    callState,
+    localStream,
+    remoteStreams,
+    participants,
+    remoteParticipants,
+    isMuted,
+    isVideoOn,
+    isScreenSharing,
+    callDuration,
+    error,
+    initializeCall,
+    endCall,
+    toggleMute,
+    toggleVideo,
+    toggleScreenShare,
+    isInCall,
+    isActive
+  } = useWebRTC();
 
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const meetingId = (params?.id as string) || '';
 
   // Load meeting details
@@ -50,12 +77,18 @@ export default function MeetingRoomPage() {
   // Join meeting
   const handleJoinMeeting = async () => {
     try {
-      const response = await meetingService.generateMeetingToken(meetingId);
+      // Initialize WebRTC call
+      const success = await initializeCall('video');
+      if (!success) {
+        showError("Failed to initialize video call", "Error");
+        return;
+      }
+
       setIsJoined(true);
       showSuccess("Joined meeting successfully", "Success");
       
-      // In a real implementation, this would initialize WebRTC
-      console.log('Meeting token:', response.data.token);
+      // In a real implementation, you would connect to the meeting room via WebSocket
+      console.log('Joined meeting:', meetingId);
     } catch (error) {
       console.error('Error joining meeting:', error);
       showError("Failed to join meeting", "Error");
@@ -63,10 +96,39 @@ export default function MeetingRoomPage() {
   };
 
   // Leave meeting
-  const handleLeaveMeeting = () => {
-    setIsJoined(false);
-    showSuccess("Left meeting", "Success");
+  const handleLeaveMeeting = async () => {
+    try {
+      await endCall();
+      setIsJoined(false);
+      showSuccess("Left meeting", "Success");
+    } catch (error) {
+      console.error('Error leaving meeting:', error);
+      showError("Failed to leave meeting", "Error");
+    }
   };
+
+  // Handle local video stream
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
+    }
+  }, [localStream]);
+
+  // Handle remote video streams
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStreams.size > 0) {
+      // For simplicity, show the first remote stream
+      const firstRemoteStream = Array.from(remoteStreams.values())[0];
+      remoteVideoRef.current.srcObject = firstRemoteStream;
+    }
+  }, [remoteStreams]);
+
+  // Handle WebRTC errors
+  useEffect(() => {
+    if (error) {
+      showError(error.message, "WebRTC Error");
+    }
+  }, [error, showError]);
 
   useEffect(() => {
     if (meetingId) {
@@ -108,12 +170,17 @@ export default function MeetingRoomPage() {
                meeting.status === 'in_progress' ? 'In Progress' : 
                meeting.status === 'completed' ? 'Completed' : 'Cancelled'}
             </Badge>
+            {isActive && (
+              <Badge variant="default">
+                {Math.floor(callDuration / 60)}:{(callDuration % 60).toString().padStart(2, '0')}
+              </Badge>
+            )}
           </div>
           
           <div className="flex items-center space-x-2">
             <Button variant="ghost" size="sm" className="text-white">
               <Users className="h-4 w-4 mr-2" />
-              {meeting.participants.length} Participants
+              {participants.length} Participants
             </Button>
             <Button variant="ghost" size="sm" className="text-white">
               <Settings className="h-4 w-4" />
@@ -156,87 +223,148 @@ export default function MeetingRoomPage() {
           </div>
         ) : (
           // Meeting room
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Video Area */}
-            <div className="bg-gray-800 rounded-lg p-4 min-h-[400px] flex items-center justify-center">
-              <div className="text-center text-white">
-                <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                <p className="text-lg font-semibold mb-2">Video Call Interface</p>
-                <p className="text-gray-400">
-                  This is a placeholder for the actual video call interface.
-                  In a real implementation, this would show video streams from participants.
-                </p>
+            <div className="lg:col-span-3">
+              <div className="bg-gray-800 rounded-lg p-4 min-h-[500px] relative">
+                {/* Remote Video */}
+                <video
+                  ref={remoteVideoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-cover rounded"
+                />
+                
+                {/* Local Video (Picture-in-Picture) */}
+                {localStream && (
+                  <div className="absolute bottom-4 right-4 w-48 h-36 bg-gray-900 rounded-lg overflow-hidden">
+                    <video
+                      ref={localVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                
+                {/* No Video Placeholder */}
+                {!remoteStreams.size && !localStream && (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center text-white">
+                      <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                      <p className="text-lg font-semibold mb-2">Video Call Interface</p>
+                      <p className="text-gray-400">
+                        Waiting for participants to join...
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center justify-center space-x-4 mt-4">
+                <Button
+                  variant={isVideoOn ? "default" : "secondary"}
+                  size="lg"
+                  onClick={toggleVideo}
+                >
+                  {isVideoOn ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
+                </Button>
+                
+                <Button
+                  variant={!isMuted ? "default" : "secondary"}
+                  size="lg"
+                  onClick={toggleMute}
+                >
+                  {!isMuted ? <Mic className="h-5 w-5" /> : <MicOff className="h-5 w-5" />}
+                </Button>
+                
+                <Button
+                  variant={isScreenSharing ? "default" : "outline"}
+                  size="lg"
+                  onClick={toggleScreenShare}
+                >
+                  {isScreenSharing ? <MonitorOff className="h-5 w-5" /> : <Monitor className="h-5 w-5" />}
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowChat(!showChat)}
+                >
+                  <MessageSquare className="h-5 w-5" />
+                </Button>
+                
+                <Button
+                  variant="destructive"
+                  size="lg"
+                  onClick={handleLeaveMeeting}
+                >
+                  <Phone className="h-5 w-5" />
+                </Button>
               </div>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center justify-center space-x-4">
-              <Button
-                variant={videoEnabled ? "default" : "secondary"}
-                size="lg"
-                onClick={() => setVideoEnabled(!videoEnabled)}
-              >
-                {videoEnabled ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
-              </Button>
-              
-              <Button
-                variant={audioEnabled ? "default" : "secondary"}
-                size="lg"
-                onClick={() => setAudioEnabled(!audioEnabled)}
-              >
-                {audioEnabled ? <Mic className="h-5 w-5" /> : <MicOff className="h-5 w-5" />}
-              </Button>
-              
-              <Button variant="outline" size="lg">
-                <MessageSquare className="h-5 w-5" />
-              </Button>
-              
-              <Button variant="outline" size="lg">
-                <Share className="h-5 w-5" />
-              </Button>
-              
-              <Button
-                variant="destructive"
-                size="lg"
-                onClick={handleLeaveMeeting}
-              >
-                <Phone className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Participants List */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-white">Participants</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {meeting.participants.map((participant: any) => (
-                    <div key={participant.id} className="flex items-center justify-between p-2 bg-gray-800 rounded">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm">
-                            {participant.user ? 
-                              participant.user.name[0].toUpperCase() : 
-                              participant.email[0].toUpperCase()
-                            }
-                          </span>
+            {/* Sidebar */}
+            <div className="lg:col-span-1 space-y-4">
+              {/* Participants List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-white">Participants</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {participants.map((participant) => (
+                      <div key={participant.id} className="flex items-center justify-between p-2 bg-gray-800 rounded">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                            <span className="text-white text-sm">
+                              {participant.name[0].toUpperCase()}
+                            </span>
+                          </div>
+                          <span className="text-white text-sm">{participant.name}</span>
                         </div>
-                        <span className="text-white">
-                          {participant.user ? 
-                            participant.user.name : 
-                            participant.email
-                          }
-                        </span>
+                        <div className="flex space-x-1">
+                          {participant.isMuted && <MicOff className="h-3 w-3 text-red-400" />}
+                          {!participant.isCameraOn && <VideoOff className="h-3 w-3 text-red-400" />}
+                        </div>
                       </div>
-                      <Badge variant="outline" className="text-xs">
-                        {participant.role}
-                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Chat */}
+              {showChat && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-white">Chat</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {chatMessages.map((message, index) => (
+                        <div key={index} className="p-2 bg-gray-800 rounded">
+                          <p className="text-white text-sm">
+                            <span className="font-medium">{message.sender}:</span> {message.text}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="mt-2 flex space-x-2">
+                      <input
+                        type="text"
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        placeholder="Type a message..."
+                        className="flex-1 px-2 py-1 bg-gray-700 text-white rounded text-sm"
+                      />
+                      <Button size="sm">Send</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         )}
       </div>

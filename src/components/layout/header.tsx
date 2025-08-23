@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
 import { LogOut, Settings, Crown, AlertCircle, Briefcase } from '@/lib/icons'
-import { Activity, AlertTriangle } from 'lucide-react'
+import { Activity, AlertTriangle, Video } from 'lucide-react'
 
 interface UserData {
   id: string
@@ -108,6 +108,26 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                     </DropdownMenuItem>
                   )}
 
+                  {user.role === 'recruiter' && (
+                    <>
+                      {/* Meetings */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard/meetings" className="cursor-pointer">
+                          <Video className="mr-2 h-4 w-4" />
+                          <span>Meetings</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Settings */}
+                      <DropdownMenuItem asChild>
+                        <Link href={'/recruiters/settings'} className="cursor-pointer">
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+
                   {user.role !== 'recruiter' && (
                     <>
                       {/* Professional Profile */}
@@ -150,15 +170,6 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                         </Link>
                       </DropdownMenuItem>
                     </>
-                  )}
-
-                  {user.role === 'recruiter' && (
-                    <DropdownMenuItem asChild>
-                      <Link href={'/recruiters/settings'} className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
-                      </Link>
-                    </DropdownMenuItem>
                   )}
 
                   <DropdownMenuSeparator />

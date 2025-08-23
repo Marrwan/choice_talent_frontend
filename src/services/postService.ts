@@ -139,6 +139,12 @@ class PostService {
     return response;
   }
 
+  // Get comments for a post
+  async getComments(postId: string, page: number = 1, limit: number = 10): Promise<{ success: boolean; data: { comments: Comment[]; pagination: any } }> {
+    const response = await apiClient.get<{ success: boolean; data: { comments: Comment[]; pagination: any } }>(`/posts/${postId}/comments`, true, { page, limit });
+    return response;
+  }
+
   // Delete a comment
   async deleteComment(commentId: string): Promise<{ success: boolean; message: string }> {
     const response = await apiClient.delete<{ success: boolean; message: string }>(`/posts/comments/${commentId}`, true);

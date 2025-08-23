@@ -101,8 +101,8 @@ export interface SingleMeetingResponse {
 class MeetingService {
   // Create a new meeting
   async createMeeting(data: CreateMeetingData): Promise<SingleMeetingResponse> {
-    const response = await apiClient.post('/meetings', data, true);
-    return response.data;
+    const response = await apiClient.post<SingleMeetingResponse>('/meetings', data, true);
+    return response;
   }
 
   // Get recruiter's meetings
@@ -116,26 +116,26 @@ class MeetingService {
       params.status = status;
     }
 
-    const response = await apiClient.get<MeetingsResponse>('/meetings', true, params) as MeetingsResponse;
+    const response = await apiClient.get<MeetingsResponse>('/meetings', true, params);
     return response.data;
   }
 
   // Get a single meeting
   async getMeeting(id: string): Promise<SingleMeetingResponse> {
-    const response = await apiClient.get(`/meetings/${id}`, true);
-    return response.data;
+    const response = await apiClient.get<SingleMeetingResponse>(`/meetings/${id}`, true);
+    return response;
   }
 
   // Update a meeting
   async updateMeeting(id: string, data: UpdateMeetingData): Promise<SingleMeetingResponse> {
-    const response = await apiClient.patch(`/meetings/${id}`, data, true);
-    return response.data;
+    const response = await apiClient.patch<SingleMeetingResponse>(`/meetings/${id}`, data, true);
+    return response;
   }
 
   // Delete a meeting
   async deleteMeeting(id: string): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.delete(`/meetings/${id}`, true);
-    return response.data;
+    const response = await apiClient.delete<{ success: boolean; message: string }>(`/meetings/${id}`, true);
+    return response;
   }
 
   // Invite participants to a meeting
@@ -146,14 +146,20 @@ class MeetingService {
       addedParticipants: MeetingParticipant[];
     };
   }> {
-    const response = await apiClient.post(`/meetings/${meetingId}/invite`, data, true);
-    return response.data;
+    const response = await apiClient.post<{
+      success: boolean;
+      data: {
+        meeting: Meeting;
+        addedParticipants: MeetingParticipant[];
+      };
+    }>(`/meetings/${meetingId}/invite`, data, true);
+    return response;
   }
 
   // Generate meeting access token
   async generateMeetingToken(meetingId: string): Promise<MeetingTokenResponse> {
-    const response = await apiClient.post(`/meetings/${meetingId}/token`, undefined, true);
-    return response.data;
+    const response = await apiClient.post<MeetingTokenResponse>(`/meetings/${meetingId}/token`, undefined, true);
+    return response;
   }
 
   // Update participant status
@@ -162,8 +168,8 @@ class MeetingService {
     participantId: string, 
     status: 'invited' | 'accepted' | 'declined' | 'attended'
   ): Promise<{ success: boolean; data: MeetingParticipant }> {
-    const response = await apiClient.patch(`/meetings/${meetingId}/participants/${participantId}/status`, { status }, true);
-    return response.data;
+    const response = await apiClient.patch<{ success: boolean; data: MeetingParticipant }>(`/meetings/${meetingId}/participants/${participantId}/status`, { status }, true);
+    return response;
   }
 }
 

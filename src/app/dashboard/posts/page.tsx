@@ -194,16 +194,46 @@ export default function PostsPage() {
   };
 
   // Toggle comments section
-  const toggleComments = (postId: string) => {
+  const toggleComments = async (postId: string) => {
     setExpandedComments(prev => {
       const newSet = new Set(prev);
       if (newSet.has(postId)) {
         newSet.delete(postId);
       } else {
         newSet.add(postId);
+        // Fetch comments when expanding
+        loadCommentsForPost(postId);
       }
       return newSet;
     });
+  };
+
+  // Load comments for a specific post
+  const loadCommentsForPost = async (postId: string) => {
+    try {
+      setLoadingComments(prev => new Set(prev).add(postId));
+      const response = await postService.getComments(postId);
+      
+      // Update post with comments
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: response.data.comments
+          };
+        }
+        return post;
+      }));
+    } catch (error) {
+      console.error('Error loading comments:', error);
+      showError("Failed to load comments", "Error");
+    } finally {
+      setLoadingComments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+    }
   };
 
   // Handle comment input change
@@ -589,7 +619,12 @@ export default function PostsPage() {
                       </div>
 
                       {/* Comments List */}
-                      {post.comments && post.comments.length > 0 ? (
+                      {loadingComments.has(post.id) ? (
+                        <div className="text-center py-4">
+                          <Loader2 className="h-6 w-6 animate-spin mx-auto text-gray-400" />
+                          <p className="text-sm text-gray-500 mt-2">Loading comments...</p>
+                        </div>
+                      ) : post.comments && post.comments.length > 0 ? (
                         <div className="space-y-3">
                           {post.comments
                             .filter(comment => comment && comment.author) // Filter out comments without author data
@@ -597,16 +632,16 @@ export default function PostsPage() {
                               <div key={comment.id} className="flex items-start space-x-2">
                                 <Avatar className="h-8 w-8 flex-shrink-0">
                                   <AvatarImage src={comment.author.profilePicture} />
-                                  <AvatarFallback className={`text-sm ${comment.author.id === 'deleted' ? 'bg-gray-300' : ''}`}>
-                                    {comment.author.id === 'deleted' ? 'D' : (comment.author.name?.[0] || '?')}
+                                  <AvatarFallback className={`text-sm ${!comment.author.id ? 'bg-gray-300' : ''}`}>
+                                    {!comment.author.id ? 'D' : (comment.author.name?.[0] || '?')}
                                   </AvatarFallback>
                                 </Avatar>
                               <div className="flex-1 min-w-0">
-                                <div className={`rounded-lg p-3 ${comment.author.id === 'deleted' ? 'bg-gray-100' : 'bg-gray-50'}`}>
+                                <div className={`rounded-lg p-3 ${!comment.author.id ? 'bg-gray-100' : 'bg-gray-50'}`}>
                                   <div className="flex items-center justify-between mb-1">
-                                    <span className={`font-medium text-sm ${comment.author.id === 'deleted' ? 'text-gray-500' : 'text-gray-900'}`}>
+                                    <span className={`font-medium text-sm ${!comment.author.id ? 'text-gray-500' : 'text-gray-900'}`}>
                                       {comment.author.name}
-                                      {comment.author.id === 'deleted' && <span className="text-xs text-gray-400 ml-1">(deleted)</span>}
+                                      {!comment.author.id && <span className="text-xs text-gray-400 ml-1">(deleted)</span>}
                                     </span>
                                     <span className="text-xs text-gray-500">
                                       {new Date(comment.created_at).toLocaleDateString()}
@@ -616,7 +651,7 @@ export default function PostsPage() {
                                     {comment.content}
                                   </p>
                                 </div>
-                                {user?.id === comment.userId && comment.author.id !== 'deleted' && (
+                                {user?.id === comment.userId && comment.author.id && (
                                   <div className="mt-1 flex items-center space-x-2">
                                     <Button
                                       variant="ghost"
