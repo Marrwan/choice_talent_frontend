@@ -11,10 +11,12 @@ import { useAuth } from '@/lib/store'
 import { userService } from '@/services/userService'
 import { CareerLayout } from '@/components/layout/career-layout'
 import { ArrowLeft, Save, CheckCircle, AlertCircle, Eye, EyeOff, Briefcase, FileText, Settings } from 'lucide-react'
+import { useToast } from '@/lib/useToast'
 
 export default function CareerSettingsPage() {
   const router = useRouter()
   const { user, isAuthenticated, logout } = useAuth()
+  const { showSuccess } = useToast()
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'success' | 'error'>('success')
@@ -77,18 +79,8 @@ export default function CareerSettingsPage() {
   }
 
   const handleDeactivateAccount = async () => {
-    if (window.confirm('Are you sure you want to deactivate your account? This action can be reversed by contacting support.')) {
-      try {
-        await userService.deactivateAccount()
-        logout()
-        router.push('/')
-      } catch (error) {
-        console.error('Account deactivation error:', error)
-        setMessage(error instanceof Error ? error.message : 'Failed to deactivate account')
-        setMessageType('error')
-      }
-    }
-  }
+    showSuccess("Account deactivation functionality coming soon!", "Info");
+  };
 
   if (!isAuthenticated || !user) {
     router.push('/login')

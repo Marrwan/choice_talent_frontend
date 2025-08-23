@@ -27,7 +27,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -45,11 +44,15 @@ export default function MeetingsPage() {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [meetingToDelete, setMeetingToDelete] = useState<string | null>(null);
+  const [expandedMeetings, setExpandedMeetings] = useState<Set<string>>(new Set());
+  const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [submittingComments, setSubmittingComments] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [expandedMeetings, setExpandedMeetings] = useState<Set<string>>(new Set());
-  
   const [newMeeting, setNewMeeting] = useState<CreateMeetingData>({
     title: '',
     description: '',
@@ -122,15 +125,24 @@ export default function MeetingsPage() {
 
   // Delete meeting
   const handleDeleteMeeting = async (meetingId: string) => {
-    if (!confirm('Are you sure you want to delete this meeting?')) return;
+    setMeetingToDelete(meetingId);
+    setShowDeleteDialog(true);
+  };
+
+  // Confirm delete meeting
+  const confirmDeleteMeeting = async () => {
+    if (!meetingToDelete) return;
 
     try {
-      await meetingService.deleteMeeting(meetingId);
-      setMeetings(prev => prev.filter(meeting => meeting.id !== meetingId));
+      await meetingService.deleteMeeting(meetingToDelete);
+      setMeetings(prev => prev.filter(meeting => meeting.id !== meetingToDelete));
       showSuccess("Meeting deleted successfully", "Success");
     } catch (error) {
       console.error('Error deleting meeting:', error);
       showError("Failed to delete meeting", "Error");
+    } finally {
+      setShowDeleteDialog(false);
+      setMeetingToDelete(null);
     }
   };
 
@@ -145,6 +157,22 @@ export default function MeetingsPage() {
       }
       return newSet;
     });
+  };
+
+  // Copy meeting invite link
+  const copyMeetingLink = async (meetingLink: string) => {
+    try {
+      if (!meetingLink) {
+        showError("Meeting link not available", "Error");
+        return;
+      }
+      
+      await navigator.clipboard.writeText(meetingLink);
+      showSuccess("Meeting link copied to clipboard", "Success");
+    } catch (error) {
+      console.error('Error copying meeting link:', error);
+      showError("Failed to copy meeting link", "Error");
+    }
   };
 
   // Get meeting status badge
@@ -255,7 +283,7 @@ export default function MeetingsPage() {
               </div>
             </div>
             
-            <DialogFooter>
+            <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
                 Cancel
               </Button>
@@ -267,7 +295,7 @@ export default function MeetingsPage() {
                 )}
                 Create Meeting
               </Button>
-            </DialogFooter>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
@@ -392,7 +420,13 @@ export default function MeetingsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => window.open(meeting.meetingLink, '_blank')}
+                        onClick={() => {
+                          if (meeting.meetingLink) {
+                            window.open(meeting.meetingLink, '_blank');
+                          } else {
+                            showError("Meeting link not available", "Error");
+                          }
+                        }}
                       >
                         <Video className="h-4 w-4 mr-2" />
                         Join Meeting
@@ -400,7 +434,7 @@ export default function MeetingsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => navigator.clipboard.writeText(meeting.meetingLink)}
+                        onClick={() => copyMeetingLink(meeting.meetingLink)}
                       >
                         <Mail className="h-4 w-4 mr-2" />
                         Copy Link
@@ -439,6 +473,37 @@ export default function MeetingsPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Delete Meeting</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Are you sure you want to delete this meeting? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setMeetingToDelete(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDeleteMeeting}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

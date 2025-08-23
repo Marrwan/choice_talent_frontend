@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/store';
 import { meetingService } from '@/services/meetingService';
 import { useWebRTC } from '@/hooks/useWebRTC';
@@ -21,12 +21,14 @@ import {
   Settings,
   Loader2,
   Monitor,
-  MonitorOff
+  MonitorOff,
+  ArrowLeft
 } from 'lucide-react';
 
 export default function MeetingRoomPage() {
   const params = useParams();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
   const { showError, showSuccess } = useToast();
   const [meeting, setMeeting] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ export default function MeetingRoomPage() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState('');
   
-  // WebRTC hooks
+  // WebRTC hooks - only initialize if authenticated
   const {
     callState,
     localStream,
@@ -60,15 +62,35 @@ export default function MeetingRoomPage() {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const meetingId = (params?.id as string) || '';
 
+  // Check authentication
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      showError("Please log in to access this meeting", "Authentication Required");
+      router.push('/login');
+      return;
+    }
+  }, [isAuthenticated, user, router, showError]);
+
   // Load meeting details
   const loadMeeting = async () => {
+    if (!isAuthenticated || !user) {
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await meetingService.getMeeting(meetingId);
       setMeeting(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading meeting:', error);
-      showError("Failed to load meeting details", "Error");
+      if (error?.status === 401) {
+        showError("Please log in to access this meeting", "Authentication Required");
+        router.push('/login');
+      } else if (error?.status === 404) {
+        showError("Meeting not found", "Error");
+      } else {
+        showError("Failed to load meeting details", "Error");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,6 +98,12 @@ export default function MeetingRoomPage() {
 
   // Join meeting
   const handleJoinMeeting = async () => {
+    if (!isAuthenticated || !user) {
+      showError("Please log in to join this meeting", "Authentication Required");
+      router.push('/login');
+      return;
+    }
+
     try {
       // Initialize WebRTC call
       const success = await initializeCall('video');
@@ -131,10 +159,22 @@ export default function MeetingRoomPage() {
   }, [error, showError]);
 
   useEffect(() => {
-    if (meetingId) {
+    if (meetingId && isAuthenticated && user) {
       loadMeeting();
     }
-  }, [meetingId]);
+  }, [meetingId, isAuthenticated, user]);
+
+  // Show loading while checking authentication
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -152,7 +192,11 @@ export default function MeetingRoomPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Meeting Not Found</h1>
-          <p className="text-gray-600">The meeting you're looking for doesn't exist or you don't have access to it.</p>
+          <p className="text-gray-600 mb-4">The meeting you're looking for doesn't exist or you don't have access to it.</p>
+          <Button onClick={() => router.push('/dashboard')}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Button>
         </div>
       </div>
     );
@@ -164,6 +208,15 @@ export default function MeetingRoomPage() {
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-white"
+              onClick={() => router.push('/dashboard')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
             <h1 className="text-white font-semibold">{meeting.title}</h1>
             <Badge variant="secondary">
               {meeting.status === 'scheduled' ? 'Scheduled' : 
@@ -206,7 +259,7 @@ export default function MeetingRoomPage() {
                   <div className="space-y-2 text-sm text-gray-500">
                     <div>Start Time: {new Date(meeting.startTime).toLocaleString()}</div>
                     <div>End Time: {new Date(meeting.endTime).toLocaleString()}</div>
-                    <div>Participants: {meeting.participants.length}</div>
+                    <div>Participants: {meeting.participants?.length || 0}</div>
                   </div>
                 </div>
                 

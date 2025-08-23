@@ -32,6 +32,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Using native Date methods instead of date-fns
 
@@ -44,6 +45,12 @@ export default function PostsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [submittingComments, setSubmittingComments] = useState<Set<string>>(new Set());
+  const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
   const [newPost, setNewPost] = useState<CreatePostData>({
     content: '',
     image: undefined
@@ -51,12 +58,6 @@ export default function PostsPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
-  // Comments state
-  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
-  const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
-  const [submittingComments, setSubmittingComments] = useState<Set<string>>(new Set());
-  const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
-
   // Load posts
   const loadPosts = async (page: number = 1, append: boolean = false) => {
     try {
@@ -181,15 +182,24 @@ export default function PostsPage() {
 
   // Delete post
   const handleDeletePost = async (postId: string) => {
-    if (!confirm('Are you sure you want to delete this post?')) return;
+    setPostToDelete(postId);
+    setShowDeleteDialog(true);
+  };
+
+  // Confirm delete post
+  const confirmDeletePost = async () => {
+    if (!postToDelete) return;
 
     try {
-      await postService.deletePost(postId);
-      setPosts(prev => prev.filter(post => post.id !== postId));
+      await postService.deletePost(postToDelete);
+      setPosts(prev => prev.filter(post => post.id !== postToDelete));
       showSuccess("Post deleted successfully", "Success");
     } catch (error) {
       console.error('Error deleting post:', error);
       showError("Failed to delete post", "Error");
+    } finally {
+      setShowDeleteDialog(false);
+      setPostToDelete(null);
     }
   };
 
@@ -291,19 +301,17 @@ export default function PostsPage() {
   };
 
   // Delete comment
-  const handleDeleteComment = async (postId: string, commentId: string) => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
-
+  const handleDeleteComment = async (commentId: string, postId: string) => {
     try {
       await postService.deleteComment(commentId);
       
-      // Update post by removing the comment
+      // Update the post's comments
       setPosts(prev => prev.map(post => {
         if (post.id === postId) {
           return {
             ...post,
             comments: post.comments.filter(comment => comment.id !== commentId),
-            commentCount: Math.max(0, post.commentCount - 1)
+            commentCount: Math.max(0, (post.commentCount || 0) - 1)
           };
         }
         return post;
@@ -657,7 +665,7 @@ export default function PostsPage() {
                                       variant="ghost"
                                       size="sm"
                                       className="text-xs text-gray-500 hover:text-red-600"
-                                      onClick={() => handleDeleteComment(post.id, comment.id)}
+                                      onClick={() => handleDeleteComment(comment.id, post.id)}
                                     >
                                       <Trash2 className="h-3 w-3 mr-1" />
                                       Delete
@@ -704,6 +712,37 @@ export default function PostsPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Delete Post</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Are you sure you want to delete this post? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowDeleteDialog(false);
+                  setPostToDelete(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDeletePost}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

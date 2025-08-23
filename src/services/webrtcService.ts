@@ -295,28 +295,41 @@ export class WebRTCService {
     try {
       const socket = socketService.getSocket();
       if (!socket) {
-        console.error('Socket not initialized');
-        return;
+        console.warn('Socket not initialized yet, will retry when socket is available');
+        // Don't return, just log a warning - the socket will be initialized later
       }
       
-      // Handle incoming call offer
-      socket.on('webrtc:offer', this.handleIncomingOffer.bind(this));
+      // Set up a retry mechanism for when socket becomes available
+      const setupListeners = () => {
+        const currentSocket = socketService.getSocket();
+        if (!currentSocket) {
+          console.warn('Socket still not available, retrying in 1 second...');
+          setTimeout(setupListeners, 1000);
+          return;
+        }
+        
+        // Handle incoming call offer
+        currentSocket.on('webrtc:offer', this.handleIncomingOffer.bind(this));
+        
+        // Handle answer to our offer
+        currentSocket.on('webrtc:answer', this.handleAnswer.bind(this));
+        
+        // Handle ICE candidates
+        currentSocket.on('webrtc:ice-candidate', this.handleICECandidate.bind(this));
+        
+        // Handle room events
+        currentSocket.on('webrtc:room-joined', this.handleRoomJoined.bind(this));
+        currentSocket.on('webrtc:participant-joined', this.handleParticipantJoined.bind(this));
+        currentSocket.on('webrtc:participant-left', this.handleParticipantLeft.bind(this));
+        
+        // Handle errors
+        currentSocket.on('webrtc:signaling-error', this.handleSignalingError.bind(this));
+        
+        console.log('WebRTC socket listeners initialized');
+      };
       
-      // Handle answer to our offer
-      socket.on('webrtc:answer', this.handleAnswer.bind(this));
-      
-      // Handle ICE candidates
-      socket.on('webrtc:ice-candidate', this.handleICECandidate.bind(this));
-      
-      // Handle room events
-      socket.on('webrtc:room-joined', this.handleRoomJoined.bind(this));
-      socket.on('webrtc:participant-joined', this.handleParticipantJoined.bind(this));
-      socket.on('webrtc:participant-left', this.handleParticipantLeft.bind(this));
-      
-      // Handle errors
-      socket.on('webrtc:signaling-error', this.handleSignalingError.bind(this));
-      
-      console.log('WebRTC socket listeners initialized');
+      // Start the setup process
+      setupListeners();
     } catch (error) {
       console.error('Error initializing socket listeners:', error);
     }
@@ -506,7 +519,7 @@ export class WebRTCService {
       }
 
       // Notify all stream change handlers
-      this.streamChangeHandlers.forEach((handler) => {
+      this.streamHandlers.forEach((handler) => {
         try {
           if (typeof handler === 'function') {
             handler(socketId, stream);
