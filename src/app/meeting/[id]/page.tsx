@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/store';
 import { meetingService } from '@/services/meetingService';
@@ -37,6 +37,16 @@ export default function MeetingRoomPage() {
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState('');
   
+  // Store toast functions in refs to avoid dependency issues
+  const showErrorRef = useRef(showError);
+  const showSuccessRef = useRef(showSuccess);
+  
+  // Update refs when toast functions change
+  useEffect(() => {
+    showErrorRef.current = showError;
+    showSuccessRef.current = showSuccess;
+  }, [showError, showSuccess]);
+  
   // WebRTC hooks - only initialize if authenticated
   const {
     callState,
@@ -62,17 +72,8 @@ export default function MeetingRoomPage() {
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const meetingId = (params?.id as string) || '';
 
-  // Check authentication
-  useEffect(() => {
-    if (!isAuthenticated || !user) {
-      showError("Please log in to access this meeting", "Authentication Required");
-      router.push('/login');
-      return;
-    }
-  }, [isAuthenticated, user, router, showError]);
-
-  // Load meeting details
-  const loadMeeting = async () => {
+  // Load meeting details - memoized with useCallback
+  const loadMeeting = useCallback(async () => {
     if (!isAuthenticated || !user) {
       return;
     }
@@ -84,22 +85,31 @@ export default function MeetingRoomPage() {
     } catch (error: any) {
       console.error('Error loading meeting:', error);
       if (error?.status === 401) {
-        showError("Please log in to access this meeting", "Authentication Required");
+        showErrorRef.current("Please log in to access this meeting", "Authentication Required");
         router.push('/login');
       } else if (error?.status === 404) {
-        showError("Meeting not found", "Error");
+        showErrorRef.current("Meeting not found", "Error");
       } else {
-        showError("Failed to load meeting details", "Error");
+        showErrorRef.current("Failed to load meeting details", "Error");
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [meetingId, isAuthenticated, user, router]);
+
+  // Check authentication
+  useEffect(() => {
+    if (!isAuthenticated || !user) {
+      showErrorRef.current("Please log in to access this meeting", "Authentication Required");
+      router.push('/login');
+      return;
+    }
+  }, [isAuthenticated, user, router]);
 
   // Join meeting
   const handleJoinMeeting = async () => {
     if (!isAuthenticated || !user) {
-      showError("Please log in to join this meeting", "Authentication Required");
+      showErrorRef.current("Please log in to join this meeting", "Authentication Required");
       router.push('/login');
       return;
     }
@@ -108,18 +118,18 @@ export default function MeetingRoomPage() {
       // Initialize WebRTC call
       const success = await initializeCall('video');
       if (!success) {
-        showError("Failed to initialize video call", "Error");
+        showErrorRef.current("Failed to initialize video call", "Error");
         return;
       }
 
       setIsJoined(true);
-      showSuccess("Joined meeting successfully", "Success");
+      showSuccessRef.current("Joined meeting successfully", "Success");
       
       // In a real implementation, you would connect to the meeting room via WebSocket
       console.log('Joined meeting:', meetingId);
     } catch (error) {
       console.error('Error joining meeting:', error);
-      showError("Failed to join meeting", "Error");
+      showErrorRef.current("Failed to join meeting", "Error");
     }
   };
 
@@ -128,10 +138,10 @@ export default function MeetingRoomPage() {
     try {
       await endCall();
       setIsJoined(false);
-      showSuccess("Left meeting", "Success");
+      showSuccessRef.current("Left meeting", "Success");
     } catch (error) {
       console.error('Error leaving meeting:', error);
-      showError("Failed to leave meeting", "Error");
+      showErrorRef.current("Failed to leave meeting", "Error");
     }
   };
 
@@ -154,15 +164,15 @@ export default function MeetingRoomPage() {
   // Handle WebRTC errors
   useEffect(() => {
     if (error) {
-      showError(error.message, "WebRTC Error");
+      showErrorRef.current(error.message, "WebRTC Error");
     }
-  }, [error, showError]);
+  }, [error]);
 
   useEffect(() => {
     if (meetingId && isAuthenticated && user) {
       loadMeeting();
     }
-  }, [meetingId, isAuthenticated, user]);
+  }, [meetingId, isAuthenticated, user, loadMeeting]);
 
   // Show loading while checking authentication
   if (!isAuthenticated || !user) {
