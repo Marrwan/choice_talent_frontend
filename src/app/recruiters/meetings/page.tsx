@@ -46,6 +46,25 @@ export default function MeetingsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [meetingToDelete, setMeetingToDelete] = useState<string | null>(null);
+  
+  // Edit meeting states
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [editMeeting, setEditMeeting] = useState<CreateMeetingData>({
+    title: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    participants: []
+  });
+  const [updating, setUpdating] = useState(false);
+  
+  // Send invites states
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [invitingMeeting, setInvitingMeeting] = useState<Meeting | null>(null);
+  const [newParticipants, setNewParticipants] = useState<string[]>(['']);
+  const [sendingInvites, setSendingInvites] = useState(false);
+  
   const [newMeeting, setNewMeeting] = useState<CreateMeetingData>({
     title: '',
     description: '',
@@ -190,14 +209,116 @@ export default function MeetingsPage() {
     }
   };
 
-  // Send invites (placeholder)
+  // Send invites
   const handleSendInvites = (meeting: Meeting) => {
-    showSuccess("Invite functionality coming soon!", "Info");
+    setInvitingMeeting(meeting);
+    setNewParticipants(['']);
+    setShowInviteDialog(true);
   };
 
-  // Edit meeting (placeholder)
+  // Handle invite participants
+  const handleInviteParticipants = async () => {
+    if (!invitingMeeting) return;
+    
+    const validEmails = newParticipants.filter(email => email.trim() && email.includes('@'));
+    if (validEmails.length === 0) {
+      showError("Please add at least one valid email address", "Error");
+      return;
+    }
+
+    try {
+      setSendingInvites(true);
+      await meetingService.inviteParticipants(invitingMeeting.id, {
+        participants: validEmails.map(email => ({ email }))
+      });
+      showSuccess("Invitations sent successfully", "Success");
+      setShowInviteDialog(false);
+      setInvitingMeeting(null);
+      setNewParticipants(['']);
+    } catch (error: any) {
+      console.error('Error sending invitations:', error);
+      showError(error?.message || "Failed to send invitations", "Error");
+    } finally {
+      setSendingInvites(false);
+    }
+  };
+
+  // Add participant email field
+  const addParticipantField = () => {
+    setNewParticipants([...newParticipants, '']);
+  };
+
+  // Remove participant email field
+  const removeParticipantField = (index: number) => {
+    if (newParticipants.length > 1) {
+      setNewParticipants(newParticipants.filter((_, i) => i !== index));
+    }
+  };
+
+  // Update participant email
+  const updateParticipantEmail = (index: number, email: string) => {
+    const updated = [...newParticipants];
+    updated[index] = email;
+    setNewParticipants(updated);
+  };
+
+  // Edit meeting
   const handleEditMeeting = (meeting: Meeting) => {
-    showSuccess("Edit functionality coming soon!", "Info");
+    setEditingMeeting(meeting);
+    setEditMeeting({
+      title: meeting.title,
+      description: meeting.description || '',
+      startTime: new Date(meeting.startTime).toISOString().slice(0, 16),
+      endTime: new Date(meeting.endTime).toISOString().slice(0, 16),
+      participants: []
+    });
+    setShowEditDialog(true);
+  };
+
+  // Handle update meeting
+  const handleUpdateMeeting = async () => {
+    if (!editingMeeting) return;
+    
+    if (!editMeeting.title.trim() || !editMeeting.startTime || !editMeeting.endTime) {
+      showError("Please fill in all required fields", "Error");
+      return;
+    }
+
+    // Client-side validation
+    const startTime = new Date(editMeeting.startTime);
+    const endTime = new Date(editMeeting.endTime);
+
+    if (endTime <= startTime) {
+      showError("End time must be after start time", "Validation Error");
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      await meetingService.updateMeeting(editingMeeting.id, editMeeting);
+      
+      // Update meeting in the list
+      setMeetings(prev => prev.map(meeting => 
+        meeting.id === editingMeeting.id 
+          ? { 
+              ...meeting, 
+              title: editMeeting.title,
+              description: editMeeting.description,
+              startTime: editMeeting.startTime,
+              endTime: editMeeting.endTime
+            }
+          : meeting
+      ));
+      
+      showSuccess("Meeting updated successfully", "Success");
+      setShowEditDialog(false);
+      setEditingMeeting(null);
+    } catch (error: any) {
+      console.error('Error updating meeting:', error);
+      showError(error?.message || "Failed to update meeting", "Error");
+    } finally {
+      setUpdating(false);
+    }
   };
 
   // Get meeting status badge
@@ -521,6 +642,159 @@ export default function MeetingsPage() {
                 onClick={confirmDeleteMeeting}
               >
                 Delete
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meeting Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Edit Meeting</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Title *
+              </label>
+              <Input
+                value={editMeeting.title}
+                onChange={(e) => setEditMeeting({ ...editMeeting, title: e.target.value })}
+                placeholder="Meeting title"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <Textarea
+                value={editMeeting.description}
+                onChange={(e) => setEditMeeting({ ...editMeeting, description: e.target.value })}
+                placeholder="Meeting description"
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Time *
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={editMeeting.startTime}
+                  onChange={(e) => setEditMeeting({ ...editMeeting, startTime: e.target.value })}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Time *
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={editMeeting.endTime}
+                  onChange={(e) => setEditMeeting({ ...editMeeting, endTime: e.target.value })}
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowEditDialog(false);
+                  setEditingMeeting(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdateMeeting}
+                disabled={updating}
+              >
+                {updating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Meeting'
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Invites Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Send Meeting Invites</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Add email addresses of participants you want to invite to this meeting.
+            </p>
+            
+            <div className="space-y-3">
+              {newParticipants.map((email, index) => (
+                <div key={index} className="flex space-x-2">
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => updateParticipantEmail(index, e.target.value)}
+                    placeholder="participant@example.com"
+                    className="flex-1"
+                  />
+                  {newParticipants.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeParticipantField(index)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              ))}
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addParticipantField}
+              >
+                Add Another Email
+              </Button>
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowInviteDialog(false);
+                  setInvitingMeeting(null);
+                  setNewParticipants(['']);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleInviteParticipants}
+                disabled={sendingInvites}
+              >
+                {sendingInvites ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  'Send Invites'
+                )}
               </Button>
             </div>
           </div>
