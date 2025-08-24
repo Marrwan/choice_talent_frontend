@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/store';
-import { meetingService, Meeting, CreateMeetingData } from '@/services/meetingService';
+import { meetingService, Meeting, CreateMeetingData, UpdateMeetingData } from '@/services/meetingService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,12 +53,29 @@ export default function MeetingsPage() {
   const [submittingComments, setSubmittingComments] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  
+  // New state for edit and invite functionality
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
+  const [invitingMeeting, setInvitingMeeting] = useState<Meeting | null>(null);
+  const [newParticipants, setNewParticipants] = useState<Array<{ userId?: string; email?: string }>>([]);
+  const [updating, setUpdating] = useState(false);
+  const [inviting, setInviting] = useState(false);
+  
   const [newMeeting, setNewMeeting] = useState<CreateMeetingData>({
     title: '',
     description: '',
     startTime: '',
     endTime: '',
     participants: []
+  });
+
+  const [editMeeting, setEditMeeting] = useState<UpdateMeetingData>({
+    title: '',
+    description: '',
+    startTime: '',
+    endTime: ''
   });
 
   // Load meetings
@@ -121,6 +138,91 @@ export default function MeetingsPage() {
     } finally {
       setCreating(false);
     }
+  };
+
+  // Edit meeting
+  const handleEditMeeting = (meeting: Meeting) => {
+    setEditingMeeting(meeting);
+    setEditMeeting({
+      title: meeting.title,
+      description: meeting.description || '',
+      startTime: meeting.startTime ? new Date(meeting.startTime).toISOString().slice(0, 16) : '',
+      endTime: meeting.endTime ? new Date(meeting.endTime).toISOString().slice(0, 16) : ''
+    });
+    setShowEditDialog(true);
+  };
+
+  // Update meeting
+  const handleUpdateMeeting = async () => {
+    if (!editingMeeting || !editMeeting.title || !editMeeting.startTime || !editMeeting.endTime) {
+      showError("Title, start time, and end time are required", "Error");
+      return;
+    }
+
+    try {
+      setUpdating(true);
+      await meetingService.updateMeeting(editingMeeting.id, editMeeting);
+       
+      showSuccess("Meeting updated successfully", "Success");
+      setShowEditDialog(false);
+      setEditingMeeting(null);
+      
+      // Reload meetings
+      loadMeetings(1, false);
+    } catch (error) {
+      console.error('Error updating meeting:', error);
+      showError("Failed to update meeting", "Error");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  // Send invites
+  const handleSendInvites = (meeting: Meeting) => {
+    setInvitingMeeting(meeting);
+    setNewParticipants([]);
+    setShowInviteDialog(true);
+  };
+
+  // Invite participants
+  const handleInviteParticipants = async () => {
+    if (!invitingMeeting || newParticipants.length === 0) {
+      showError("Please add at least one participant", "Error");
+      return;
+    }
+
+    try {
+      setInviting(true);
+      await meetingService.inviteParticipants(invitingMeeting.id, { participants: newParticipants });
+      
+      showSuccess("Invitations sent successfully", "Success");
+      setShowInviteDialog(false);
+      setInvitingMeeting(null);
+      setNewParticipants([]);
+      
+      // Reload meetings
+      loadMeetings(1, false);
+    } catch (error) {
+      console.error('Error sending invitations:', error);
+      showError("Failed to send invitations", "Error");
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  // Add participant to invite list
+  const addParticipant = () => {
+    setNewParticipants(prev => [...prev, { email: '' }]);
+  };
+
+  // Remove participant from invite list
+  const removeParticipant = (index: number) => {
+    setNewParticipants(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Update participant in invite list
+  const updateParticipant = (index: number, field: 'email', value: string) => {
+    setNewParticipants(prev => prev.map((p, i) => i === index ? { ...p, [field]: value } : p));
   };
 
   // Delete meeting
@@ -207,6 +309,18 @@ export default function MeetingsPage() {
     }
   };
 
+  // Format date safely
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'Unknown';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid Date';
+      return date.toLocaleDateString();
+    } catch {
+      return 'Invalid Date';
+    }
+  };
+
   useEffect(() => {
     loadMeetings();
   }, []);
@@ -216,14 +330,14 @@ export default function MeetingsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Meetings</h1>
-          <p className="text-gray-600 mt-2">Manage your scheduled meetings and interviews</p>
+          <p className="text-gray-600 mt-2">Schedule and manage your meetings</p>
         </div>
         
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Create Meeting
+              Schedule Another Meeting
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
@@ -339,6 +453,10 @@ export default function MeetingsPage() {
                         <Users className="h-4 w-4" />
                         <span>{meeting.participants.length} participants</span>
                       </div>
+                      
+                      <div className="flex items-center space-x-1">
+                        <span>Created {formatDate(meeting.createdAt)}</span>
+                      </div>
                     </div>
                   </div>
                   
@@ -362,9 +480,13 @@ export default function MeetingsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSendInvites(meeting)}>
                           <Mail className="h-4 w-4 mr-2" />
                           Send Invites
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEditMeeting(meeting)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Meeting
                         </DropdownMenuItem>
                         <DropdownMenuItem>
                           <Video className="h-4 w-4 mr-2" />
@@ -501,6 +623,141 @@ export default function MeetingsPage() {
                 Delete
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Meeting Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Edit Meeting</DialogTitle>
+            <DialogDescription>
+              Update meeting details
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Meeting Title *
+              </label>
+              <Input
+                placeholder="Enter meeting title"
+                value={editMeeting.title}
+                onChange={(e) => setEditMeeting(prev => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <Textarea
+                placeholder="Enter meeting description"
+                value={editMeeting.description}
+                onChange={(e) => setEditMeeting(prev => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Start Time *
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={editMeeting.startTime}
+                  onChange={(e) => setEditMeeting(prev => ({ ...prev, startTime: e.target.value }))}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  End Time *
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={editMeeting.endTime}
+                  onChange={(e) => setEditMeeting(prev => ({ ...prev, endTime: e.target.value }))}
+                />
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdateMeeting} disabled={updating}>
+              {updating ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Edit className="h-4 w-4 mr-2" />
+              )}
+              Update Meeting
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Invites Dialog */}
+      <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Send Meeting Invites</DialogTitle>
+            <DialogDescription>
+              Invite participants to {invitingMeeting?.title}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Participants
+              </label>
+              <div className="space-y-2">
+                {newParticipants.map((participant, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <Input
+                      placeholder="Enter email address"
+                      value={participant.email || ''}
+                      onChange={(e) => updateParticipant(index, 'email', e.target.value)}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeParticipant(index)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={addParticipant}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Participant
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex justify-end space-x-2">
+            <Button variant="outline" onClick={() => setShowInviteDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleInviteParticipants} disabled={inviting}>
+              {inviting ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Mail className="h-4 w-4 mr-2" />
+              )}
+              Send Invites
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

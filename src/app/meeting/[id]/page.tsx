@@ -257,16 +257,16 @@ export default function MeetingRoomPage() {
         {!isJoined ? (
           // Pre-join screen
           <div className="flex items-center justify-center min-h-[60vh]">
-            <Card className="w-full max-w-md">
+            <Card className="w-full max-w-md bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-center">Join Meeting</CardTitle>
+                <CardTitle className="text-center text-white">Join Meeting</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 bg-gray-800">
                 <div className="text-center">
-                  <h3 className="font-semibold text-lg mb-2">{meeting.title}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{meeting.description}</p>
+                  <h3 className="font-semibold text-lg mb-2 text-white">{meeting.title}</h3>
+                  <p className="text-gray-300 text-sm mb-4">{meeting.description}</p>
                   
-                  <div className="space-y-2 text-sm text-gray-500">
+                  <div className="space-y-2 text-sm text-gray-400">
                     <div>Start Time: {new Date(meeting.startTime).toLocaleString()}</div>
                     <div>End Time: {new Date(meeting.endTime).toLocaleString()}</div>
                     <div>Participants: {meeting.participants?.length || 0}</div>
@@ -275,7 +275,7 @@ export default function MeetingRoomPage() {
                 
                 <Button 
                   onClick={handleJoinMeeting}
-                  className="w-full"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   size="lg"
                 >
                   <Video className="h-4 w-4 mr-2" />
@@ -372,14 +372,14 @@ export default function MeetingRoomPage() {
             {/* Sidebar */}
             <div className="lg:col-span-1 space-y-4">
               {/* Participants List */}
-              <Card>
+              <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-white">Participants</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="bg-gray-800">
                   <div className="space-y-2">
                     {participants.map((participant) => (
-                      <div key={participant.id} className="flex items-center justify-between p-2 bg-gray-800 rounded">
+                      <div key={participant.id} className="flex items-center justify-between p-2 bg-gray-700 rounded">
                         <div className="flex items-center space-x-2">
                           <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
                             <span className="text-white text-sm">
@@ -400,14 +400,14 @@ export default function MeetingRoomPage() {
 
               {/* Chat */}
               {showChat && (
-                <Card>
+                <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
                     <CardTitle className="text-white">Chat</CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="bg-gray-800">
                     <div className="space-y-2 max-h-64 overflow-y-auto">
                       {chatMessages.map((message, index) => (
-                        <div key={index} className="p-2 bg-gray-800 rounded">
+                        <div key={index} className="p-2 bg-gray-700 rounded">
                           <p className="text-white text-sm">
                             <span className="font-medium">{message.sender}:</span> {message.text}
                           </p>
@@ -420,9 +420,9 @@ export default function MeetingRoomPage() {
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         placeholder="Type a message..."
-                        className="flex-1 px-2 py-1 bg-gray-700 text-white rounded text-sm"
+                        className="flex-1 px-2 py-1 bg-gray-700 text-white rounded text-sm border-gray-600 placeholder-gray-400"
                       />
-                      <Button size="sm">Send</Button>
+                      <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">Send</Button>
                     </div>
                   </CardContent>
                 </Card>
