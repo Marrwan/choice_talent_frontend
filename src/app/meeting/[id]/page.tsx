@@ -74,20 +74,19 @@ export default function MeetingRoomPage() {
 
   // Load meeting details - memoized with useCallback
   const loadMeeting = useCallback(async () => {
-    if (!isAuthenticated || !user) {
-      return;
-    }
-
     try {
       setLoading(true);
-      const response = await meetingService.getMeeting(meetingId);
+      // Try authenticated first if available; otherwise fall back to public
+      let response;
+      if (isAuthenticated && user) {
+        response = await meetingService.getMeeting(meetingId);
+      } else {
+        response = await meetingService.getMeetingPublic(meetingId);
+      }
       setMeeting(response.data);
     } catch (error: any) {
       console.error('Error loading meeting:', error);
-      if (error?.status === 401) {
-        showErrorRef.current("Please log in to access this meeting", "Authentication Required");
-        router.push('/login');
-      } else if (error?.status === 404) {
+      if (error?.status === 404) {
         showErrorRef.current("Meeting not found", "Error");
       } else {
         showErrorRef.current("Failed to load meeting details", "Error");
@@ -95,25 +94,12 @@ export default function MeetingRoomPage() {
     } finally {
       setLoading(false);
     }
-  }, [meetingId, isAuthenticated, user, router]);
+  }, [meetingId, isAuthenticated, user]);
 
-  // Check authentication
-  useEffect(() => {
-    if (!isAuthenticated || !user) {
-      showErrorRef.current("Please log in to access this meeting", "Authentication Required");
-      router.push('/login');
-      return;
-    }
-  }, [isAuthenticated, user, router]);
+  // For viewing, login is not forced. Users can join as guests.
 
   // Join meeting
   const handleJoinMeeting = async () => {
-    if (!isAuthenticated || !user) {
-      showErrorRef.current("Please log in to join this meeting", "Authentication Required");
-      router.push('/login');
-      return;
-    }
-
     try {
       // Initialize WebRTC call
       const success = await initializeCall('video');
@@ -169,10 +155,10 @@ export default function MeetingRoomPage() {
   }, [error]);
 
   useEffect(() => {
-    if (meetingId && isAuthenticated && user) {
+    if (meetingId) {
       loadMeeting();
     }
-  }, [meetingId, isAuthenticated, user, loadMeeting]);
+  }, [meetingId, loadMeeting]);
 
   // Show loading while checking authentication
   if (!isAuthenticated || !user) {

@@ -126,6 +126,12 @@ class MeetingService {
     return response;
   }
 
+  // Public: Get a single meeting without auth
+  async getMeetingPublic(id: string): Promise<SingleMeetingResponse> {
+    const response = await apiClient.get<SingleMeetingResponse>(`/meetings/${id}/public`, false);
+    return response;
+  }
+
   // Update a meeting
   async updateMeeting(id: string, data: UpdateMeetingData): Promise<SingleMeetingResponse> {
     const response = await apiClient.patch<SingleMeetingResponse>(`/meetings/${id}`, data, true);
