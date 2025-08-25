@@ -101,8 +101,9 @@ export default function MeetingRoomPage() {
   // Join meeting
   const handleJoinMeeting = async () => {
     try {
-      // Initialize WebRTC call
-      const success = await initializeCall('video');
+      // Join room using meetingId and initialize media
+      await webrtcService.joinRoom(`meeting_${meetingId}`, 'video');
+      const success = true;
       if (!success) {
         showErrorRef.current("Failed to initialize video call", "Error");
         return;

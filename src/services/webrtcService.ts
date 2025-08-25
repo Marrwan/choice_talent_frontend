@@ -518,11 +518,11 @@ export class WebRTCService {
         this.remoteStreams.delete(socketId);
       }
 
-      // Notify all stream change handlers
+      // Notify all stream change handlers (signature: (stream, participantId))
       this.streamHandlers.forEach((handler) => {
         try {
           if (typeof handler === 'function') {
-            handler(socketId, stream);
+            handler(stream as MediaStream, socketId);
           }
         } catch (error) {
           console.error('Error in stream change handler:', error);
@@ -710,18 +710,108 @@ export class WebRTCService {
   }
 
   private handleRoomJoined(data: any): void {
-    console.log('Joined WebRTC room:', data);
-    // Implementation for handling room joined events
+    try {
+      console.log('Joined WebRTC room:', data);
+      const { callRoomId, existingParticipants = [] } = data || {};
+      this.currentRoomId = callRoomId || this.currentRoomId;
+
+      // Add existing participants and initiate offers to each
+      existingParticipants.forEach((p: any) => {
+        const pid = p.socketId;
+        if (!pid) return;
+        if (!this.participants.has(pid)) {
+          this.participants.set(pid, {
+            id: pid,
+            name: p.realName || p.username || 'Guest',
+            isMuted: false,
+            isCameraOn: false,
+          });
+          this.notifyParticipantUpdate(this.participants.get(pid)!);
+        }
+        // Create peer connection and send offer
+        const pc = this.createPeerConnection(pid);
+        pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: this.currentCallType === 'video' })
+          .then(offer => pc.setLocalDescription(offer).then(() => {
+            this.emitToSocket('webrtc:offer', {
+              callRoomId: this.currentRoomId,
+              targetSocketId: pid,
+              offer: pc.localDescription
+            });
+          }))
+          .catch(err => console.error('Error creating offer to existing participant:', err));
+      });
+    } catch (error) {
+      console.error('Error in handleRoomJoined:', error);
+    }
   }
 
   private handleParticipantJoined(data: any): void {
-    console.log('Participant joined:', data);
-    // Implementation for handling participant joined events
+    try {
+      console.log('Participant joined:', data);
+      const { participant } = data || {};
+      const pid = participant?.socketId;
+      if (!pid) return;
+
+      // Track participant
+      if (!this.participants.has(pid)) {
+        this.participants.set(pid, {
+          id: pid,
+          name: participant.realName || participant.username || 'Guest',
+          isMuted: false,
+          isCameraOn: false,
+        });
+        this.notifyParticipantUpdate(this.participants.get(pid)!);
+      }
+
+      // Create peer connection and send offer to the new participant
+      const pc = this.createPeerConnection(pid);
+      pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: this.currentCallType === 'video' })
+        .then(offer => pc.setLocalDescription(offer).then(() => {
+          this.emitToSocket('webrtc:offer', {
+            callRoomId: this.currentRoomId,
+            targetSocketId: pid,
+            offer: pc.localDescription
+          });
+        }))
+        .catch(err => console.error('Error creating offer to new participant:', err));
+    } catch (error) {
+      console.error('Error in handleParticipantJoined:', error);
+    }
   }
 
   private handleParticipantLeft(data: any): void {
-    console.log('Participant left:', data);
-    // Implementation for handling participant left events
+    try {
+      console.log('Participant left:', data);
+      const { participant } = data || {};
+      const pid = participant?.socketId;
+      if (!pid) return;
+
+      this.participants.delete(pid);
+      this.notifyParticipantUpdate({
+        id: this.localParticipantId, // trigger update list
+        name: 'You',
+        isMuted: false,
+        isCameraOn: this.isVideoEnabled,
+      });
+      const pc = this.peerConnections.get(pid);
+      if (pc) {
+        pc.close();
+        this.peerConnections.delete(pid);
+      }
+      this.remoteStreams.delete(pid);
+      this.notifyStreamChange(pid, null);
+    } catch (error) {
+      console.error('Error in handleParticipantLeft:', error);
+    }
+  }
+
+  public async joinRoom(roomId: string, callType: CallType = 'video'): Promise<void> {
+    // ensure local stream available
+    if (!this.localStream) {
+      await this.initializeCall({ callType, isVideoEnabled: callType === 'video', isAudioEnabled: true });
+    }
+    this.currentRoomId = roomId;
+    this.emitToSocket('webrtc:join-room', { callRoomId: roomId, callType });
   }
 
   private handleSignalingError(data: unknown): void {
