@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/store';
 import { meetingService } from '@/services/meetingService';
 import { useWebRTC } from '@/hooks/useWebRTC';
+import { webrtcService } from '@/services/webrtcService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
