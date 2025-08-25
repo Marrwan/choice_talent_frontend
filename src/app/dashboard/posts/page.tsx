@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/store';
 import { postService, Post, CreatePostData, Comment, CreateCommentData } from '@/services/postService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +25,9 @@ import {
   Trash2,
   Smile,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  ArrowLeft,
+  Home
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -532,10 +535,10 @@ export default function PostsPage() {
                           </div>
                         )
                       ))}
-                      {post.comments && post.comments.length > 0 && (
+                      {post.commentCount > 0 && (
                         <div className="flex items-center space-x-1">
                           <MessageCircle className="h-4 w-4" />
-                          <span className="text-xs sm:text-sm text-gray-600">{post.comments.length}</span>
+                          <span className="text-xs sm:text-sm text-gray-600">{post.commentCount}</span>
                         </div>
                       )}
                     </div>
