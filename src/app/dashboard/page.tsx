@@ -30,7 +30,8 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  Mail
+  Mail,
+  Calendar
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react'
 import { ProfileSwitcher } from '@/components/ui/profile-switcher';
@@ -413,6 +414,14 @@ export default function DashboardPage() {
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Users className="mr-2 h-4 w-4" />
                     Networking
+                  </Button>
+                </Link>
+
+                {/* Meeting */}
+                <Link href="/dashboard/meetings" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Meeting
                   </Button>
                 </Link>
 
