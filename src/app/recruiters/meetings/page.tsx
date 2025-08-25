@@ -23,6 +23,7 @@ import {
   MoreHorizontal,
   Copy
 } from 'lucide-react';
+import { NavigationHeader } from '@/components/ui/navigation-header';
 import {
   Dialog,
   DialogContent,
@@ -395,6 +396,8 @@ export default function MeetingsPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="max-w-4xl mx-auto space-y-6">
+        <NavigationHeader title="Meetings" fallbackPath="/recruiters/dashboard" />
+        
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>

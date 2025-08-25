@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/store'
 import { userService } from '@/services/userService'
 import { ArrowLeft, Save, CheckCircle, AlertCircle, Eye, EyeOff } from 'lucide-react'
 import { useToast } from '@/lib/useToast'
+import { NavigationHeader } from '@/components/ui/navigation-header';
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -91,13 +92,7 @@ export default function SettingsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Link>
+          <NavigationHeader title="Settings" />
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
           <p className="text-gray-600 mt-2">
             Manage your account settings and preferences

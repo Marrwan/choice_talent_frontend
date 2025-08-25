@@ -23,6 +23,7 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
+import { NavigationHeader } from '@/components/ui/navigation-header';
 import {
   Dialog,
   DialogContent,
@@ -327,6 +328,8 @@ export default function MeetingsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <NavigationHeader title="Meetings" />
+      
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Meetings</h1>

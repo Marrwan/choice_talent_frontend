@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/lib/store'
 import { userService, type UpdateProfileRequest } from '@/services/userService'
 import { ArrowLeft, Save, CheckCircle, AlertCircle } from 'lucide-react'
+import { NavigationHeader } from '@/components/ui/navigation-header';
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -159,13 +160,7 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <Link 
-            href="/dashboard" 
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Link>
+          <NavigationHeader title="Profile" />
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Profile</h1>

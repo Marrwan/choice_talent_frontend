@@ -10,6 +10,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { useAuth } from '@/lib/store'
 import { chatService, User as ChatUser } from '@/services/chatService'
 import { ArrowLeft, Search, MessageCircle, Users, MapPin, Briefcase, Heart, User } from 'lucide-react'
+import { NavigationHeader } from '@/components/ui/navigation-header';
 
 interface UserCardProps {
   user: ChatUser
@@ -175,13 +176,7 @@ export default function UsersPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <Link 
-            href="/dashboard" 
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Dashboard
-          </Link>
+          <NavigationHeader title="Find People" />
           
           <div className="flex items-center justify-between">
             <div>

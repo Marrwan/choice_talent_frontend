@@ -16,6 +16,7 @@ import {
   User as UserIcon,
   Plus
 } from 'lucide-react'
+import { NavigationHeader } from '@/components/ui/navigation-header';
 // Group chats removed
 
 interface Message {
@@ -302,15 +303,7 @@ export default function ConversationsPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-            <Link 
-              href="/dashboard" 
-              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Back to Dashboard
-            </Link>
-          </div>
+          <NavigationHeader title="Messages" />
           
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
