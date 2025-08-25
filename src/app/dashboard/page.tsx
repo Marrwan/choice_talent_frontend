@@ -33,6 +33,7 @@ import {
   Mail
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react'
+import { ProfileSwitcher } from '@/components/ui/profile-switcher';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -300,6 +301,7 @@ export default function DashboardPage() {
                   Premium
                 </Badge>
               )}
+              <ProfileSwitcher />
             </div>
           </div>
         </div>
@@ -426,6 +428,30 @@ export default function DashboardPage() {
 
                 {/* Divider */}
                 <div className="border-t pt-2" />
+
+                <div className="mt-2">
+                  <div className="text-xs font-semibold text-gray-500 mb-2">BUSINESS</div>
+                  <div className="space-y-2">
+                    <Link href="/recruiters/dashboard" className="block">
+                      <Button variant="outline" className="w-full justify-start h-12">
+                        <Briefcase className="mr-2 h-4 w-4" />
+                        Recruiter / Employer
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/vendor" className="block">
+                      <Button variant="outline" className="w-full justify-start h-12">
+                        <TrendingUp className="mr-2 h-4 w-4" />
+                        Vendor
+                      </Button>
+                    </Link>
+                    <Link href="/dashboard/advertise" className="block">
+                      <Button variant="outline" className="w-full justify-start h-12">
+                        <TrendingUp className="mr-2 h-4 w-4" />
+                        Advertise
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
 
                 {/* Additional quick actions preserved */}
                 <Link href="/dashboard/job-hunting-settings" className="block">
