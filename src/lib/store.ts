@@ -22,6 +22,7 @@ interface AuthState {
   isLoading: boolean
   isInitialized: boolean
   token: string | null
+  activeProfileType: 'professional' | 'recruiter' | 'vendor' | 'employer'
   
   // Actions
   login: (user: User, token?: string) => void
@@ -30,6 +31,7 @@ interface AuthState {
   setLoading: (loading: boolean) => void
   initialize: () => Promise<void>
   refreshUser: () => Promise<void>
+  setActiveProfileType: (type: 'professional' | 'recruiter' | 'vendor' | 'employer') => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -41,6 +43,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       isInitialized: false,
       token: null,
+      activeProfileType: 'professional',
 
       // Actions
       login: (user: User, token?: string) => {
@@ -55,7 +58,8 @@ export const useAuthStore = create<AuthState>()(
             isPremium: user.isPremium || false
           },
           isAuthenticated: true,
-          isLoading: false
+          isLoading: false,
+          activeProfileType: (user as any)?.activeProfile?.type || (user.role as any) || 'professional'
         })
       },
 
@@ -108,7 +112,8 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
             token: null,
-            isInitialized: true // Keep initialized to prevent re-initialization loops
+            isInitialized: true, // Keep initialized to prevent re-initialization loops
+            activeProfileType: 'professional'
           })
           
           // Navigate to login page
@@ -162,7 +167,8 @@ export const useAuthStore = create<AuthState>()(
               },
               isAuthenticated: true,
               isInitialized: true,
-              token
+              token,
+              activeProfileType: (user as any)?.activeProfile?.type || (user as any)?.role || 'professional'
             })
           } else {
             set({
@@ -207,7 +213,8 @@ export const useAuthStore = create<AuthState>()(
               ...user,
               subscriptionStatus: user.subscriptionStatus || 'free',
               isPremium: user.isPremium || false
-            }
+            },
+            activeProfileType: (user as any)?.activeProfile?.type || (user.role as any) || 'professional'
           })
         } catch (error) {
           console.error('Failed to refresh user:', error)
@@ -217,6 +224,8 @@ export const useAuthStore = create<AuthState>()(
           }
         }
       }
+      ,
+      setActiveProfileType: (type) => set({ activeProfileType: type })
     }),
     {
       name: 'choice-talent-auth',

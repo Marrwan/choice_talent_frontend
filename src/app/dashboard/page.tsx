@@ -408,6 +408,14 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
 
+                {/* Networking */}
+                <Link href="/dashboard/networking" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12">
+                    <Users className="mr-2 h-4 w-4" />
+                    Networking
+                  </Button>
+                </Link>
+
                 {/* Posts */}
                 <Link href="/dashboard/posts" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
@@ -430,7 +438,7 @@ export default function DashboardPage() {
                 <div className="border-t pt-2" />
 
                 <div className="mt-2">
-                  <div className="text-xs font-semibold text-gray-500 mb-2">BUSINESS</div>
+                  <div className="text-sm sm:text-base font-bold text-gray-900 mb-2">BUSINESS</div>
                   <div className="space-y-2">
                     <Link href="/recruiters/dashboard" className="block">
                       <Button variant="outline" className="w-full justify-start h-12">
@@ -453,7 +461,10 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Additional quick actions preserved */}
+                {/* Divider */}
+                <div className="border-t pt-2" />
+
+                {/* Additional quick actions */}
                 <Link href="/dashboard/job-hunting-settings" className="block">
                   <Button variant="outline" className="w-full justify-start h-12">
                     <Search className="mr-2 h-4 w-4" />

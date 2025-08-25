@@ -92,7 +92,7 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  {user.role === 'recruiter' ? (
+                  {(user as any)?.activeProfile?.type === 'recruiter' ? (
                     <DropdownMenuItem asChild>
                       <Link href="/recruiters/dashboard" className="cursor-pointer">
                         <Briefcase className="mr-2 h-4 w-4" />
@@ -108,11 +108,11 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                     </DropdownMenuItem>
                   )}
 
-                  {user.role === 'recruiter' && (
+                  {(user as any)?.activeProfile?.type === 'recruiter' && (
                     <>
                       {/* Meetings */}
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard/meetings" className="cursor-pointer">
+                        <Link href="/recruiters/meetings" className="cursor-pointer">
                           <Video className="mr-2 h-4 w-4" />
                           <span>Meetings</span>
                         </Link>
@@ -128,7 +128,7 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                     </>
                   )}
 
-                  {user.role !== 'recruiter' && (
+                  {(user as any)?.activeProfile?.type !== 'recruiter' && (
                     <>
                       {/* Professional Profile */}
                       <DropdownMenuItem asChild>
@@ -173,6 +173,13 @@ export function Header({ isAuthenticated = false, user, onLogout }: HeaderProps)
                   )}
 
                   <DropdownMenuSeparator />
+                  {/* Quick switch link */}
+                  <DropdownMenuItem asChild>
+                    <Link href={(user as any)?.activeProfile?.type === 'recruiter' ? '/dashboard' : '/recruiters/dashboard'} className="cursor-pointer">
+                      <Briefcase className="mr-2 h-4 w-4" />
+                      <span>Switch to {(user as any)?.activeProfile?.type === 'recruiter' ? 'Career' : 'Recruiter'}</span>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={onLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
