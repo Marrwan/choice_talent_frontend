@@ -40,6 +40,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 // Using native Date methods instead of date-fns
 
 export default function PostsPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const { showError, showSuccess } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -372,6 +373,33 @@ export default function PostsPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
+      {/* Navigation Header */}
+      <div className="max-w-2xl mx-auto mb-4 sm:mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="flex items-center space-x-1 text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
+          </div>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/dashboard')}
+            className="flex items-center space-x-1 text-gray-600 hover:text-gray-900"
+          >
+            <Home className="h-4 w-4" />
+            <span className="hidden sm:inline">Dashboard</span>
+          </Button>
+        </div>
+      </div>
+      
       <div className="max-w-2xl mx-auto space-y-4 sm:space-y-6">
         {/* Create Post Card */}
         <Card>
