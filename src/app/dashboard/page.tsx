@@ -251,6 +251,7 @@ export default function DashboardPage() {
       const response = await userService.uploadCareerBannerPicture(formData);
       if (response.success) {
         toast.showSuccess('Banner updated successfully!', 'Success');
+        setUserProfile((prev:any) => ({ ...(prev || {}), careerBannerPicture: (response as any).data?.careerBannerPicture || (prev?.careerBannerPicture) }));
         await refreshUser();
       } else {
         toast.showError(response.message || 'Failed to update banner', 'Error');
@@ -339,18 +340,20 @@ export default function DashboardPage() {
         <div className="mb-6 sm:mb-8">
           <div className="relative rounded-xl overflow-hidden bg-gray-100 border border-[#d3d3d3]">
             {/* Banner image */}
-            <div className="w-full h-36 sm:h-48 bg-cover bg-center" style={{ backgroundImage: `url(${getFullImageUrl(userProfile?.careerBannerPicture || '')})` }}></div>
-            {/* Upload banner button */}
-            <div className="absolute top-2 right-2">
-              <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
-              <Button size="sm" variant="outline" className="bg-white/80 hover:bg-white" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
-                {bannerUploading ? 'Uploading...' : 'Change Banner'}
-              </Button>
-            </div>
-            {/* Profile summary */}
-            <div className="px-4 sm:px-6 pb-4 -mt-8 sm:-mt-10">
-              <div className="flex items-end gap-3">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer" onClick={handleProfilePictureClick}>
+            <div className="w-full h-36 sm:h-48 bg-gray-100 flex items-center justify-center relative">
+              {userProfile?.careerBannerPicture ? (
+                <img
+                  src={getFullImageUrl(userProfile.careerBannerPicture)}
+                  alt="Banner"
+                  className="w-full h-full object-contain"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
+              ) : null}
+              {/* Bottom gradient for subtle separation */}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent" />
+              {/* Overlapping avatar */}
+              <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 z-10">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer shadow" onClick={handleProfilePictureClick}>
                   {userProfile?.careerProfilePicture ? (
                     <img src={getFullImageUrl(userProfile.careerProfilePicture)} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
@@ -359,7 +362,19 @@ export default function DashboardPage() {
                     </div>
                   )}
                 </div>
-                <div className="flex-1">
+              </div>
+            </div>
+            {/* Upload banner button */}
+            <div className="absolute top-2 right-2">
+              <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
+              <Button size="sm" variant="outline" className="bg-white/80 hover:bg-white" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
+                {bannerUploading ? 'Uploading...' : 'Change Banner'}
+              </Button>
+            </div>
+            {/* Profile summary */}
+            <div className="px-4 sm:px-6 pt-10 sm:pt-12 pb-4">
+              <div className="flex items-end gap-3">
+                <div className="flex-1 pl-20 sm:pl-24">
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
                   <p className="text-sm text-gray-600">Welcome back, {user?.name || 'User'}</p>
                   <p className="text-sm text-gray-700 mt-1">

@@ -131,9 +131,6 @@ export const userService = {
         endpoint: '/user/career-profile-picture',
         data: formData,
         requiresAuth: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
       })
       return response
     } catch (error) {
@@ -149,9 +146,6 @@ export const userService = {
         endpoint: '/user/career-banner-picture',
         data: formData,
         requiresAuth: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
       })
       return response
     } catch (error) {
