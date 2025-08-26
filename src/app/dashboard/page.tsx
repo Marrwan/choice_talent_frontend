@@ -80,6 +80,7 @@ function DashboardPosts() {
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
   const [submittingComments, setSubmittingComments] = useState<Set<string>>(new Set());
   const [loadingComments, setLoadingComments] = useState<Set<string>>(new Set());
+  const [collapsedPosts, setCollapsedPosts] = useState<Set<string>>(new Set());
   const [newPost, setNewPost] = useState<any>({
     content: '',
     image: undefined
@@ -87,6 +88,21 @@ function DashboardPosts() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
+  // Word helpers
+  const WORD_LIMIT = 1500;
+  const PREVIEW_WORDS = 100;
+  const countWords = (text: string): number => {
+    if (!text) return 0;
+    return (text.trim().match(/\S+/g) || []).length;
+  };
+  const truncateWords = (text: string, maxWords: number): string => {
+    const words = (text.trim().match(/\S+/g) || []);
+    if (words.length <= maxWords) return text;
+    return words.slice(0, maxWords).join(' ');
+  };
+  const isLongPost = (text: string): boolean => countWords(text) > PREVIEW_WORDS;
+  const getPreview = (text: string): string => truncateWords(text, PREVIEW_WORDS);
+
   // Load posts
   const loadPosts = async (page: number = 1, append: boolean = false) => {
     try {
@@ -98,6 +114,12 @@ function DashboardPosts() {
       } else {
         setPosts(response.data.posts);
       }
+      // Default-collapse long posts
+      const idsToCollapse = new Set<string>();
+      (response.data.posts || []).forEach((p: any) => {
+        if (p?.id && isLongPost(p?.content || '')) idsToCollapse.add(p.id);
+      });
+      setCollapsedPosts(idsToCollapse);
       
       setHasNextPage(response.data.pagination.hasNextPage);
       setCurrentPage(response.data.pagination.currentPage);
@@ -120,6 +142,10 @@ function DashboardPosts() {
   const handleCreatePost = async () => {
     if (!newPost.content.trim()) {
       showError("Post content is required", "Error");
+      return;
+    }
+    if (countWords(newPost.content) > WORD_LIMIT) {
+      showError(`Post exceeds ${WORD_LIMIT} words. Please shorten it.`, "Too long");
       return;
     }
 
@@ -198,7 +224,7 @@ function DashboardPosts() {
           return {
             ...post,
             reactionCounts: newReactionCounts,
-            totalReactions: Object.values(newReactionCounts).reduce((a, b) => a + b, 0)
+            totalReactions: (Object.values(newReactionCounts as Record<string, number>) as number[]).reduce((a: number, b: number) => a + b, 0)
           };
         }
         return post;
@@ -339,7 +365,7 @@ function DashboardPosts() {
         if (post.id === postId) {
           return {
             ...post,
-            comments: post.comments.filter(comment => comment.id !== commentId),
+            comments: post.comments.filter((comment: any) => comment.id !== commentId),
             commentCount: Math.max(0, (post.commentCount || 0) - 1)
           };
         }
@@ -408,8 +434,17 @@ function DashboardPosts() {
               <Textarea
                 placeholder="Share your thoughts, achievements, or updates..."
                 value={newPost.content}
-                onChange={(e) => setNewPost(prev => ({ ...prev, content: e.target.value }))}
-                maxLength={1500}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  // Soft-enforce 1500-word limit: trim extra words
+                  const words = (next.trim().match(/\S+/g) || []);
+                  if (words.length > WORD_LIMIT) {
+                    const trimmed = words.slice(0, WORD_LIMIT).join(' ');
+                    setNewPost((prev: any) => ({ ...prev, content: trimmed }));
+                  } else {
+                    setNewPost((prev: any) => ({ ...prev, content: next }));
+                  }
+                }}
                 className="min-h-[100px] text-sm sm:text-base"
               />
               
@@ -452,7 +487,7 @@ function DashboardPosts() {
                 
                 <div className="flex items-center space-x-2 w-full sm:w-auto">
                   <span className="text-sm text-gray-500 flex-shrink-0">
-                    {newPost.content.length}/1500
+                    {countWords(newPost.content)}/{WORD_LIMIT} words
                   </span>
                   <Button
                     onClick={() => setShowCreateForm(false)}
@@ -528,7 +563,23 @@ function DashboardPosts() {
             
             <CardContent className="pt-0">
               <div className="space-y-3 sm:space-y-4">
-                <p className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base">{post.content}</p>
+                <div className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base">
+                  {collapsedPosts.has(post.id) && isLongPost(post.content)
+                    ? getPreview(post.content) + '...'
+                    : post.content}
+                </div>
+                {isLongPost(post.content) && (
+                  <button
+                    className="text-blue-600 text-sm hover:underline"
+                    onClick={() => setCollapsedPosts(prev => {
+                      const next = new Set(prev);
+                      if (next.has(post.id)) next.delete(post.id); else next.add(post.id);
+                      return next;
+                    })}
+                  >
+                    {collapsedPosts.has(post.id) ? 'Read more' : 'Show less'}
+                  </button>
+                )}
                 
                 {post.imageUrl && (
                   <img 
@@ -543,11 +594,11 @@ function DashboardPosts() {
                 {/* Reactions Summary */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 sm:space-x-4 flex-wrap">
-                    {post.reactionCounts && Object.entries(post.reactionCounts).map(([type, count]) => (
+                    {post.reactionCounts && (Object.entries(post.reactionCounts as Record<string, number>) as [string, number][]) .map(([type, count]) => (
                       count > 0 && (
                         <div key={type} className="flex items-center space-x-1">
                           {getReactionIcon(type)}
-                          <span className="text-xs sm:text-sm text-gray-600">{count}</span>
+                          <span className="text-xs sm:text-sm text-gray-600">{count as number}</span>
                         </div>
                       )
                     ))}
@@ -654,8 +705,8 @@ function DashboardPosts() {
                     ) : post.comments && post.comments.length > 0 ? (
                       <div className="space-y-3">
                         {post.comments
-                          .filter(comment => comment && comment.author) // Filter out comments without author data
-                          .map((comment) => (
+                          .filter((comment: any) => comment && comment.author) // Filter out comments without author data
+                          .map((comment: any) => (
                             <div key={comment.id} className="flex items-start space-x-2">
                               <Avatar className="h-8 w-8 flex-shrink-0">
                                 <AvatarImage src={comment.author.profilePicture} />
@@ -1132,10 +1183,10 @@ export default function DashboardPage() {
                     <div className="pl-20 sm:pl-24 pr-2 space-y-1.5">
                       <div className="flex items-center gap-2">
                         <h2 className="text-2xl sm:text-3xl font-semibold leading-tight text-gray-900">{user?.name || 'User'}</h2>
-                        {user?.isVerified && (
+                        {(user as any)?.isVerified && (
                           <ShieldCheck className="h-5 w-5 text-blue-600" />
                         )}
-                      </div>
+                  </div>
                       {(() => { const exp = getMostRecentWorkExperience(); return exp ? (
                         <p className="text-base text-gray-800 font-medium">{`${exp.designation || exp.jobTitle || ''}${exp.companyName ? ` at ${exp.companyName}` : ''}`}</p>
                       ) : null; })()}
@@ -1293,16 +1344,16 @@ export default function DashboardPage() {
             {/* Posts Section replacing removed cards */}
             <Card>
               <CardHeader className="pb-3 sm:pb-4">
-                <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                   <CardTitle className="text-lg sm:text-xl">Posts</CardTitle>
                   <Link href="/dashboard/posts"><Button variant="outline" size="sm">Open</Button></Link>
-                </div>
+                      </div>
               </CardHeader>
               <CardContent>
                 <DashboardPosts />
               </CardContent>
             </Card>
-          </div>
+                  </div>
         </div>
       </div>
 
