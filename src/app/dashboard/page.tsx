@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/lib/useToast';
@@ -60,6 +61,7 @@ export default function DashboardPage() {
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const [connectionsCount, setConnectionsCount] = useState<number>(0);
   const [bannerUploading, setBannerUploading] = useState<boolean>(false);
+  const [showBannerModal, setShowBannerModal] = useState(false);
 
   // Guard: redirect recruiters to recruiters dashboard
   useEffect(() => {
@@ -369,12 +371,12 @@ export default function DashboardPage() {
           <div className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* User Profile Card */}
             <Card>
-              <CardHeader>
+              {/* <CardHeader>
                 <CardTitle className="flex items-center text-[18px] font-bold">Profile</CardTitle>
-              </CardHeader>
+              </CardHeader> */}
               <CardContent className="space-y-4 p-0">
                 <div className="relative rounded-xl overflow-hidden bg-gray-100">
-                  <div className="w-full h-28 sm:h-40 bg-gray-100 flex items-center justify-center relative">
+                  <div className="w-full h-28 sm:h-40 bg-gray-100 flex items-center justify-center relative cursor-pointer" onClick={() => setShowBannerModal(true)}>
                      {userProfile?.careerBannerPicture ? (
                        <img
                          src={getFullImageUrl(userProfile.careerBannerPicture)}
@@ -386,9 +388,9 @@ export default function DashboardPage() {
                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent" />
                     <div className="absolute top-2 right-2 z-10">
                       <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
-                      <Button size="sm" variant="outline" className="h-8 bg-white/90 hover:bg-white" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
+                      {/* <Button size="sm" variant="outline" className="h-8 bg-white/90 hover:bg-white" onClick={(e) => { e.stopPropagation(); bannerInputRef.current?.click(); }} disabled={bannerUploading}>
                         {bannerUploading ? 'Uploading...' : 'Change Banner'}
-                      </Button>
+                      </Button> */}
                     </div>
                     <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 z-10">
                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer shadow" onClick={handleProfilePictureClick}>
@@ -421,9 +423,9 @@ export default function DashboardPage() {
                         <Link href="/dashboard/professional-career-profile" className="w-full sm:w-auto">
                           <Button size="sm" className="w-full justify-center sm:justify-start">View Career Profile</Button>
                         </Link>
-                        <Link href="/dashboard/profile" className="w-full sm:w-auto">
+                        {/* <Link href="/dashboard/profile" className="w-full sm:w-auto">
                           <Button variant="outline" size="sm" className="w-full justify-center sm:justify-start">Edit Profile</Button>
-                        </Link>
+                        </Link> */}
                       </div>
                     </div>
                   </div>
@@ -1054,6 +1056,31 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Banner Modal */}
+      <Dialog open={showBannerModal} onOpenChange={setShowBannerModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Banner</DialogTitle>
+            <DialogDescription>Preview and manage your profile banner.</DialogDescription>
+          </DialogHeader>
+          <div className="rounded-md overflow-hidden border bg-gray-50">
+            {userProfile?.careerBannerPicture ? (
+              <img src={getFullImageUrl(userProfile.careerBannerPicture)} alt="Banner preview" className="w-full h-48 object-contain bg-white" />
+            ) : (
+              <div className="w-full h-48 flex items-center justify-center text-gray-500">No banner set</div>
+            )}
+          </div>
+          <div className="flex gap-2 justify-end">
+            <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => { setShowBannerModal(false); handleBannerSelect(e as any); }} />
+            <Button variant="default" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>{bannerUploading ? 'Uploading...' : 'Upload New Banner'}</Button>
+            {userProfile?.careerBannerPicture && (
+              <Button variant="destructive" onClick={async () => { await userService.deleteCareerBannerPicture(); await refreshUser(); setShowBannerModal(false); }}>Remove Banner</Button>
+            )}
+            <Button variant="outline" onClick={() => setShowBannerModal(false)}>Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
