@@ -31,7 +31,9 @@ import {
   XCircle,
   AlertTriangle,
   Mail,
-  Calendar
+  Calendar,
+  MapPin,
+  ShieldCheck
 } from 'lucide-react';
 import { MessageSquare } from 'lucide-react'
 import { ProfileSwitcher } from '@/components/ui/profile-switcher';
@@ -164,6 +166,31 @@ export default function DashboardPage() {
     }
   };
 
+  // Helper: get most recent/current work experience
+  const getMostRecentWorkExperience = () => {
+    const experiences = profile?.workExperiences;
+    if (!Array.isArray(experiences) || experiences.length === 0) return null;
+    const toTs = (val: any) => {
+      if (!val) return null;
+      const t = new Date(val).getTime();
+      return Number.isFinite(t) ? t : null;
+    };
+    const isCurrent = (e: any) => Boolean(e?.isCurrentJob) || !e?.exitDate && !e?.endDate;
+    const endTs = (e: any) => toTs(e?.exitDate ?? e?.endDate) ?? Date.now();
+    const startTs = (e: any) => toTs(e?.entryDate ?? e?.startDate) ?? 0;
+    const sorted = [...experiences].sort((a: any, b: any) => {
+      const aCurrent = isCurrent(a);
+      const bCurrent = isCurrent(b);
+      if (aCurrent !== bCurrent) return aCurrent ? -1 : 1; // current roles first
+      const aEnd = endTs(a);
+      const bEnd = endTs(b);
+      if (aEnd !== bEnd) return bEnd - aEnd; // latest end date first
+      const aStart = startTs(a);
+      const bStart = startTs(b);
+      return bStart - aStart; // latest start date as tie-breaker
+    });
+    return sorted[0] || null;
+  };
 
 
   const handleDownloadProfile = () => {
@@ -347,8 +374,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-4 p-0">
                 <div className="relative rounded-xl overflow-hidden bg-gray-100">
-                  <div className="w-full h-36 sm:h-48 bg-gray-100 flex items-center justify-center relative">
-                    {userProfile?.careerBannerPicture ? (
+                  <div className="w-full h-28 sm:h-40 bg-gray-100 flex items-center justify-center relative">
+                     {userProfile?.careerBannerPicture ? (
                        <img
                          src={getFullImageUrl(userProfile.careerBannerPicture)}
                          alt="Banner"
@@ -356,47 +383,58 @@ export default function DashboardPage() {
                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                        />
                      ) : null}
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent" />
+                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent" />
+                    <div className="absolute top-2 right-2 z-10">
+                      <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
+                      <Button size="sm" variant="outline" className="h-8 bg-white/90 hover:bg-white" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
+                        {bannerUploading ? 'Uploading...' : 'Change Banner'}
+                      </Button>
+                    </div>
                     <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 z-10">
                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer shadow" onClick={handleProfilePictureClick}>
                         {userProfile?.careerProfilePicture ? (
                           <img src={getFullImageUrl(userProfile.careerProfilePicture)} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <User className="w-8 h-8 text-gray-400" />
-                          </div>
+                        <User className="w-8 h-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  </div>
+                </div>
+                  <div className="px-4 sm:px-6 pt-8 sm:pt-10 pb-4">
+                    <div className="pl-20 sm:pl-24 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-2xl sm:text-3xl font-semibold leading-tight text-gray-900">{user?.name || 'User'}</h2>
+                        {user?.isVerified && (
+                          <ShieldCheck className="h-5 w-5 text-blue-600" />
                         )}
                       </div>
-                    </div>
-                  </div>
-                  <div className="px-4 sm:px-6 pt-10 sm:pt-12 pb-4">
-                    <div className="flex items-end gap-3">
-                      <div className="flex-1 pl-20 sm:pl-24">
-                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
-                        <p className="text-sm text-gray-600">Welcome back, {user?.name || 'User'}</p>
-                        <p className="text-sm text-gray-700 mt-1">
-                          {profile?.workExperiences?.[0]?.jobTitle ? `${profile.workExperiences[0].jobTitle} at ${profile.workExperiences[0].companyName || ''}` : 'Update your current position'}
-                        </p>
-                        <div className="flex items-center gap-4 mt-2 text-sm">
-                          <span className="text-gray-700">Connections: <span className="font-semibold">{connectionsCount}</span></span>
-                          <Link href="/dashboard/professional-career-profile" className="text-blue-600 hover:underline">View Career Profile</Link>
-                        </div>
-                      </div>
-                      <div className="hidden sm:flex items-center gap-2 pb-2 pr-2">
+                      {(() => { const exp = getMostRecentWorkExperience(); return exp ? (
+                        <p className="text-base text-gray-800 font-medium">{`${exp.designation || exp.jobTitle || ''}${exp.companyName ? ` at ${exp.companyName}` : ''}`}</p>
+                      ) : null; })()}
+                      {profile?.stateOfResidence && (
+                        <p className="text-sm text-gray-500 flex items-center gap-1"><MapPin className="h-4 w-4" /> {profile.stateOfResidence}</p>
+                      )}
+                      <p className="text-sm text-gray-700">{connectionsCount >= 500 ? '500+ connections' : `${connectionsCount} connections`}</p>
+                      <div className="pt-2">
+                        <Link href="/dashboard/professional-career-profile" className="inline-flex items-center rounded-full px-3 py-1 bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm">View Career Profile</Link>
                         {user?.isPremium && (
-                          <Badge variant="default" className="flex items-center gap-1">
-                            <Crown className="h-3 w-3" />
-                            Premium
+                          <Badge variant="default" className="ml-2 h-6 text-xs align-middle inline-flex items-center gap-1">
+                            <Crown className="h-3 w-3" /> Premium
                           </Badge>
                         )}
-                        <ProfileSwitcher />
+                        <span className="ml-2 align-middle inline-block"><ProfileSwitcher /></span>
+                        <Link href="/dashboard/profile" className="ml-2 text-sm text-blue-600 hover:underline align-middle">Edit Profile</Link>
                       </div>
-                    </div>
-                    <div className="mt-4">
-                      <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
-                      <Button size="sm" variant="outline" className="bg-white hover:bg-gray-50" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
-                        {bannerUploading ? 'Uploading...' : 'Change Banner'}
-                      </Button>
+                      {/* {(() => { const exp = getMostRecentWorkExperience(); return exp?.companyName ? (
+                        <div className="pt-1">
+                          <span className="inline-flex items-center gap-2 rounded-md bg-gray-100 text-gray-800 px-2.5 py-1 text-xs font-medium">
+                            {exp.companyLogoUrl ? <img src={getFullImageUrl(exp.companyLogoUrl)} alt="Company" className="h-4 w-4 rounded-sm" /> : null}
+                            {exp.companyName}
+                          </span>
+                        </div>
+                      ) : null; })()} */}
                     </div>
                   </div>
                 </div>
@@ -475,20 +513,20 @@ export default function DashboardPage() {
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <Briefcase className="mr-2 h-4 w-4" />
                         Recruiter / Employer
-                      </Button>
-                    </Link>
+                  </Button>
+                </Link>
                     <Link href="/dashboard/vendor" className="block">
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         Vendor
-                      </Button>
-                    </Link>
+                  </Button>
+                </Link>
                     <Link href="/dashboard/advertise" className="block">
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         Advertise
-                      </Button>
-                    </Link>
+                  </Button>
+                </Link>
                   </div>
                 </div>
 

@@ -41,10 +41,10 @@ export function ProfileSwitcher() {
           {p.type}
         </Button>
       ))}
-      <div className="relative">
+      {/* <div className="relative">
         <Button variant="ghost" size="sm" disabled={loading} onClick={() => create('professional')}>+ Pro</Button>
         <Button variant="ghost" size="sm" disabled={loading} onClick={() => create('recruiter')}>+ Rec</Button>
-      </div>
+      </div> */}
     </div>
   );
 }
