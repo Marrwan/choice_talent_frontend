@@ -88,9 +88,11 @@ export default function MeetingRoomPage() {
     } catch (error: any) {
       console.error('Error loading meeting:', error);
       if (error?.status === 404) {
-        showErrorRef.current("Meeting not found", "Error");
+        showErrorRef.current("The meeting you're looking for does not exist or you don't have access to it.", "Meeting Not Found");
+      } else if (error?.status === 400) {
+        showErrorRef.current(error.message || "Meeting is not available at this time.", "Meeting Unavailable");
       } else {
-        showErrorRef.current("Failed to load meeting details", "Error");
+        showErrorRef.current("Failed to load meeting details. Please try again.", "Error");
       }
     } finally {
       setLoading(false);
@@ -102,22 +104,37 @@ export default function MeetingRoomPage() {
   // Join meeting
   const handleJoinMeeting = async () => {
     try {
-      // Join room using meetingId and initialize media
-      await webrtcService.joinRoom(`meeting_${meetingId}`, 'video');
-      const success = true;
-      if (!success) {
-        showErrorRef.current("Failed to initialize video call", "Error");
+      if (!isAuthenticated || !user) {
+        showErrorRef.current("Please log in to join this meeting", "Authentication Required");
         return;
       }
 
-      setIsJoined(true);
-      showSuccessRef.current("Joined meeting successfully", "Success");
+      // First, join the meeting through our API
+      const joinResponse = await meetingService.joinMeeting(meetingId);
       
-      // In a real implementation, you would connect to the meeting room via WebSocket
-      console.log('Joined meeting:', meetingId);
-    } catch (error) {
+      if (joinResponse.success) {
+        // Initialize WebRTC connection
+        await webrtcService.joinRoom(`meeting_${meetingId}`, 'video');
+        
+        setIsJoined(true);
+        showSuccessRef.current("Joined meeting successfully", "Success");
+        
+        // Update meeting data with the response
+        setMeeting(joinResponse.data.meeting);
+        
+        console.log('Joined meeting:', meetingId, 'as', joinResponse.data.role);
+      } else {
+        showErrorRef.current("Failed to join meeting", "Error");
+      }
+    } catch (error: any) {
       console.error('Error joining meeting:', error);
-      showErrorRef.current("Failed to join meeting", "Error");
+      if (error?.status === 403) {
+        showErrorRef.current("You are not authorized to join this meeting", "Access Denied");
+      } else if (error?.status === 400) {
+        showErrorRef.current(error.message || "Meeting is not available at this time", "Meeting Unavailable");
+      } else {
+        showErrorRef.current("Failed to join meeting. Please try again.", "Error");
+      }
     }
   };
 

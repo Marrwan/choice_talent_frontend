@@ -37,6 +37,10 @@ export interface MeetingParticipant {
   };
 }
 
+export interface Invitation extends MeetingParticipant {
+  meeting: Meeting;
+}
+
 export interface CreateMeetingData {
   title: string;
   description?: string;
@@ -74,6 +78,15 @@ export interface MeetingTokenResponse {
       endTime: string;
       meetingLink: string;
     };
+  };
+}
+
+export interface JoinMeetingResponse {
+  success: boolean;
+  data: {
+    meeting: Meeting;
+    token: string;
+    role: 'host' | 'participant';
   };
 }
 
@@ -168,6 +181,12 @@ class MeetingService {
     return response;
   }
 
+  // Join meeting
+  async joinMeeting(meetingId: string): Promise<JoinMeetingResponse> {
+    const response = await apiClient.post<JoinMeetingResponse>(`/meetings/${meetingId}/join`, undefined, true);
+    return response;
+  }
+
   // Update participant status
   async updateParticipantStatus(
     meetingId: string, 
@@ -175,6 +194,12 @@ class MeetingService {
     status: 'invited' | 'accepted' | 'declined' | 'attended'
   ): Promise<{ success: boolean; data: MeetingParticipant }> {
     const response = await apiClient.patch<{ success: boolean; data: MeetingParticipant }>(`/meetings/${meetingId}/participants/${participantId}/status`, { status }, true);
+    return response;
+  }
+
+  // Fetch current user's invitations
+  async getMyInvitations(): Promise<{ success: boolean; data: Invitation[] }> {
+    const response = await apiClient.get<{ success: boolean; data: Invitation[] }>(`/meetings/invitations/mine`, true);
     return response;
   }
 }

@@ -124,25 +124,68 @@ export const userService = {
     return { message: response.message }
   },
 
-  // Upload career profile picture
   async uploadCareerProfilePicture(formData: FormData): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.request<{ success: boolean; message: string }>({
-      method: 'POST',
-      endpoint: '/user/career-profile-picture',
-      data: formData,
-      requiresAuth: true
-    })
-    return { success: response.success, message: response.message }
+    try {
+      const response = await apiClient.request<{ success: boolean; message: string }>({
+        method: 'POST',
+        endpoint: '/user/career-profile-picture',
+        data: formData,
+        requiresAuth: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response
+    } catch (error) {
+      console.error('Error uploading career profile picture:', error)
+      throw error
+    }
   },
 
-  // Delete career profile picture
+  async uploadCareerBannerPicture(formData: FormData): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await apiClient.request<{ success: boolean; message: string }>({
+        method: 'POST',
+        endpoint: '/user/career-banner-picture',
+        data: formData,
+        requiresAuth: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      return response
+    } catch (error) {
+      console.error('Error uploading career banner picture:', error)
+      throw error
+    }
+  },
+
   async deleteCareerProfilePicture(): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.request<{ success: boolean; message: string }>({
-      method: 'DELETE',
-      endpoint: '/user/career-profile-picture',
-      requiresAuth: true
-    })
-    return { success: response.success, message: response.message }
+    try {
+      const response = await apiClient.request<{ success: boolean; message: string }>({
+        method: 'DELETE',
+        endpoint: '/user/career-profile-picture',
+        requiresAuth: true,
+      })
+      return response
+    } catch (error) {
+      console.error('Error deleting career profile picture:', error)
+      throw error
+    }
+  },
+
+  async deleteCareerBannerPicture(): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await apiClient.request<{ success: boolean; message: string }>({
+        method: 'DELETE',
+        endpoint: '/user/career-banner-picture',
+        requiresAuth: true,
+      })
+      return response
+    } catch (error) {
+      console.error('Error deleting career banner picture:', error)
+      throw error
+    }
   },
 
   // Check if profile is complete

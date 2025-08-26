@@ -36,6 +36,7 @@ import {
 import { MessageSquare } from 'lucide-react'
 import { ProfileSwitcher } from '@/components/ui/profile-switcher';
 import Link from 'next/link';
+import { networkingService } from '@/services/networkingService';
 
 export default function DashboardPage() {
   const toast = useToast();
@@ -54,6 +55,9 @@ export default function DashboardPage() {
   });
   const [showProfileModal, setShowProfileModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const [connectionsCount, setConnectionsCount] = useState<number>(0);
+  const [bannerUploading, setBannerUploading] = useState<boolean>(false);
 
   // Guard: redirect recruiters to recruiters dashboard
   useEffect(() => {
@@ -145,6 +149,14 @@ export default function DashboardPage() {
         }));
       }
 
+      // Networking stats for connections
+      try {
+        const statsRes = await networkingService.getStats();
+        if (statsRes && typeof statsRes.connections === 'number') {
+          setConnectionsCount(statsRes.connections);
+        }
+      } catch {}
+
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -213,6 +225,41 @@ export default function DashboardPage() {
       toast.showError('Failed to delete profile picture', 'Error');
     }
     setShowProfileModal(false);
+  };
+
+  // Banner upload handlers
+  const handleBannerSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const isValidType = ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type);
+    if (!isValidType) {
+      toast.showError('Only JPG and PNG files are allowed', 'Invalid file');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.showError('File size must be less than 5MB', 'Too large');
+      return;
+    }
+    handleBannerUpload(file);
+  };
+
+  const handleBannerUpload = async (file: File) => {
+    try {
+      setBannerUploading(true);
+      const formData = new FormData();
+      formData.append('banner', file);
+      const response = await userService.uploadCareerBannerPicture(formData);
+      if (response.success) {
+        toast.showSuccess('Banner updated successfully!', 'Success');
+        await refreshUser();
+      } else {
+        toast.showError(response.message || 'Failed to update banner', 'Error');
+      }
+    } catch (e) {
+      toast.showError('Failed to update banner', 'Error');
+    } finally {
+      setBannerUploading(false);
+    }
   };
 
   const getCompletionPercentage = () => {
@@ -288,21 +335,51 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
+        {/* Header/Profile Banner Section */}
         <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Career Dashboard</h1>
-              <p className="text-gray-600 mt-2">Welcome back, {user?.name || 'User'}!</p>
+          <div className="relative rounded-xl overflow-hidden bg-gray-100 border border-[#d3d3d3]">
+            {/* Banner image */}
+            <div className="w-full h-36 sm:h-48 bg-cover bg-center" style={{ backgroundImage: `url(${getFullImageUrl(userProfile?.careerBannerPicture || '')})` }}></div>
+            {/* Upload banner button */}
+            <div className="absolute top-2 right-2">
+              <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
+              <Button size="sm" variant="outline" className="bg-white/80 hover:bg-white" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
+                {bannerUploading ? 'Uploading...' : 'Change Banner'}
+              </Button>
             </div>
-            <div className="flex items-center gap-2">
-              {user?.isPremium && (
-                <Badge variant="default" className="flex items-center gap-1">
-                  <Crown className="h-3 w-3" />
-                  Premium
-                </Badge>
-              )}
-              <ProfileSwitcher />
+            {/* Profile summary */}
+            <div className="px-4 sm:px-6 pb-4 -mt-8 sm:-mt-10">
+              <div className="flex items-end gap-3">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer" onClick={handleProfilePictureClick}>
+                  {userProfile?.careerProfilePicture ? (
+                    <img src={getFullImageUrl(userProfile.careerProfilePicture)} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <User className="w-8 h-8 text-gray-400" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
+                  <p className="text-sm text-gray-600">Welcome back, {user?.name || 'User'}</p>
+                  <p className="text-sm text-gray-700 mt-1">
+                    {profile?.workExperiences?.[0]?.jobTitle ? `${profile.workExperiences[0].jobTitle} at ${profile.workExperiences[0].companyName || ''}` : 'Update your current position'}
+                  </p>
+                  <div className="flex items-center gap-4 mt-2 text-sm">
+                    <span className="text-gray-700">Connections: <span className="font-semibold">{connectionsCount}</span></span>
+                    <Link href="/dashboard/professional-career-profile" className="text-blue-600 hover:underline">View Career Profile</Link>
+                  </div>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 pb-2 pr-2">
+                  {user?.isPremium && (
+                    <Badge variant="default" className="flex items-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      Premium
+                    </Badge>
+                  )}
+                  <ProfileSwitcher />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -314,10 +391,7 @@ export default function DashboardPage() {
             {/* User Profile Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="mr-2 h-5 w-5" />
-                  User Dashboard
-                </CardTitle>
+                <CardTitle className="flex items-center text-[18px] font-bold">Profile Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -372,22 +446,11 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {/* Career Profile */}
-                <Link href="/dashboard/professional-career-profile" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Career Profile
-                  </Button>
-                </Link>
-
-                {/* Download Profile */}
-                <Button variant="outline" className="w-full justify-start h-12" onClick={handleDownloadProfile}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download Profile
-                </Button>
+                {/* trimmed per spec: removed Career Profile & Download Profile */}
 
                 {/* AppAI */}
                 <Link href="/dashboard/appai" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <Settings className="mr-2 h-4 w-4" />
                     AppAI
                   </Button>
@@ -395,7 +458,7 @@ export default function DashboardPage() {
 
                 {/* Email */}
                 <Link href="/dashboard/email-campaigns" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <Mail className="mr-2 h-4 w-4" />
                     Email
                   </Button>
@@ -403,7 +466,7 @@ export default function DashboardPage() {
 
                 {/* Messaging */}
                 <Link href="/dashboard/chat" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Messaging
                   </Button>
@@ -411,7 +474,7 @@ export default function DashboardPage() {
 
                 {/* Networking */}
                 <Link href="/dashboard/networking" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <Users className="mr-2 h-4 w-4" />
                     Networking
                   </Button>
@@ -419,7 +482,7 @@ export default function DashboardPage() {
 
                 {/* Meeting */}
                 <Link href="/dashboard/meetings" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <Calendar className="mr-2 h-4 w-4" />
                     Meeting
                   </Button>
@@ -434,13 +497,8 @@ export default function DashboardPage() {
                 </Link>
 
                 {/* Earn (placeholder) */}
-                <Button
-                  variant="outline"
-                  className="w-full justify-start h-12"
-                  onClick={() => toast.showInfo('Earn is coming soon', 'Coming soon')}
-                >
-                  <TrendingUp className="mr-2 h-4 w-4" />
-                  Earn
+                <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50" onClick={() => toast.showInfo('Earn is coming soon', 'Coming soon')}>
+                  <TrendingUp className="mr-2 h-4 w-4" /> Earn
                 </Button>
 
                 {/* Divider */}
@@ -450,19 +508,19 @@ export default function DashboardPage() {
                   <div className="text-sm sm:text-base font-bold text-gray-900 mb-2">BUSINESS</div>
                   <div className="space-y-2">
                     <Link href="/recruiters/dashboard" className="block">
-                      <Button variant="outline" className="w-full justify-start h-12">
+                      <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <Briefcase className="mr-2 h-4 w-4" />
                         Recruiter / Employer
                       </Button>
                     </Link>
                     <Link href="/dashboard/vendor" className="block">
-                      <Button variant="outline" className="w-full justify-start h-12">
+                      <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         Vendor
                       </Button>
                     </Link>
                     <Link href="/dashboard/advertise" className="block">
-                      <Button variant="outline" className="w-full justify-start h-12">
+                      <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         Advertise
                       </Button>
@@ -473,41 +531,7 @@ export default function DashboardPage() {
                 {/* Divider */}
                 <div className="border-t pt-2" />
 
-                {/* Additional quick actions */}
-                <Link href="/dashboard/job-hunting-settings" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <Search className="mr-2 h-4 w-4" />
-                    Job Hunting
-                  </Button>
-                </Link>
-
-                <Link href="/dashboard/subscription" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <Crown className="mr-2 h-4 w-4" />
-                    Subscription
-                  </Button>
-                </Link>
-
-                <Link href="/dashboard/career/activities" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <Activity className="mr-2 h-4 w-4" />
-                    Track Activities
-                  </Button>
-                </Link>
-
-                <Link href="/dashboard/career/settings" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Button>
-                </Link>
-
-                <Link href="/dashboard/report-abuse" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    Report Abuse
-                  </Button>
-                </Link>
+                {/* trimmed utilities per spec */}
               </CardContent>
             </Card>
 
