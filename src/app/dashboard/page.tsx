@@ -403,7 +403,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                   <div className="px-4 sm:px-6 pt-8 sm:pt-10 pb-4">
-                    <div className="pl-20 sm:pl-24 space-y-1">
+                    <div className="pl-20 sm:pl-24 pr-2 space-y-1.5">
                       <div className="flex items-center gap-2">
                         <h2 className="text-2xl sm:text-3xl font-semibold leading-tight text-gray-900">{user?.name || 'User'}</h2>
                         {user?.isVerified && (
@@ -417,24 +417,14 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-500 flex items-center gap-1"><MapPin className="h-4 w-4" /> {profile.stateOfResidence}</p>
                       )}
                       <p className="text-sm text-gray-700">{connectionsCount >= 500 ? '500+ connections' : `${connectionsCount} connections`}</p>
-                      <div className="pt-2">
-                        <Link href="/dashboard/professional-career-profile" className="inline-flex items-center rounded-full px-3 py-1 bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm">View Career Profile</Link>
-                        {user?.isPremium && (
-                          <Badge variant="default" className="ml-2 h-6 text-xs align-middle inline-flex items-center gap-1">
-                            <Crown className="h-3 w-3" /> Premium
-                          </Badge>
-                        )}
-                        <span className="ml-2 align-middle inline-block"><ProfileSwitcher /></span>
-                        <Link href="/dashboard/profile" className="ml-2 text-sm text-blue-600 hover:underline align-middle">Edit Profile</Link>
+                      <div className="pt-3 flex flex-col sm:flex-row sm:flex-wrap gap-2">
+                        <Link href="/dashboard/professional-career-profile" className="w-full sm:w-auto">
+                          <Button size="sm" className="w-full justify-center sm:justify-start">View Career Profile</Button>
+                        </Link>
+                        <Link href="/dashboard/profile" className="w-full sm:w-auto">
+                          <Button variant="outline" size="sm" className="w-full justify-center sm:justify-start">Edit Profile</Button>
+                        </Link>
                       </div>
-                      {/* {(() => { const exp = getMostRecentWorkExperience(); return exp?.companyName ? (
-                        <div className="pt-1">
-                          <span className="inline-flex items-center gap-2 rounded-md bg-gray-100 text-gray-800 px-2.5 py-1 text-xs font-medium">
-                            {exp.companyLogoUrl ? <img src={getFullImageUrl(exp.companyLogoUrl)} alt="Company" className="h-4 w-4 rounded-sm" /> : null}
-                            {exp.companyName}
-                          </span>
-                        </div>
-                      ) : null; })()} */}
                     </div>
                   </div>
                 </div>
