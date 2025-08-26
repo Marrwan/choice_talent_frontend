@@ -236,8 +236,8 @@ export default function DashboardPage() {
       toast.showError('Only JPG and PNG files are allowed', 'Invalid file');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.showError('File size must be less than 5MB', 'Too large');
+    if (file.size > 50 * 1024 * 1024) {
+      toast.showError('File size must be less than 50MB', 'Too large');
       return;
     }
     handleBannerUpload(file);
