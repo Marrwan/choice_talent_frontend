@@ -336,69 +336,6 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto p-4 sm:p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Header/Profile Banner Section */}
-        <div className="mb-6 sm:mb-8">
-          <div className="relative rounded-xl overflow-hidden bg-gray-100 border border-[#d3d3d3]">
-            {/* Banner image */}
-            <div className="w-full h-36 sm:h-48 bg-gray-100 flex items-center justify-center relative">
-              {userProfile?.careerBannerPicture ? (
-                <img
-                  src={getFullImageUrl(userProfile.careerBannerPicture)}
-                  alt="Banner"
-                  className="w-full h-full object-contain"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
-              ) : null}
-              {/* Bottom gradient for subtle separation */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent" />
-              {/* Overlapping avatar */}
-              <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 z-10">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer shadow" onClick={handleProfilePictureClick}>
-                  {userProfile?.careerProfilePicture ? (
-                    <img src={getFullImageUrl(userProfile.careerProfilePicture)} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <User className="w-8 h-8 text-gray-400" />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            {/* Upload banner button */}
-            <div className="absolute top-2 right-2">
-              <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
-              <Button size="sm" variant="outline" className="bg-white/80 hover:bg-white" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
-                {bannerUploading ? 'Uploading...' : 'Change Banner'}
-              </Button>
-            </div>
-            {/* Profile summary */}
-            <div className="px-4 sm:px-6 pt-10 sm:pt-12 pb-4">
-              <div className="flex items-end gap-3">
-                <div className="flex-1 pl-20 sm:pl-24">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
-                  <p className="text-sm text-gray-600">Welcome back, {user?.name || 'User'}</p>
-                  <p className="text-sm text-gray-700 mt-1">
-                    {profile?.workExperiences?.[0]?.jobTitle ? `${profile.workExperiences[0].jobTitle} at ${profile.workExperiences[0].companyName || ''}` : 'Update your current position'}
-                  </p>
-                  <div className="flex items-center gap-4 mt-2 text-sm">
-                    <span className="text-gray-700">Connections: <span className="font-semibold">{connectionsCount}</span></span>
-                    <Link href="/dashboard/professional-career-profile" className="text-blue-600 hover:underline">View Career Profile</Link>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-center gap-2 pb-2 pr-2">
-                  {user?.isPremium && (
-                    <Badge variant="default" className="flex items-center gap-1">
-                      <Crown className="h-3 w-3" />
-                      Premium
-                    </Badge>
-                  )}
-                  <ProfileSwitcher />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Main Dashboard Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column - User Info & Quick Actions */}
@@ -406,49 +343,61 @@ export default function DashboardPage() {
             {/* User Profile Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-[18px] font-bold">Profile Summary</CardTitle>
+                <CardTitle className="flex items-center text-[18px] font-bold">Profile</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div 
-                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                    onClick={handleProfilePictureClick}
-                  >
-                    {userProfile?.careerProfilePicture ? (
-                      <img
-                        src={getFullImageUrl(userProfile.careerProfilePicture)}
-                        alt="Profile"
-                        className="w-16 h-16 object-cover rounded-full"
-                        onError={(e) => {
-                          console.error('[Career Dashboard] Image failed to load:', userProfile.careerProfilePicture);
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                        <User className="w-8 h-8 text-gray-400" />
+              <CardContent className="space-y-4 p-0">
+                <div className="relative rounded-xl overflow-hidden bg-gray-100">
+                  <div className="w-full h-36 sm:h-48 bg-gray-100 flex items-center justify-center relative">
+                    {userProfile?.careerBannerPicture ? (
+                       <img
+                         src={getFullImageUrl(userProfile.careerBannerPicture)}
+                         alt="Banner"
+                         className="w-full h-full object-cover object-center block"
+                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                       />
+                     ) : null}
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent" />
+                    <div className="absolute -bottom-8 sm:-bottom-10 left-4 sm:left-6 z-10">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-white overflow-hidden bg-gray-200 cursor-pointer shadow" onClick={handleProfilePictureClick}>
+                        {userProfile?.careerProfilePicture ? (
+                          <img src={getFullImageUrl(userProfile.careerProfilePicture)} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <User className="w-8 h-8 text-gray-400" />
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">{user?.name || 'User'}</h3>
-                    <p className="text-sm text-gray-600 truncate">{user?.email}</p>
-                    <Badge variant={user?.isPremium ? 'default' : 'secondary'} className="mt-1">
-                      {user?.isPremium ? 'Premium Plan' : 'Free Plan'}
-                    </Badge>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">Profile Complete</span>
-                    <span className="text-sm font-medium">{stats.profileComplete}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${stats.profileComplete}%` }}
-                    ></div>
+                  <div className="px-4 sm:px-6 pt-10 sm:pt-12 pb-4">
+                    <div className="flex items-end gap-3">
+                      <div className="flex-1 pl-20 sm:pl-24">
+                        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
+                        <p className="text-sm text-gray-600">Welcome back, {user?.name || 'User'}</p>
+                        <p className="text-sm text-gray-700 mt-1">
+                          {profile?.workExperiences?.[0]?.jobTitle ? `${profile.workExperiences[0].jobTitle} at ${profile.workExperiences[0].companyName || ''}` : 'Update your current position'}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2 text-sm">
+                          <span className="text-gray-700">Connections: <span className="font-semibold">{connectionsCount}</span></span>
+                          <Link href="/dashboard/professional-career-profile" className="text-blue-600 hover:underline">View Career Profile</Link>
+                        </div>
+                      </div>
+                      <div className="hidden sm:flex items-center gap-2 pb-2 pr-2">
+                        {user?.isPremium && (
+                          <Badge variant="default" className="flex items-center gap-1">
+                            <Crown className="h-3 w-3" />
+                            Premium
+                          </Badge>
+                        )}
+                        <ProfileSwitcher />
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={handleBannerSelect} />
+                      <Button size="sm" variant="outline" className="bg-white hover:bg-gray-50" onClick={() => bannerInputRef.current?.click()} disabled={bannerUploading}>
+                        {bannerUploading ? 'Uploading...' : 'Change Banner'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
