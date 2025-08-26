@@ -364,13 +364,27 @@ export default function ProfessionalCareerProfileViewPage() {
                         {experience.jobDescription && (
                           <div className="mb-3">
                           <h5 className="font-semibold text-black mb-2 text-lg">Responsibilities:</h5>
-                          <div className="text-black whitespace-pre-line text-base">{experience.jobDescription}</div>
+                          <div className="text-black text-base">
+                            {experience.jobDescription.split('\n').map((line: string, index: number) => (
+                              <div key={index} className="flex items-start">
+                                <span className="text-black mr-2 mt-1">•</span>
+                                <span className="flex-1">{line.trim()}</span>
+                              </div>
+                            ))}
+                          </div>
                           </div>
                         )}
                         {experience.achievements && (
                           <div className="text-black">
                           <h5 className="font-semibold text-black mb-2 text-lg">Achievements:</h5>
-                          <div className="whitespace-pre-line text-base">{experience.achievements}</div>
+                          <div className="text-black text-base">
+                            {experience.achievements.split('\n').map((line: string, index: number) => (
+                              <div key={index} className="flex items-start">
+                                <span className="text-black mr-2 mt-1">•</span>
+                                <span className="flex-1">{line.trim()}</span>
+                              </div>
+                            ))}
+                          </div>
                           </div>
                         )}
                         
@@ -438,29 +452,6 @@ export default function ProfessionalCareerProfileViewPage() {
                       </div>
                     ))}
                     </div>
-                </div>
-              )}
-
-              {/* NYSC Status */}
-              {profile.nyscStatus && profile.nyscStatus.trim() !== '' && (
-              <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
-                  <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                  NYSC STATUS
-                </h3>
-
-                <div className="content-section bg-white p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                      <span className="nysc-status bg-white text-black border border-black px-4 py-2 rounded-full text-center text-base">
-                          {profile.nyscStatus}
-                        </span>
-                        {profile.nyscStatus === 'Completed' && profile.nyscCompletionDate && (
-                        <span className="text-black text-base">
-                            Completed on: {formatDate(profile.nyscCompletionDate)}
-                          </span>
-                        )}
-                    </div>
-                  </div>
                 </div>
               )}
 
