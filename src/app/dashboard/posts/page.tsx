@@ -263,8 +263,8 @@ export default function PostsPage() {
           return {
             ...post,
             comments: response.data.comments,
-            totalComments: response.data.pagination?.total || response.data.comments.length,
-            hasMoreComments: response.data.pagination?.hasNextPage || false
+            totalComments: post.commentCount ?? response.data.pagination?.total ?? response.data.pagination?.totalCount ?? response.data.total ?? response.data.comments.length,
+            hasMoreComments: (post.commentCount ?? response.data.pagination?.total ?? response.data.pagination?.totalCount ?? response.data.total ?? response.data.comments.length) > response.data.comments.length
           };
         }
         return post;
@@ -299,7 +299,7 @@ export default function PostsPage() {
           return {
             ...post,
             comments: [...post.comments, ...response.data.comments],
-            hasMoreComments: response.data.pagination?.hasNextPage || false
+            hasMoreComments: (post.totalComments ?? post.commentCount ?? 0) > ([...post.comments, ...response.data.comments].length)
           };
         }
         return post;
@@ -728,7 +728,6 @@ export default function PostsPage() {
                           {/* Show only latest 10 comments initially */}
                           {post.comments
                             .filter(comment => comment && comment.author) // Filter out comments without author data
-                            .slice(0, COMMENTS_PER_PAGE)
                             .map((comment) => (
                               <div key={comment.id} className="flex items-start space-x-2">
                                 <Avatar className="h-8 w-8 flex-shrink-0">
@@ -770,7 +769,7 @@ export default function PostsPage() {
                           ))}
                           
                           {/* Load more comments button */}
-                          {post.hasMoreComments && (
+                          {(post.totalComments ?? post.commentCount ?? 0) > (post.comments?.length || 0) && (
                             <div className="text-center pt-2">
                               <Button
                                 variant="outline"
@@ -782,7 +781,7 @@ export default function PostsPage() {
                                 {loadingMoreComments.has(post.id) ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                  `Load ${Math.min(COMMENTS_PER_PAGE, (post.totalComments || 0) - post.comments.length)} more comments`
+                                  `Load ${Math.min(COMMENTS_PER_PAGE, Math.max(0, (post.totalComments ?? post.commentCount ?? 0) - (post.comments?.length || 0)))} more comments`
                                 )}
                               </Button>
                             </div>

@@ -290,8 +290,8 @@ function DashboardPosts() {
           return {
             ...post,
             comments: response.data.comments,
-            totalComments: response.data.pagination?.total || response.data.comments.length,
-            hasMoreComments: response.data.pagination?.hasNextPage || false
+            totalComments: post.commentCount ?? response.data.pagination?.total ?? response.data.pagination?.totalCount ?? response.data.comments.length,
+            hasMoreComments: (post.commentCount ?? response.data.pagination?.total ?? response.data.pagination?.totalCount ?? response.data.comments.length) > response.data.comments.length
           };
         }
         return post;
@@ -326,7 +326,7 @@ function DashboardPosts() {
           return {
             ...post,
             comments: [...post.comments, ...response.data.comments],
-            hasMoreComments: response.data.pagination?.hasNextPage || false
+            hasMoreComments: (post.totalComments ?? post.commentCount ?? 0) > ([...post.comments, ...response.data.comments].length)
           };
         }
         return post;
@@ -752,7 +752,6 @@ function DashboardPosts() {
                         {/* Show only latest 10 comments initially */}
                         {post.comments
                           .filter((comment: any) => comment && comment.author) // Filter out comments without author data
-                          .slice(0, COMMENTS_PER_PAGE)
                           .map((comment: any) => (
                             <div key={comment.id} className="flex items-start space-x-2">
                               <Avatar className="h-8 w-8 flex-shrink-0">
@@ -794,7 +793,7 @@ function DashboardPosts() {
                         ))}
                         
                         {/* Load more comments button */}
-                        {post.hasMoreComments && (
+                        {(post.totalComments ?? post.commentCount ?? 0) > (post.comments?.length || 0) && (
                           <div className="text-center pt-2">
                             <Button
                               variant="outline"
@@ -806,7 +805,7 @@ function DashboardPosts() {
                               {loadingMoreComments.has(post.id) ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
                               ) : (
-                                `Load ${Math.min(COMMENTS_PER_PAGE, (post.totalComments || 0) - post.comments.length)} more comments`
+                                `Load ${Math.min(COMMENTS_PER_PAGE, Math.max(0, (post.totalComments ?? post.commentCount ?? 0) - (post.comments?.length || 0)))} more comments`
                               )}
                             </Button>
                           </div>
@@ -1246,9 +1245,9 @@ export default function DashboardPage() {
                   </div>
                 </div>
                   <div className="px-4 sm:px-6 pt-8 sm:pt-10 pb-4">
-                    <div className="pl-20 sm:pl-24 pr-2 space-y-1.5">
+                    <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
-                        <h2 className="text-2xl sm:text-3xl font-semibold leading-tight text-gray-900">{user?.name || 'User'}</h2>
+                        <h2 className="text-lg sm:text-xl font-semibold leading-tight text-gray-900 w-full">{user?.name || 'User'}</h2>
                         {(user as any)?.isVerified && (
                           <ShieldCheck className="h-5 w-5 text-blue-600" />
                         )}
