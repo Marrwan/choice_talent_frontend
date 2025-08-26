@@ -59,6 +59,27 @@ export default function PostsPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   
+  // Word helpers
+  const WORD_LIMIT = 1500;
+  const PREVIEW_WORDS = 30;
+  const countWords = (text: string): number => {
+    if (!text) return 0;
+    return (text.trim().match(/\S+/g) || []).length;
+  };
+  const truncateWords = (text: string, maxWords: number): string => {
+    const words = (text.trim().match(/\S+/g) || []);
+    if (words.length <= maxWords) return text;
+    return words.slice(0, maxWords).join(' ');
+  };
+  const isLongPost = (text: string): boolean => countWords(text) > PREVIEW_WORDS;
+  const getPreview = (text: string): string => truncateWords(text, PREVIEW_WORDS);
+  
+  // Comment pagination state
+  const [commentPages, setCommentPages] = useState<Record<string, number>>({});
+  const [loadingMoreComments, setLoadingMoreComments] = useState<Set<string>>(new Set());
+  const [collapsedPosts, setCollapsedPosts] = useState<Set<string>>(new Set());
+  const COMMENTS_PER_PAGE = 10;
+  
   // Load posts
   const loadPosts = async (page: number = 1, append: boolean = false) => {
     try {
@@ -70,6 +91,13 @@ export default function PostsPage() {
       } else {
         setPosts(response.data.posts);
       }
+      
+      // Default-collapse long posts
+      const idsToCollapse = new Set<string>();
+      (response.data.posts || []).forEach((p: any) => {
+        if (p?.id && isLongPost(p?.content || '')) idsToCollapse.add(p.id);
+      });
+      setCollapsedPosts(idsToCollapse);
       
       setHasNextPage(response.data.pagination.hasNextPage);
       setCurrentPage(response.data.pagination.currentPage);
@@ -92,6 +120,10 @@ export default function PostsPage() {
   const handleCreatePost = async () => {
     if (!newPost.content.trim()) {
       showError("Post content is required", "Error");
+      return;
+    }
+    if (countWords(newPost.content) > WORD_LIMIT) {
+      showError(`Post exceeds ${WORD_LIMIT} words. Please shorten it.`, "Too long");
       return;
     }
 
@@ -223,23 +255,63 @@ export default function PostsPage() {
   const loadCommentsForPost = async (postId: string) => {
     try {
       setLoadingComments(prev => new Set(prev).add(postId));
-      const response = await postService.getComments(postId);
+      const response = await postService.getComments(postId, 1);
       
       // Update post with comments
       setPosts(prev => prev.map(post => {
         if (post.id === postId) {
           return {
             ...post,
-            comments: response.data.comments
+            comments: response.data.comments,
+            totalComments: response.data.pagination?.total || response.data.comments.length,
+            hasMoreComments: response.data.pagination?.hasNextPage || false
           };
         }
         return post;
       }));
+      
+      // Set initial page
+      setCommentPages(prev => ({ ...prev, [postId]: 1 }));
     } catch (error) {
       console.error('Error loading comments:', error);
       showError("Failed to load comments", "Error");
     } finally {
       setLoadingComments(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(postId);
+        return newSet;
+      });
+    }
+  };
+  
+  // Load more comments for a post
+  const loadMoreComments = async (postId: string) => {
+    try {
+      setLoadingMoreComments(prev => new Set(prev).add(postId));
+      const currentPage = commentPages[postId] || 1;
+      const nextPage = currentPage + 1;
+      
+      const response = await postService.getComments(postId, nextPage);
+      
+      // Update post with additional comments
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            comments: [...post.comments, ...response.data.comments],
+            hasMoreComments: response.data.pagination?.hasNextPage || false
+          };
+        }
+        return post;
+      }));
+      
+      // Update page count
+      setCommentPages(prev => ({ ...prev, [postId]: nextPage }));
+    } catch (error) {
+      console.error('Error loading more comments:', error);
+      showError("Failed to load more comments", "Error");
+    } finally {
+      setLoadingMoreComments(prev => {
         const newSet = new Set(prev);
         newSet.delete(postId);
         return newSet;
@@ -436,7 +508,7 @@ export default function PostsPage() {
                   
                   <div className="flex items-center space-x-2 w-full sm:w-auto">
                     <span className="text-sm text-gray-500 flex-shrink-0">
-                      {newPost.content.length}/1500
+                      {countWords(newPost.content)}/{WORD_LIMIT} words
                     </span>
                     <Button
                       onClick={() => setShowCreateForm(false)}
@@ -512,7 +584,23 @@ export default function PostsPage() {
               
               <CardContent className="pt-0">
                 <div className="space-y-3 sm:space-y-4">
-                  <p className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base">{post.content}</p>
+                  <div className="text-gray-900 whitespace-pre-wrap text-sm sm:text-base">
+                    {collapsedPosts.has(post.id) && isLongPost(post.content)
+                      ? getPreview(post.content) + '...'
+                      : post.content}
+                  </div>
+                  {isLongPost(post.content) && (
+                    <button
+                      className="text-blue-600 text-sm hover:underline"
+                      onClick={() => setCollapsedPosts(prev => {
+                        const next = new Set(prev);
+                        if (next.has(post.id)) next.delete(post.id); else next.add(post.id);
+                        return next;
+                      })}
+                    >
+                      {collapsedPosts.has(post.id) ? 'Read more' : 'Show less'}
+                    </button>
+                  )}
                   
                   {post.imageUrl && (
                     <img 
@@ -637,8 +725,10 @@ export default function PostsPage() {
                         </div>
                       ) : post.comments && post.comments.length > 0 ? (
                         <div className="space-y-3">
+                          {/* Show only latest 10 comments initially */}
                           {post.comments
                             .filter(comment => comment && comment.author) // Filter out comments without author data
+                            .slice(0, COMMENTS_PER_PAGE)
                             .map((comment) => (
                               <div key={comment.id} className="flex items-start space-x-2">
                                 <Avatar className="h-8 w-8 flex-shrink-0">
@@ -678,6 +768,25 @@ export default function PostsPage() {
                               </div>
                             </div>
                           ))}
+                          
+                          {/* Load more comments button */}
+                          {post.hasMoreComments && (
+                            <div className="text-center pt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => loadMoreComments(post.id)}
+                                disabled={loadingMoreComments.has(post.id)}
+                                className="text-sm"
+                              >
+                                {loadingMoreComments.has(post.id) ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  `Load ${Math.min(COMMENTS_PER_PAGE, (post.totalComments || 0) - post.comments.length)} more comments`
+                                )}
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="text-center py-4">
