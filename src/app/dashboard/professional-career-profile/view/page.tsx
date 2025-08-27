@@ -214,22 +214,22 @@ export default function ProfessionalCareerProfileViewPage() {
           <div id="career-profile-content" className="bg-white shadow-xl rounded-lg overflow-hidden pdf-content">
             {/* Profile Header - Name centered at top, clean image, consistent contact typography */}
             <div className="profile-header profile-header-regular p-4 sm:p-8">
-              <div className="text-center mb-4 sm:mb-6">
+              <div className="text-center mb-2 sm:mb-4">
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-tight">{profile.fullName}</h1>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
                 {profile.profilePicture ? (
-                  <div className="profile-image-container w-32 h-32 sm:w-40 sm:h-40 mx-auto sm:mx-0 overflow-hidden rounded-full bg-white">
+                  <div className="profile-image-container w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0 overflow-hidden rounded-full bg-white">
                     <AuthenticatedImage
                       src={profile.profilePicture}
                       alt="Profile"
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-contain object-center"
                       style={{ border: 'none', outline: 'none', filter: 'none' }}
                     />
                   </div>
                 ) : (
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 bg-white rounded-full flex items-center justify-center mx-auto sm:mx-0">
-                    <User className="w-16 h-16 sm:w-20 sm:h-20 text-black" />
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full flex items-center justify-center mx-auto sm:mx-0">
+                    <User className="w-12 h-12 sm:w-16 sm:h-16 text-black" />
                   </div>
                 )}
                 <div className="flex-1">
@@ -427,25 +427,17 @@ export default function ProfessionalCareerProfileViewPage() {
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   EDUCATION
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {profile.higherEducations.map((education: any) => (
                       <div key={education.id} className="bg-white p-4 sm:p-6">
-                        <div className="flex flex-col gap-3 mb-3">
-                          <div className="flex-1">
-                            <span className="text-lg font-semibold text-black mb-1">
-                              {education.institutionName}{education.location ? `, ${education.location}` : ''}
-                            </span>
-                          </div>
+                        <div className="text-lg font-semibold text-black mb-2">
+                          {education.institutionName}{education.location ? `, ${education.location}` : ''}
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                          <div className="flex-1">
-                            <span className="text-lg font-semibold text-black">
-                              {education.courseOfStudy} | <span className="text-base font-medium text-black">{education.qualification}</span>
-                            </span>
-                          </div>
-                          <div className="text-left sm:text-right">
-                            <span className="bg-white text-black px-3 py-1 rounded-full text-base">
-                              {education.entryYear} - {education.graduationYear}
+                        <div className="ml-4">
+                          <div className="flex items-start">
+                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-base text-black">
+                              {education.courseOfStudy}, {education.qualification} | {education.entryYear} - {education.graduationYear}
                             </span>
                           </div>
                         </div>
@@ -462,25 +454,44 @@ export default function ProfessionalCareerProfileViewPage() {
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   BASIC EDUCATION
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {profile.basicEducations.map((education: any) => (
                       <div key={education.id} className="bg-white p-4 sm:p-6">
-                        <div className="flex flex-col gap-3 mb-3">
-                          <div className="flex-1">
-                            <span className="text-lg font-semibold text-black mb-1">
-                              {education.schoolName}
+                        <div className="text-lg font-semibold text-black mb-2">
+                          {education.schoolName}
+                        </div>
+                        <div className="ml-4">
+                          <div className="flex items-start">
+                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-base text-black">
+                              {education.certification}, {education.educationType} | {education.year}
                             </span>
                           </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                          <div className="flex-1">
-                            <span className="text-lg font-semibold text-black">
-                              {education.certification} | <span className="text-base font-medium text-black">{education.educationType}</span>
-                            </span>
-                          </div>
-                          <div className="text-left sm:text-right">
-                            <span className="bg-white text-black px-3 py-1 rounded-full text-base">
-                              {education.year}
+                      </div>
+                    ))}
+                    </div>
+                </div>
+              )}
+
+              {/* Training & Certifications */}
+              {profile.trainingCertifications && profile.trainingCertifications.length > 0 && (
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                  <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
+                  TRAINING
+                </h3>
+                <div className="space-y-3">
+                    {profile.trainingCertifications.map((certification: any) => (
+                      <div key={certification.id} className="bg-white p-4 sm:p-6">
+                        <div className="text-lg font-semibold text-black mb-2">
+                          {certification.trainingOrganization}
+                        </div>
+                        <div className="ml-4">
+                          <div className="flex items-start">
+                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-base text-black">
+                              {certification.certificationName} | {certification.dateOfCertification ? formatDate(certification.dateOfCertification) : 'N/A'}
                             </span>
                           </div>
                         </div>
@@ -497,61 +508,18 @@ export default function ProfessionalCareerProfileViewPage() {
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL MEMBERSHIPS 
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                     {profile.professionalMemberships.map((membership: any) => (
-                      <div key={membership.id} className="membership-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col gap-3 mb-3">
-                          {/* First line: Organization name */}
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                            <div className="flex-1">
-                              <span className="text-lg font-semibold text-black mb-1">
-                                {membership.professionalBodyName}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          {/* Second line: Member type and date */}
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                            <div className="flex-1">
-                              <span className="text-lg font-semibold text-black">
-                                Professional Member | <span className="text-base font-medium text-black">{membership.yearOfJoining}</span>
-                              </span>
-                            </div>
-                          </div>
+                      <div key={membership.id} className="bg-white p-4 sm:p-6">
+                        <div className="text-lg font-semibold text-black mb-2">
+                          {membership.professionalBodyName}
                         </div>
-                      </div>
-                    ))}
-                    </div>
-                </div>
-              )}
-
-              {/* Training & Certifications */}
-              {profile.trainingCertifications && profile.trainingCertifications.length > 0 && (
-              <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
-                  <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                  TRAINING & CERTIFICATIONS
-                </h3>
-                <div className="space-y-4">
-                    {profile.trainingCertifications.map((certification: any) => (
-                      <div key={certification.id} className="certification-item bg-white p-4 sm:p-6">
-                        <div className="flex flex-col gap-3 mb-3">
-                          {/* First line: Organization name */}
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                            <div className="flex-1">
-                              <span className="text-lg font-semibold text-black mb-1">
-                                {certification.trainingOrganization}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          {/* Second line: Certification name and date */}
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                            <div className="flex-1">
-                              <span className="text-lg font-semibold text-black">
-                                {certification.certificationName} | <span className="text-base font-medium text-black">{certification.dateOfCertification ? formatDate(certification.dateOfCertification) : 'N/A'}</span>
-                              </span>
-                            </div>
+                        <div className="ml-4">
+                          <div className="flex items-start">
+                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-base text-black">
+                              Professional Member | {membership.yearOfJoining}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -561,41 +529,17 @@ export default function ProfessionalCareerProfileViewPage() {
               )}
 
               {/* Reference Details */}
-              {profile.referenceDetails && profile.referenceDetails.length > 0 && (
               <div className="mb-6 sm:mb-8">
                 <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                  REFERENCES
+                  REFERENCE
                 </h3>
-                <div className="space-y-4">
-                    {profile.referenceDetails.map((reference: any) => (
-                      <div key={reference.id} className="reference-item bg-white p-4 sm:p-6">
-                        <div className="space-y-3">
-                          <div>
-                            <h4 className="text-lg font-semibold text-black mb-2">{reference.refereeName}</h4>
-                            <p className="text-base font-semibold text-black mb-1">{reference.occupation}</p>
-                            <p className="text-black text-base">{reference.location}</p>
-                          </div>
-                          <div className="space-y-2 text-base text-black">
-                            {reference.emailAddress && (
-                              <div className="flex items-center">
-                                <Mail className="mr-2 h-4 w-4 text-black flex-shrink-0" />
-                                <span>{reference.emailAddress}</span>
-                              </div>
-                            )}
-                            {reference.contactNumber && (
-                              <div className="flex items-center">
-                                <Phone className="mr-2 h-4 w-4 text-black flex-shrink-0" />
-                                <span>{reference.contactNumber}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    </div>
+                <div className="bg-white p-4 sm:p-6">
+                  <div className="text-base text-black">
+                    Available on Request
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
