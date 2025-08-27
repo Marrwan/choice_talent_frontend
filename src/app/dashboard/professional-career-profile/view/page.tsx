@@ -213,43 +213,51 @@ export default function ProfessionalCareerProfileViewPage() {
           {/* Main Profile Content */}
           <div id="career-profile-content" className="bg-white shadow-xl rounded-lg overflow-hidden pdf-content">
             {/* Profile Header - Name centered at top, clean image, consistent contact typography */}
-            <div className="profile-header profile-header-regular p-4 sm:p-8">
-              <div className="text-center mb-2 sm:mb-4">
+            <div className="profile-header profile-header-regular p-3 sm:p-6">
+              <div className="text-center mb-1">
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-tight">{profile.fullName}</h1>
               </div>
-              <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
                 {profile.profilePicture ? (
-                  <div className="profile-image-container w-24 h-24 sm:w-32 sm:h-32 mx-auto sm:mx-0 overflow-hidden rounded-full bg-white">
-                    <AuthenticatedImage
-                      src={profile.profilePicture}
-                      alt="Profile"
-                      className="w-full h-full object-contain object-center"
-                      style={{ border: 'none', outline: 'none', filter: 'none' }}
-                    />
+                  <div className="profile-image-container w-16 h-16 sm:w-24 sm:h-24 mx-auto sm:mx-0 flex-shrink-0">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+                      <AuthenticatedImage
+                        src={profile.profilePicture}
+                        alt="Profile"
+                        className="w-full h-full object-cover object-center"
+                        style={{ 
+                          borderRadius: '50%',
+                          border: 'none', 
+                          outline: 'none', 
+                          filter: 'none',
+                          aspectRatio: '1 / 1'
+                        }}
+                      />
+                    </div>
                   </div>
                 ) : (
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full flex items-center justify-center mx-auto sm:mx-0">
-                    <User className="w-12 h-12 sm:w-16 sm:h-16 text-black" />
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto sm:mx-0 flex-shrink-0 border-2 border-gray-200">
+                    <User className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400" />
                   </div>
                 )}
-                <div className="flex-1">
-                  <div className="contact-info grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-black">
+                <div className="flex-1 flex items-center">
+                  <div className="contact-info grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-black w-full">
                     {profile.emailAddress && (
-                    <div className="flex items-center justify-center sm:justify-start">
-                      <Mail className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
-                        <span className="text-base truncate">{profile.emailAddress}</span>
+                    <div className="flex items-center justify-center sm:justify-start group">
+                      <Mail className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+                        <span className="text-sm sm:text-base text-gray-700 truncate font-medium">{profile.emailAddress}</span>
                     </div>
                     )}
                     {profile.phoneNumber && (
-                    <div className="flex items-center justify-center sm:justify-start">
-                      <Phone className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
-                        <span className="text-base truncate">{profile.phoneNumber}</span>
+                    <div className="flex items-center justify-center sm:justify-start group">
+                      <Phone className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+                        <span className="text-sm sm:text-base text-gray-700 truncate font-medium">{profile.phoneNumber}</span>
                     </div>
                     )}
                     {profile.stateOfResidence && profile.lgaOfResidence && (
-                    <div className="flex items-center justify-center sm:justify-start">
-                      <MapPin className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5 text-black flex-shrink-0" />
-                        <span className="text-base truncate">{`${profile.lgaOfResidence}, ${profile.stateOfResidence}`}</span>
+                    <div className="flex items-center justify-center sm:justify-start group">
+                      <MapPin className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+                        <span className="text-sm sm:text-base text-gray-700 truncate font-medium">{`${profile.lgaOfResidence}, ${profile.stateOfResidence}`}</span>
                     </div>
                     )}
                   </div>
@@ -261,7 +269,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Professional Summary */}
               {profile.professionalSummary && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <FileText className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL SUMMARY
                 </h3>
@@ -274,7 +282,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Persona */}
               {profile.persona && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <User className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PERSONA
                 </h3>
@@ -290,7 +298,7 @@ export default function ProfessionalCareerProfileViewPage() {
                 {/* Expertise & Competencies */}
                   {profile.expertiseCompetencies && profile.expertiseCompetencies.length > 0 && (
                 <div>
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                     <Code className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                         AREA OF EXPERTISE
                   </h3>
@@ -309,7 +317,7 @@ export default function ProfessionalCareerProfileViewPage() {
                 {/* Software Skills */}
                   {profile.softwareSkills && profile.softwareSkills.length > 0 && (
                 <div>
-                      <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                       <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                     <Settings className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                         SOFT & TECHNICAL SKILLS
                   </h3>
@@ -330,7 +338,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Work Experience - Latest First */}
               {profile.workExperiences && profile.workExperiences.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <Briefcase className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   WORK EXPERIENCE
                 </h3>
@@ -423,7 +431,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Education */}
               {profile.higherEducations && profile.higherEducations.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   EDUCATION
                 </h3>
@@ -450,7 +458,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Basic Education */}
               {profile.basicEducations && profile.basicEducations.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   BASIC EDUCATION
                 </h3>
@@ -477,7 +485,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Training & Certifications */}
               {profile.trainingCertifications && profile.trainingCertifications.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   TRAINING
                 </h3>
@@ -504,7 +512,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Professional Memberships */}
               {profile.professionalMemberships && profile.professionalMemberships.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
+                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL MEMBERSHIPS 
                 </h3>
@@ -529,17 +537,19 @@ export default function ProfessionalCareerProfileViewPage() {
               )}
 
               {/* Reference Details */}
-              <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-4 flex items-center">
-                  <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
-                  REFERENCE
-                </h3>
-                <div className="bg-white p-4 sm:p-6">
-                  <div className="text-base text-black">
-                    Available on Request
+              {profile.referenceDetails && profile.referenceDetails.length > 0 && (
+                <div className="mb-6 sm:mb-8">
+                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
+                    <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
+                    REFERENCE
+                  </h3>
+                  <div className="bg-white p-4 sm:p-6">
+                    <div className="text-base text-black">
+                      Available on Request
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
