@@ -1,12 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { NavigationHeader } from '@/components/ui/navigation-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { serviceService } from '@/services/serviceService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type Category = {
@@ -65,7 +66,8 @@ export default function EarnCreateServicesPage() {
   const [query, setQuery] = useState('');
   const [modalStep, setModalStep] = useState<'categories'|'category'>('categories');
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-  const [selected, setSelected] = useState<string[]>([]);
+  type SelectedService = { serviceName: string; category: string };
+  const [selected, setSelected] = useState<SelectedService[]>([]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return RAW_CATEGORIES;
@@ -75,11 +77,13 @@ export default function EarnCreateServicesPage() {
       .filter(cat => cat.name.toLowerCase().includes(q) || cat.services.length > 0);
   }, [query]);
 
-  const toggleService = (svc: string) => {
-    if (selected.includes(svc)) {
-      setSelected(prev => prev.filter(s => s !== svc));
+  const toggleService = (svc: string, category: string) => {
+    const key = `${category}::${svc}`;
+    const exists = selected.find(s => `${s.category}::${s.serviceName}` === key);
+    if (exists) {
+      setSelected(prev => prev.filter(s => `${s.category}::${s.serviceName}` !== key));
     } else if (selected.length < 10) {
-      setSelected(prev => [...prev, svc]);
+      setSelected(prev => [...prev, { serviceName: svc, category }]);
     }
   };
 
@@ -92,9 +96,48 @@ export default function EarnCreateServicesPage() {
   const [allowMessages, setAllowMessages] = useState(true);
 
   const onPublish = async () => {
-    // TODO: Wire to backend in next steps
+    // Save each selected service as a record
+    for (const svc of selected) {
+      await serviceService.upsert({
+        category: svc.category,
+        serviceName: svc.serviceName,
+        description: about,
+        location: useProfileLocation ? 'profile' : undefined,
+        pricingAmount: contactForPrice ? undefined : (rate ? Number(rate) : undefined),
+        pricingCurrency: contactForPrice ? undefined : currency,
+        pricingType: contactForPrice ? undefined : 'hourly',
+        remoteAvailable: remote,
+        allowMessages: allowMessages,
+        status: 'published'
+      } as any);
+    }
     router.push('/dashboard/earn/services');
   };
+
+  // Prefill from existing services on load
+  useEffect(() => {
+    (async () => {
+      try {
+        const mine = await serviceService.mine();
+        if (mine.success && mine.data && mine.data.length > 0) {
+          const svcs: SelectedService[] = mine.data.slice(0, 10).map((s: any) => ({ serviceName: s.serviceName, category: s.category }));
+          setSelected(svcs);
+          const first = mine.data[0];
+          setAbout(first.description || '');
+          setRemote(!!first.remoteAvailable);
+          setUseProfileLocation(first.location === 'profile');
+          if (first.pricingAmount && first.pricingCurrency) {
+            setContactForPrice(false);
+            setCurrency(first.pricingCurrency);
+            setRate(String(first.pricingAmount));
+          } else {
+            setContactForPrice(true);
+          }
+          setAllowMessages(first.allowMessages !== false);
+        }
+      } catch {}
+    })();
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-8">
@@ -111,7 +154,7 @@ export default function EarnCreateServicesPage() {
           {selected.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-2">
               {selected.map(s => (
-                <span key={s} className="text-xs border rounded-full px-3 py-1">{s}</span>
+                <span key={`${s.category}-${s.serviceName}`} className="text-xs border rounded-full px-3 py-1">{s.serviceName}</span>
               ))}
             </div>
           )}
@@ -175,7 +218,7 @@ export default function EarnCreateServicesPage() {
           </div>
 
           <div className="pt-2">
-            <Button disabled onClick={onPublish}>Publish</Button>
+            <Button onClick={onPublish}>Publish</Button>
           </div>
         </CardContent>
       </Card>
@@ -212,10 +255,10 @@ export default function EarnCreateServicesPage() {
                 {activeCategory?.services.map(s => (
                   <label key={s} className="flex items-center justify-between px-4 py-3 border-b">
                     <div className="flex items-center gap-2">
-                      <input type="checkbox" checked={selected.includes(s)} onChange={()=>toggleService(s)} />
+                      <input type="checkbox" checked={!!selected.find(x => x.serviceName === s && x.category === (activeCategory?.name || ''))} onChange={()=>toggleService(s, activeCategory?.name || '')} />
                       <span className="font-medium">{s}</span>
                     </div>
-                    {!selected.includes(s) && selected.length >= 10 && (
+                    {!selected.find(x => x.serviceName === s && x.category === (activeCategory?.name || '')) && selected.length >= 10 && (
                       <span className="text-xs text-gray-400">limit reached</span>
                     )}
                   </label>
