@@ -1314,6 +1314,14 @@ export default function DashboardPage() {
                   </Button>
                 </Link>
 
+                {/* Earn */}
+                <Link href="/dashboard/earn" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Earn
+                  </Button>
+                </Link>
+
                 {/* Meeting */}
                 <Link href="/dashboard/meetings" className="block">
                   <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">

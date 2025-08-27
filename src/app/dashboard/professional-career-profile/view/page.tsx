@@ -213,7 +213,7 @@ export default function ProfessionalCareerProfileViewPage() {
           {/* Main Profile Content */}
           <div id="career-profile-content" className="bg-white shadow-xl rounded-lg overflow-hidden pdf-content">
             {/* Profile Header - Name centered at top, clean image, consistent contact typography */}
-            <div className="profile-header profile-header-regular p-3 sm:p-6">
+            <div className="profile-header profile-header-regular pt-3 sm:pt-4 pb-1 sm:pb-2 px-3 sm:px-6">
               <div className="text-center mb-1">
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-tight">{profile.fullName}</h1>
               </div>
@@ -222,8 +222,8 @@ export default function ProfessionalCareerProfileViewPage() {
                   <div className="profile-image-container w-16 h-16 sm:w-24 sm:h-24 mx-auto sm:mx-0 flex-shrink-0">
                     <div className="w-full h-full rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
                       <AuthenticatedImage
-                        src={profile.profilePicture}
-                        alt="Profile"
+                    src={profile.profilePicture}
+                    alt="Profile"
                         className="w-full h-full object-cover object-center"
                         style={{ 
                           borderRadius: '50%',
@@ -243,20 +243,20 @@ export default function ProfessionalCareerProfileViewPage() {
                 <div className="flex-1 flex items-center">
                   <div className="contact-info grid grid-cols-1 sm:grid-cols-2 gap-1 sm:gap-2 text-black w-full">
                     {profile.emailAddress && (
-                    <div className="flex items-center justify-center sm:justify-start group">
-                      <Mail className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+                      <div className="flex items-center justify-center sm:justify-start group">
+                        <Mail className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm sm:text-base text-gray-700 truncate font-medium">{profile.emailAddress}</span>
                     </div>
                     )}
                     {profile.phoneNumber && (
-                    <div className="flex items-center justify-center sm:justify-start group">
-                      <Phone className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+                      <div className="flex items-center justify-center sm:justify-start group">
+                        <Phone className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm sm:text-base text-gray-700 truncate font-medium">{profile.phoneNumber}</span>
                     </div>
                     )}
                     {profile.stateOfResidence && profile.lgaOfResidence && (
-                    <div className="flex items-center justify-center sm:justify-start group">
-                      <MapPin className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
+                      <div className="flex items-center justify-center sm:justify-start group">
+                        <MapPin className="mr-2 h-4 w-4 text-gray-600 flex-shrink-0 group-hover:text-blue-600 transition-colors" />
                         <span className="text-sm sm:text-base text-gray-700 truncate font-medium">{`${profile.lgaOfResidence}, ${profile.stateOfResidence}`}</span>
                     </div>
                     )}
@@ -265,11 +265,11 @@ export default function ProfessionalCareerProfileViewPage() {
               </div>
             </div>
 
-            <div className="p-4 sm:p-8 text-base">
+            <div className="pt-1 sm:pt-3 px-4 sm:px-8 pb-4 sm:pb-6 text-base">
               {/* Professional Summary */}
               {profile.professionalSummary && (
-              <div className="mb-6 sm:mb-8">
-                <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-2xl font-bold text-black  flex items-center">
                   <FileText className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL SUMMARY
                 </h3>
@@ -281,7 +281,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Persona */}
               {profile.persona && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                 <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <User className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PERSONA
@@ -294,7 +294,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Two Column Layout for Skills */}
               {(profile.expertiseCompetencies && profile.expertiseCompetencies.length > 0) || (profile.softwareSkills && profile.softwareSkills.length > 0) ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-4 sm:mb-6">
                 {/* Expertise & Competencies */}
                   {profile.expertiseCompetencies && profile.expertiseCompetencies.length > 0 && (
                 <div>
@@ -337,7 +337,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Work Experience - Latest First */}
               {profile.workExperiences && profile.workExperiences.length > 0 && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                   <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <Briefcase className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   WORK EXPERIENCE
@@ -397,7 +397,7 @@ export default function ProfessionalCareerProfileViewPage() {
                         )}
                         
                         {/* Reference Information */}
-                        {(experience.employerOrSupervisorName || experience.officialPhone || experience.officialEmail) && (
+                        {/* {(experience.employerOrSupervisorName || experience.officialPhone || experience.officialEmail) && (
                           <div className="mt-4 pt-4 border-t border-black">
                           <h5 className="font-semibold text-black mb-2 text-lg">Reference Information:</h5>
                           <div className="space-y-1 text-base text-black">
@@ -421,7 +421,7 @@ export default function ProfessionalCareerProfileViewPage() {
                               )}
                             </div>
                           </div>
-                        )}
+                        )} */}
                       </div>
                   ))}
                   </div>
@@ -430,7 +430,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Education */}
               {profile.higherEducations && profile.higherEducations.length > 0 && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                   <h3 className="text-2xl font-bold text-black  flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   EDUCATION
@@ -438,8 +438,8 @@ export default function ProfessionalCareerProfileViewPage() {
                 <div className="space-y-3">
                     {profile.higherEducations.map((education: any) => (
                       <div key={education.id} className="bg-white p-4 sm:p-6">
-                        <div className="text-lg font-semibold text-black mb-2">
-                          {education.institutionName}{education.location ? `, ${education.location}` : ''}
+                        <div className="text-lg text-black mb-2">
+                              {education.institutionName}{education.location ? `, ${education.location}` : ''}
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
@@ -451,13 +451,13 @@ export default function ProfessionalCareerProfileViewPage() {
                         </div>
                       </div>
                     ))}
-                    </div>
+                  </div>
                 </div>
               )}
 
               {/* Basic Education */}
               {profile.basicEducations && profile.basicEducations.length > 0 && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                   <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   BASIC EDUCATION
@@ -466,7 +466,7 @@ export default function ProfessionalCareerProfileViewPage() {
                     {profile.basicEducations.map((education: any) => (
                       <div key={education.id} className="bg-white p-4 sm:p-6">
                         <div className="text-lg font-semibold text-black mb-2">
-                          {education.schoolName}
+                              {education.schoolName}
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
@@ -484,7 +484,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Training & Certifications */}
               {profile.trainingCertifications && profile.trainingCertifications.length > 0 && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                 <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <Award className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   TRAINING
@@ -492,9 +492,9 @@ export default function ProfessionalCareerProfileViewPage() {
                 <div className="space-y-3">
                     {profile.trainingCertifications.map((certification: any) => (
                       <div key={certification.id} className="bg-white p-4 sm:p-6">
-                        <div className="text-lg font-semibold text-black mb-2">
+                        <div className="text-lg text-black mb-2">
                           {certification.trainingOrganization}
-                        </div>
+                          </div>
                         <div className="ml-4">
                           <div className="flex items-start">
                             <span className="text-black mr-2 text-xl text-bold">▪</span>
@@ -511,7 +511,7 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Professional Memberships */}
               {profile.professionalMemberships && profile.professionalMemberships.length > 0 && (
-              <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                   <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
                   <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   PROFESSIONAL MEMBERSHIPS 
@@ -519,15 +519,15 @@ export default function ProfessionalCareerProfileViewPage() {
                 <div className="space-y-3">
                     {profile.professionalMemberships.map((membership: any) => (
                       <div key={membership.id} className="bg-white p-4 sm:p-6">
-                        <div className="text-lg font-semibold text-black mb-2">
-                          {membership.professionalBodyName}
+                        <div className="text-lg text-black mb-2">
+                                {membership.professionalBodyName}
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
                             <span className="text-black mr-2 text-xl text-bold">▪</span>
                             <span className="text-base text-black">
                               Professional Member | {membership.yearOfJoining}
-                            </span>
+                              </span>
                           </div>
                         </div>
                       </div>
@@ -538,16 +538,16 @@ export default function ProfessionalCareerProfileViewPage() {
 
               {/* Reference Details */}
               {profile.referenceDetails && profile.referenceDetails.length > 0 && (
-                <div className="mb-6 sm:mb-8">
+              <div className="mb-4 sm:mb-6">
                   <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
-                    <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
+                  <Users className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                     REFERENCE
-                  </h3>
+                </h3>
                   <div className="bg-white p-4 sm:p-6">
                     <div className="text-base text-black">
                       Available on Request
+                      </div>
                     </div>
-                  </div>
                 </div>
               )}
             </div>
