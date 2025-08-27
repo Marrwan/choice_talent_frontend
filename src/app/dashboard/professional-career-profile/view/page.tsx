@@ -443,7 +443,7 @@ export default function ProfessionalCareerProfileViewPage() {
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
-                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-black mr-2 text-xl text-bold">▪</span>
                             <span className="text-base text-black">
                               {education.courseOfStudy}, {education.qualification} | {education.entryYear} - {education.graduationYear}
                             </span>
@@ -470,7 +470,7 @@ export default function ProfessionalCareerProfileViewPage() {
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
-                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-black mr-2 text-xl text-bold">▪</span>
                             <span className="text-base text-black">
                               {education.certification}, {education.educationType} | {education.year}
                             </span>
@@ -497,7 +497,7 @@ export default function ProfessionalCareerProfileViewPage() {
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
-                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-black mr-2 text-xl text-bold">▪</span>
                             <span className="text-base text-black">
                               {certification.certificationName} | {certification.dateOfCertification ? formatDate(certification.dateOfCertification) : 'N/A'}
                             </span>
@@ -524,7 +524,7 @@ export default function ProfessionalCareerProfileViewPage() {
                         </div>
                         <div className="ml-4">
                           <div className="flex items-start">
-                            <span className="text-black mr-2 mt-1">•</span>
+                            <span className="text-black mr-2 text-xl text-bold">▪</span>
                             <span className="text-base text-black">
                               Professional Member | {membership.yearOfJoining}
                             </span>
