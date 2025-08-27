@@ -431,7 +431,7 @@ export default function ProfessionalCareerProfileViewPage() {
               {/* Education */}
               {profile.higherEducations && profile.higherEducations.length > 0 && (
               <div className="mb-6 sm:mb-8">
-                  <h3 className="text-2xl font-bold text-black mb-1 flex items-center">
+                  <h3 className="text-2xl font-bold text-black  flex items-center">
                   <GraduationCap className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-black" />
                   EDUCATION
                 </h3>
