@@ -7,6 +7,9 @@ export interface RecruiterProfile {
   contactEmail?: string
   contactPhone?: string
   logoUrl?: string
+  website?: string
+  workforceSize?: string | number
+  about?: string
 }
 
 export const recruiterService = {
@@ -25,12 +28,15 @@ export const recruiterService = {
       method: 'POST', endpoint: '/recruiter/profile', data: formData, requiresAuth: true
     })
   },
-  async search(params: { position?: string; location?: string; categories?: string[]; jobTypes?: string[] }) {
+  async search(params: { position?: string; description?: string; location?: string; categories?: string[]; jobTypes?: string[]; careerCategories?: string[]; minExperience?: number }) {
     const q = new URLSearchParams()
     if (params.position) q.set('position', params.position)
+    if (params.description) q.set('description', params.description)
     if (params.location) q.set('location', params.location)
     if (params.categories && params.categories.length) q.set('categories', params.categories.join(','))
     if (params.jobTypes && params.jobTypes.length) q.set('jobTypes', params.jobTypes.join(','))
+    if (params.careerCategories && params.careerCategories.length) q.set('careerCategories', params.careerCategories.join(','))
+    if (typeof params.minExperience === 'number') q.set('minExperience', String(params.minExperience))
     return apiClient.request<{ success: boolean; data: { results: any[] } }>({
       method: 'GET', endpoint: `/recruiter/search?${q.toString()}`, requiresAuth: true
     })
@@ -38,6 +44,11 @@ export const recruiterService = {
   async shortlist(candidateUserId: string, notes?: string) {
     return apiClient.request<{ success: boolean; message: string }>({
       method: 'POST', endpoint: '/recruiter/shortlist', data: { candidateUserId, notes }, requiresAuth: true
+    })
+  },
+  async removeShortlist(candidateUserId: string) {
+    return apiClient.request<{ success: boolean; message: string }>({
+      method: 'POST', endpoint: '/recruiter/shortlist/remove', data: { candidateUserId }, requiresAuth: true
     })
   },
   async listShortlist() {

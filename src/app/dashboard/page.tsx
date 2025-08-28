@@ -1366,7 +1366,7 @@ export default function DashboardPage() {
                         Recruitment
                   </Button>
                 </Link>
-                    <Link href="/recruiters/dashboard" className="block">
+                    <Link href="/recruiters/talent-hunt" className="block">
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <Users className="mr-2 h-4 w-4" />
                         Talent Hunt

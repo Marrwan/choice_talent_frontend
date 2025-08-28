@@ -25,6 +25,7 @@ export default function RecruiterCompanyProfilePage() {
   const [workforceSize, setWorkforceSize] = useState('');
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string>('');
+  const [about, setAbout] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -41,6 +42,7 @@ export default function RecruiterCompanyProfilePage() {
           setWebsite(p.website || '');
           setWorkforceSize(p.workforceSize || '');
           if (p.logoUrl) setLogoPreview(p.logoUrl);
+          setAbout(p.about || '');
         }
       } finally {
         setLoading(false);
@@ -60,6 +62,7 @@ export default function RecruiterCompanyProfilePage() {
       if (website) form.append('website', website);
       if (workforceSize) form.append('workforceSize', workforceSize);
       if (logoFile) form.append('logo', logoFile);
+      if (about) form.append('about', about);
       const res = await recruiterService.saveProfileForm(form);
       if (res?.success) {
         router.push('/recruiters/jobs/new');
@@ -102,6 +105,7 @@ export default function RecruiterCompanyProfilePage() {
           <Input placeholder="Contact email" value={contactEmail} onChange={(e)=>setContactEmail(e.target.value)} />
           <Input placeholder="Contact number" value={contactPhone} onChange={(e)=>setContactPhone(e.target.value)} />
           <Input placeholder="Website" value={website} onChange={(e)=>setWebsite(e.target.value)} />
+          <Textarea placeholder="Company Description" value={about} onChange={(e)=>setAbout(e.target.value)} className="min-h-[120px]" />
           <div className="pt-2">
             <Button onClick={handleSave} disabled={saving}>
               {saving ? 'Saving...' : 'Proceed to Job Details'}
