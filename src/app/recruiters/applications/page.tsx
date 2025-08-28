@@ -1,29 +1,42 @@
 "use client"
 
 import { useEffect, useState } from 'react'
-import { recruiterService } from '@/services/recruiterService'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { jobService } from '@/services/jobService'
+import { applicationService } from '@/services/applicationService'
 
 export default function ManageApplicationsPage() {
-  const [position, setPosition] = useState('')
-  const [location, setLocation] = useState('')
-  const [results, setResults] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  const [jobs, setJobs] = useState<any[]>([])
+  const [selectedJobId, setSelectedJobId] = useState<string>('')
+  const [applications, setApplications] = useState<any[]>([])
+  const [loadingJobs, setLoadingJobs] = useState(false)
+  const [loadingApps, setLoadingApps] = useState(false)
 
-  const search = async () => {
-    setLoading(true)
+  const loadJobs = async () => {
+    setLoadingJobs(true)
     try {
-      const res = await recruiterService.search({ position, location })
-      if (res.success) setResults(res.data.results || [])
-    } finally {
-      setLoading(false)
-    }
+      const res = await jobService.listMine()
+      if (res.success) {
+        const list = res.data.jobs || []
+        setJobs(list)
+        if (list.length > 0) setSelectedJobId(list[0].id)
+      }
+    } finally { setLoadingJobs(false) }
   }
 
-  useEffect(() => { search() }, [])
+  const loadApplications = async (jobId: string) => {
+    if (!jobId) { setApplications([]); return }
+    setLoadingApps(true)
+    try {
+      const res = await applicationService.listByJob(jobId)
+      if (res.success) setApplications(res.data.applications || [])
+    } finally { setLoadingApps(false) }
+  }
+
+  useEffect(() => { loadJobs() }, [])
+  useEffect(() => { if (selectedJobId) loadApplications(selectedJobId) }, [selectedJobId])
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -34,30 +47,59 @@ export default function ManageApplicationsPage() {
       </div>
       <h1 className="text-2xl font-semibold mb-4">Manage Applications</h1>
       <Card className="mb-4">
-        <CardContent className="py-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-          <Input placeholder="Position/Designation" value={position} onChange={(e) => setPosition(e.target.value)} />
-          <Input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-          <Button onClick={search} disabled={loading}>{loading ? 'Searching...' : 'Search'}</Button>
+        <CardHeader>
+          <CardTitle>Your Listings</CardTitle>
+          <CardDescription>Select a job to view applications</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingJobs ? (
+            <div>Loading jobs...</div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {jobs.map((job) => (
+                <Button key={job.id} size="sm" variant={selectedJobId === job.id ? 'default' : 'outline'} onClick={()=>setSelectedJobId(job.id)}>
+                  {job.position}
+                </Button>
+              ))}
+              {jobs.length === 0 && <div className="text-gray-500 text-sm">No listings yet.</div>}
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {results.map((r) => (
-          <Card key={r.id}>
-            <CardHeader>
-              <CardTitle>{r.fullName || r.user?.name || 'Professional'}</CardTitle>
-              <CardDescription>{r.persona || r.professionalSummary?.slice(0, 80)}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="text-sm text-gray-600">Location: {r.stateOfResidence || r.jobHuntingSettings?.preferredLocations?.[0] || 'N/A'}</div>
-              <div className="flex gap-2">
-                <Button size="sm" onClick={() => recruiterService.shortlist(r.userId || r.user?.id)}>Shortlist</Button>
-                <Button size="sm" variant="outline" onClick={() => window.open(`/dashboard/professional-career-profile/view?id=${r.userId || r.user?.id}`, '_blank')}>View Profile</Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Applications</CardTitle>
+          <CardDescription>{jobs.find(j=>j.id===selectedJobId)?.position || ''}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingApps ? (
+            <div>Loading applications...</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {applications.map((app) => (
+                <Card key={app.id}>
+                  <CardHeader>
+                    <CardTitle className="text-base">{app.applicant?.name || 'Applicant'}</CardTitle>
+                    <CardDescription>Status: {app.status}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={()=>applicationService.updateStatus(app.id, 'shortlisted').then(()=>loadApplications(selectedJobId))}>Shortlist</Button>
+                      <Button size="sm" variant="outline" onClick={()=>applicationService.updateStatus(app.id, 'rejected').then(()=>loadApplications(selectedJobId))}>Reject</Button>
+                      <Link href={`/recruiters/interviews?candidateId=${app.applicant?.id}&position=${encodeURIComponent(jobs.find(j=>j.id===selectedJobId)?.position||'')}`}>
+                        <Button size="sm" variant="outline">Schedule Interview</Button>
+                      </Link>
+                    </div>
+                    <Link href={`/dashboard/professional-career-profile/view?id=${app.applicant?.id}`} className="text-blue-600 text-sm underline">View Profile</Link>
+                  </CardContent>
+                </Card>
+              ))}
+              {applications.length === 0 && <div className="text-gray-500 text-sm">No applications yet.</div>}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
