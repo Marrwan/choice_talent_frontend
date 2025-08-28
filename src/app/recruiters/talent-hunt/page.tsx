@@ -3,15 +3,18 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { NavigationHeader } from '@/components/ui/navigation-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { recruiterService } from '@/services/recruiterService';
+import { useToast } from '@/lib/useToast';
 
 type Step = 'about' | 'company' | 'job' | 'results' | 'shortlist';
 
 export default function TalentHuntPage() {
   const router = useRouter();
+  const { showError } = useToast();
   const [step, setStep] = useState<Step>('about');
   const [loading, setLoading] = useState(false);
   const [companyExists, setCompanyExists] = useState(false);
@@ -56,6 +59,7 @@ export default function TalentHuntPage() {
     (async () => {
       setLoading(true);
       try {
+        // Always follow normal flow - check company profile
         const res = await recruiterService.getProfile();
         if (res?.success && res.data?.profile) {
           setCompanyExists(true);
@@ -97,17 +101,23 @@ export default function TalentHuntPage() {
   const getMatches = async () => {
     setLoading(true);
     try {
+      // Search for matches based on job criteria
       const res = await recruiterService.search({
         position: filterPosition || position,
         description: filterDescription || description,
         location: filterLocation || (isRemote ? undefined : (jobLocation || undefined)),
         categories: (filterCategoryOfPosition || categoryOfPosition) ? [filterCategoryOfPosition || categoryOfPosition] : undefined,
         jobTypes: (filterJobType || jobType) ? [filterJobType || jobType] : undefined,
-        careerCategories: (filterCareerCats.length ? filterCareerCats : (careerCategory ? [careerCategory] : undefined)),
+        careerCategories: (filterCareerCats.length > 0 ? filterCareerCats[0] : (careerCategory || undefined)),
         minExperience: filterMinExp ? Number(filterMinExp) : (totalYearsExperience ? Number(totalYearsExperience) : undefined)
       });
-      if (res.success) setResults(res.data.results || []);
-      setStep('results');
+      if (res.success) {
+        setResults(res.data.results || []);
+        setStep('results');
+      }
+    } catch (error) {
+      console.error('Error finding matches:', error);
+      showError('Failed to find matches');
     } finally { setLoading(false); }
   };
 
@@ -118,20 +128,41 @@ export default function TalentHuntPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {step === 'about' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Talent Hunt</CardTitle>
-            <CardDescription>Use advanced search to quickly find qualified professionals.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <ul className="list-disc pl-6 text-sm text-gray-700 space-y-1">
-              <li>Speed up your recruitment process.</li>
-              <li>Conduct comprehensive talent search with filters.</li>
-              <li>Shortlist and schedule interviews instantly.</li>
-            </ul>
-            <Button onClick={handleProceedFromAbout} disabled={loading}>{loading ? 'Checking...' : 'Proceed'}</Button>
-          </CardContent>
-        </Card>
+        <div className="max-w-3xl mx-auto px-4 pb-8">
+          <NavigationHeader title="Talent Hunt" />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>About Talent Hunt</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-gray-800">
+              <p>
+                Finding top talents just got easier and better. As a recruiter, employer or HR personnel, you can now source quality career professionals who make great additions to your team.
+              </p>
+
+              <div>
+                <div className="font-semibold mb-1">Benefits</div>
+                <ul className="list-disc pl-6 space-y-2 text-sm">
+                  <li>Use simple tools to simplify complex recruitment procedures.</li>
+                  <li>Find and hire onsite, remote and hybrid career professionals.</li>
+                  <li>Attract great people to help grow your business.</li>
+                  <li>Manage multiple listings and applications with ease.</li>
+                  <li>Improve your recruitment and talent hiring results.</li>
+                  <li>Conclude your recruitment process in record time.</li>
+                  <li>Administer and review pre-interview assessment tests.</li>
+                  <li>Keep the hiring process information-open and available.</li>
+                  <li>Notify followers and non-followers of your company page.</li>
+                </ul>
+              </div>
+
+              <div className="pt-2">
+                <Button onClick={handleProceedFromAbout} disabled={loading}>
+                  {loading ? 'Checking company page...' : 'Proceed'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {step === 'company' && (
@@ -463,7 +494,8 @@ export default function TalentHuntPage() {
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Career Category</label>
-                <select multiple className="w-full border rounded px-3 py-2 text-sm h-28" value={filterCareerCats} onChange={(e)=>setFilterCareerCats(Array.from(e.target.selectedOptions).map(o=>o.value))}>
+                <select className="w-full border rounded px-3 py-2 text-sm" value={filterCareerCats[0] || ''} onChange={(e)=>setFilterCareerCats(e.target.value ? [e.target.value] : [])}>
+                  <option value="">Career Category (any)</option>
                   <option>Undergraduate Internship</option>
                   <option>Graduate Trainee / Interns</option>
                   <option>Entry-Level</option>

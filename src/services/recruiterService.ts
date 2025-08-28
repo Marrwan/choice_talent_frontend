@@ -28,14 +28,20 @@ export const recruiterService = {
       method: 'POST', endpoint: '/recruiter/profile', data: formData, requiresAuth: true
     })
   },
-  async search(params: { position?: string; description?: string; location?: string; categories?: string[]; jobTypes?: string[]; careerCategories?: string[]; minExperience?: number }) {
+  async search(params: { position?: string; description?: string; location?: string; categories?: string[]; jobTypes?: string[]; careerCategories?: string | string[]; minExperience?: number }) {
     const q = new URLSearchParams()
     if (params.position) q.set('position', params.position)
     if (params.description) q.set('description', params.description)
     if (params.location) q.set('location', params.location)
     if (params.categories && params.categories.length) q.set('categories', params.categories.join(','))
     if (params.jobTypes && params.jobTypes.length) q.set('jobTypes', params.jobTypes.join(','))
-    if (params.careerCategories && params.careerCategories.length) q.set('careerCategories', params.careerCategories.join(','))
+    if (params.careerCategories) {
+      if (Array.isArray(params.careerCategories) && params.careerCategories.length) {
+        q.set('careerCategories', params.careerCategories.join(','))
+      } else if (typeof params.careerCategories === 'string') {
+        q.set('careerCategories', params.careerCategories)
+      }
+    }
     if (typeof params.minExperience === 'number') q.set('minExperience', String(params.minExperience))
     return apiClient.request<{ success: boolean; data: { results: any[] } }>({
       method: 'GET', endpoint: `/recruiter/search?${q.toString()}`, requiresAuth: true
@@ -74,6 +80,28 @@ export const recruiterService = {
   async createAssessment(payload: { candidateUserId: string; title: string; questions: any[] }) {
     return apiClient.request({ method: 'POST', endpoint: '/recruiter/assessments', data: payload, requiresAuth: true })
   },
+  listJobs: async function() {
+    return apiClient.request<{ success: boolean; data: { jobs: any[] } }>({ 
+      method: 'GET', 
+      endpoint: '/recruiter/jobs', 
+      requiresAuth: true 
+    })
+  },
+  getJob: async function(jobId: string) {
+    return apiClient.request<{ success: boolean; data: { job: any } }>({ 
+      method: 'GET', 
+      endpoint: `/recruiter/jobs/${jobId}`, 
+      requiresAuth: true 
+    })
+  },
+  createJob: async function(jobData: any) {
+    return apiClient.request<{ success: boolean; data: { job: any } }>({ 
+      method: 'POST', 
+      endpoint: '/recruiter/jobs', 
+      data: jobData,
+      requiresAuth: true 
+    })
+  },
   async listAssessments() {
     return apiClient.request<{ success: boolean; data: { items: any[] } }>({ method: 'GET', endpoint: '/recruiter/assessments', requiresAuth: true })
   },
@@ -81,5 +109,3 @@ export const recruiterService = {
     return apiClient.request({ method: 'POST', endpoint: `/recruiter/assessments/${assessmentId}/responses`, data: { responses }, requiresAuth: true })
   }
 }
-
-
