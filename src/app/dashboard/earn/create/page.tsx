@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { serviceService } from '@/services/serviceService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Image as ImageIcon, X, Upload } from 'lucide-react';
 
 type Category = {
   name: string;
@@ -94,6 +95,43 @@ export default function EarnCreateServicesPage() {
   const [currency, setCurrency] = useState('USD');
   const [rate, setRate] = useState('');
   const [allowMessages, setAllowMessages] = useState(true);
+  const [media, setMedia] = useState<File[]>([]);
+  const [mediaPreview, setMediaPreview] = useState<string[]>([]);
+  const [existingMedia, setExistingMedia] = useState<string[]>([]);
+
+  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length + media.length > 8) {
+      alert('Maximum 8 media files allowed');
+      return;
+    }
+    
+    const newMedia = [...media, ...files];
+    setMedia(newMedia);
+    
+    // Create preview URLs
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setMediaPreview([...mediaPreview, ...newPreviews]);
+  };
+
+  const removeMedia = (index: number) => {
+    // Check if this is an existing media item or a new one
+    if (index < existingMedia.length) {
+      // Remove from existing media
+      const newExistingMedia = existingMedia.filter((_, i) => i !== index);
+      setExistingMedia(newExistingMedia);
+      // Update mediaPreview to reflect the change
+      const newPreviews = mediaPreview.filter((_, i) => i !== index);
+      setMediaPreview(newPreviews);
+    } else {
+      // Remove from new media (adjust index for new media array)
+      const newMediaIndex = index - existingMedia.length;
+      const newMedia = media.filter((_, i) => i !== newMediaIndex);
+      const newPreviews = mediaPreview.filter((_, i) => i !== index);
+      setMedia(newMedia);
+      setMediaPreview(newPreviews);
+    }
+  };
 
   const onPublish = async () => {
     // Save each selected service as a record
@@ -108,8 +146,10 @@ export default function EarnCreateServicesPage() {
         pricingType: contactForPrice ? undefined : 'hourly',
         remoteAvailable: remote,
         allowMessages: allowMessages,
-        status: 'published'
-      } as any);
+        status: 'published',
+        media: media,
+        existingMedia: existingMedia // Pass existing media URLs to preserve them
+      });
     }
     router.push('/dashboard/earn/services');
   };
@@ -134,6 +174,14 @@ export default function EarnCreateServicesPage() {
             setContactForPrice(true);
           }
           setAllowMessages(first.allowMessages !== false);
+          
+          // Load existing media
+          if (first.media && Array.isArray(first.media) && first.media.length > 0) {
+            setExistingMedia(first.media);
+            setMediaPreview(first.media);
+            // Note: We can't set the actual File objects since they're URLs from the server
+            // The media preview will show the existing images
+          }
         }
       } catch {}
     })();
@@ -215,6 +263,48 @@ export default function EarnCreateServicesPage() {
               <input type="checkbox" checked={allowMessages} onChange={(e)=>setAllowMessages(e.target.checked)} />
               Allow non-network users to message you
             </label>
+          </div>
+
+          <div>
+            <div className="text-lg font-semibold mb-2">Media</div>
+            <p className="text-sm text-gray-600 mb-3">Add up to 8 media files to showcase your work and experience.</p>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+              {mediaPreview.map((preview, index) => (
+                <div key={index} className="relative">
+                  <img 
+                    src={preview} 
+                    alt={`Media ${index + 1}`} 
+                    className="w-full h-24 object-cover rounded border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeMedia(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            
+            {(media.length + existingMedia.length) < 8 && (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleMediaUpload}
+                  className="hidden"
+                  id="media-upload"
+                />
+                <label htmlFor="media-upload" className="cursor-pointer">
+                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600">Click to upload media files</p>
+                  <p className="text-xs text-gray-500">Images and videos supported</p>
+                </label>
+              </div>
+            )}
           </div>
 
           <div className="pt-2">

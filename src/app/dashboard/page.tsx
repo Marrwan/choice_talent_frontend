@@ -63,6 +63,7 @@ import { ProfileSwitcher } from '@/components/ui/profile-switcher';
 import Link from 'next/link';
 import { networkingService } from '@/services/networkingService';
 import { postService } from '@/services/postService';
+import { serviceService } from '@/services/serviceService';
 
 // Full Posts functionality for dashboard
 function DashboardPosts() {
@@ -1315,12 +1316,27 @@ export default function DashboardPage() {
                 </Link>
 
                 {/* Earn */}
-                <Link href="/dashboard/earn" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    Earn
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50"
+                  onClick={async () => {
+                    try {
+                      const res = await serviceService.mine();
+                      if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+                        // User has at least one service → go to Services home
+                        router.push('/dashboard/earn/services');
+                      } else {
+                        // No services yet → go to Earn landing to set up
+                        router.push('/dashboard/earn');
+                      }
+                    } catch {
+                      router.push('/dashboard/earn');
+                    }
+                  }}
+                >
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Earn
+                </Button>
 
                 {/* Meeting */}
                 <Link href="/dashboard/meetings" className="block">
@@ -1337,11 +1353,6 @@ export default function DashboardPage() {
                     Posts
                   </Button>
                 </Link>
-
-                {/* Earn (placeholder) */}
-                <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50" onClick={() => toast.showInfo('Earn is coming soon', 'Coming soon')}>
-                  <TrendingUp className="mr-2 h-4 w-4" /> Earn
-                </Button>
 
                 {/* Divider */}
                 <div className="border-t pt-2" />

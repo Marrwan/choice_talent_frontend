@@ -11,17 +11,57 @@ export interface ServicePayload {
   remoteAvailable?: boolean;
   allowMessages?: boolean;
   status?: 'draft' | 'published';
+  media?: File[];
+  existingMedia?: string[];
 }
 
 export const serviceService = {
   async upsert(payload: ServicePayload) {
-    return apiClient.post('/services', payload, { auth: true });
+    const formData = new FormData();
+    
+    // Add text fields
+    Object.keys(payload).forEach(key => {
+      if (key !== 'media' && payload[key as keyof ServicePayload] !== undefined) {
+        formData.append(key, String(payload[key as keyof ServicePayload]));
+      }
+    });
+    
+    // Add media files
+    if (payload.media && payload.media.length > 0) {
+      payload.media.forEach(file => {
+        formData.append('media', file);
+      });
+    }
+    
+    return apiClient.post('/services', formData, true);
   },
   async mine() {
-    return apiClient.get('/services/mine', { auth: true });
+    return apiClient.get('/services/mine', true);
+  },
+  async getById(id: string) {
+    return apiClient.get(`/services/${id}`);
+  },
+  async update(id: string, payload: ServicePayload) {
+    const formData = new FormData();
+    
+    // Add text fields
+    Object.keys(payload).forEach(key => {
+      if (key !== 'media' && payload[key as keyof ServicePayload] !== undefined) {
+        formData.append(key, String(payload[key as keyof ServicePayload]));
+      }
+    });
+    
+    // Add media files
+    if (payload.media && payload.media.length > 0) {
+      payload.media.forEach(file => {
+        formData.append('media', file);
+      });
+    }
+    
+    return apiClient.put(`/services/${id}`, formData, true);
   },
   async remove(id: string) {
-    return apiClient.delete(`/services/${id}`, { auth: true });
+    return apiClient.delete(`/services/${id}`, true);
   },
   async search(params: { q?: string; category?: string }) {
     const sp = new URLSearchParams(params as any).toString();
