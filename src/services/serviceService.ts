@@ -21,7 +21,9 @@ export const serviceService = {
     
     // Add text fields
     Object.keys(payload).forEach(key => {
-      if (key !== 'media' && payload[key as keyof ServicePayload] !== undefined) {
+      if (key === 'media') return;
+      if (key === 'existingMedia') return;
+      if (payload[key as keyof ServicePayload] !== undefined) {
         formData.append(key, String(payload[key as keyof ServicePayload]));
       }
     });
@@ -31,6 +33,10 @@ export const serviceService = {
       payload.media.forEach(file => {
         formData.append('media', file);
       });
+    }
+    // Add existing media URLs (to preserve)
+    if (payload.existingMedia && payload.existingMedia.length > 0) {
+      formData.append('existingMedia', JSON.stringify(payload.existingMedia));
     }
     
     return apiClient.post('/services', formData, true);
@@ -46,7 +52,9 @@ export const serviceService = {
     
     // Add text fields
     Object.keys(payload).forEach(key => {
-      if (key !== 'media' && payload[key as keyof ServicePayload] !== undefined) {
+      if (key === 'media') return;
+      if (key === 'existingMedia') return;
+      if (payload[key as keyof ServicePayload] !== undefined) {
         formData.append(key, String(payload[key as keyof ServicePayload]));
       }
     });
@@ -56,6 +64,10 @@ export const serviceService = {
       payload.media.forEach(file => {
         formData.append('media', file);
       });
+    }
+    // Add existing media URLs (to preserve)
+    if (payload.existingMedia && payload.existingMedia.length > 0) {
+      formData.append('existingMedia', JSON.stringify(payload.existingMedia));
     }
     
     return apiClient.put(`/services/${id}`, formData, true);

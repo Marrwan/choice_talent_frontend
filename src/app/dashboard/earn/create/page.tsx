@@ -134,21 +134,13 @@ export default function EarnCreateServicesPage() {
   };
 
   const onPublish = async () => {
-    // Save each selected service as a record
+    // Create/ensure draft entries for each selected service only.
+    // Per-service details (about, pricing, location, media) are edited on each service page.
     for (const svc of selected) {
       await serviceService.upsert({
         category: svc.category,
         serviceName: svc.serviceName,
-        description: about,
-        location: useProfileLocation ? 'profile' : undefined,
-        pricingAmount: contactForPrice ? undefined : (rate ? Number(rate) : undefined),
-        pricingCurrency: contactForPrice ? undefined : currency,
-        pricingType: contactForPrice ? undefined : 'hourly',
-        remoteAvailable: remote,
-        allowMessages: allowMessages,
-        status: 'published',
-        media: media,
-        existingMedia: existingMedia // Pass existing media URLs to preserve them
+        status: 'draft'
       });
     }
     router.push('/dashboard/earn/services');
@@ -308,7 +300,8 @@ export default function EarnCreateServicesPage() {
           </div>
 
           <div className="pt-2">
-            <Button onClick={onPublish}>Publish</Button>
+            <Button onClick={onPublish}>Save services</Button>
+            <div className="text-xs text-gray-500 mt-2">After saving, open each service to add its own description, availability, pricing, and media.</div>
           </div>
         </CardContent>
       </Card>

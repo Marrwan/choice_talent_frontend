@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { serviceService } from '@/services/serviceService';
+import { professionalCareerProfileService } from '@/services/professionalCareerProfileService';
 import { Image as ImageIcon, X, Upload, Edit, Trash2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,6 +27,8 @@ export default function ServiceDetailPage() {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [useProfileLocation, setUseProfileLocation] = useState(false);
+  const [profileLocationText, setProfileLocationText] = useState<string>('');
   const [pricingAmount, setPricingAmount] = useState('');
   const [pricingCurrency, setPricingCurrency] = useState('USD');
   const [pricingType, setPricingType] = useState('hourly');
@@ -42,6 +45,14 @@ export default function ServiceDetailPage() {
     }
   }, [serviceId]);
 
+  // Clear transient uploads/previews when leaving edit mode
+  useEffect(() => {
+    if (!editing) {
+      setMedia([]);
+      setMediaPreview([]);
+    }
+  }, [editing]);
+
   const loadService = async () => {
     try {
       setLoading(true);
@@ -55,6 +66,7 @@ export default function ServiceDetailPage() {
         setCategory(serviceData.category || '');
         setDescription(serviceData.description || '');
         setLocation(serviceData.location || '');
+        setUseProfileLocation(serviceData.location === 'profile');
         setPricingAmount(serviceData.pricingAmount ? String(serviceData.pricingAmount) : '');
         setPricingCurrency(serviceData.pricingCurrency || 'USD');
         setPricingType(serviceData.pricingType || 'hourly');
@@ -63,6 +75,16 @@ export default function ServiceDetailPage() {
         setStatus(serviceData.status || 'published');
         setExistingMedia(serviceData.media || []);
       }
+
+      // Load professional profile for location label
+      try {
+        const prof = await professionalCareerProfileService.getProfile();
+        if (prof.success && prof.data && prof.data.profile) {
+          const p = prof.data.profile;
+          const parts = [p.lgaOfResidence, p.stateOfResidence, p.countryOfResidence].filter(Boolean);
+          setProfileLocationText(parts.join(', ') || p.stateOfResidence || 'Profile location');
+        }
+      } catch {}
     } catch (error) {
       console.error('Error loading service:', error);
     } finally {
@@ -105,18 +127,22 @@ export default function ServiceDetailPage() {
         category,
         serviceName,
         description,
-        location,
+        location: useProfileLocation ? 'profile' : undefined,
         pricingAmount: pricingAmount ? Number(pricingAmount) : undefined,
         pricingCurrency,
         pricingType,
         remoteAvailable,
         allowMessages,
         status,
-        media
+        media,
+        existingMedia
       };
 
       const response = await serviceService.update(serviceId, payload);
       if (response.success) {
+        // Clear transient local uploads and previews
+        setMedia([]);
+        setMediaPreview([]);
         setEditing(false);
         await loadService(); // Reload the service data
       }
@@ -253,19 +279,40 @@ export default function ServiceDetailPage() {
                 )}
               </div>
 
-              {/* Location */}
+              {/* Work location */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Location
-                </label>
+                <div className="block text-sm font-medium text-gray-700 mb-1">Work location</div>
                 {editing ? (
-                  <Input
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="Enter location or 'Remote'"
-                  />
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm">
+                      <input 
+                        type="checkbox" 
+                        checked={useProfileLocation} 
+                        onChange={(e) => setUseProfileLocation(e.target.checked)} 
+                      />
+                      <span>Use current profile location{profileLocationText ? ` (${profileLocationText})` : ''}</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-sm">
+                      <input 
+                        type="checkbox" 
+                        checked={remoteAvailable} 
+                        onChange={(e) => setRemoteAvailable(e.target.checked)} 
+                      />
+                      <span>I am available to work remotely</span>
+                    </label>
+                  </div>
                 ) : (
-                  <div className="text-gray-800">{service.location || 'Not specified'}</div>
+                  <div className="text-gray-800 text-sm">
+                    {useProfileLocation && (
+                      <div>Profile location{profileLocationText ? `: ${profileLocationText}` : ''}</div>
+                    )}
+                    {remoteAvailable && (
+                      <div>Remote available</div>
+                    )}
+                    {!useProfileLocation && !remoteAvailable && (
+                      <div>Not specified</div>
+                    )}
+                  </div>
                 )}
               </div>
 
