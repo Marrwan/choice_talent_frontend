@@ -80,6 +80,7 @@ export default function RecruiterDashboardPage() {
   const handleCreateJob = () => {
     setActiveSection('create-job')
   }
+  const [dashboardSelectedJobId, setDashboardSelectedJobId] = useState<string>("")
 
   const handleTalentHunt = () => {
     router.push('/recruiters/talent-hunt')
@@ -379,11 +380,15 @@ export default function RecruiterDashboardPage() {
                 )}
 
             {activeSection === 'jobs' && (
-              <JobsSection jobs={jobs} onCreateJob={handleCreateJob} onViewApplications={() => setActiveSection('applications')} />
+              <JobsSection 
+                jobs={jobs} 
+                onCreateJob={handleCreateJob} 
+                onViewApplications={(jobId: string) => { setDashboardSelectedJobId(jobId); setActiveSection('applications') }} 
+              />
             )}
 
             {activeSection === 'applications' && (
-              <ApplicationsSection />
+              <ApplicationsSection initialSelectedJobId={dashboardSelectedJobId} />
             )}
 
             {activeSection === 'shortlist' && (
@@ -429,7 +434,7 @@ export default function RecruiterDashboardPage() {
 }
 
 // Section Components
-function JobsSection({ jobs, onCreateJob, onViewApplications }: { jobs: any[], onCreateJob: () => void, onViewApplications: () => void }) {
+function JobsSection({ jobs, onCreateJob, onViewApplications }: { jobs: any[], onCreateJob: () => void, onViewApplications: (jobId: string) => void }) {
   return (
         <Card>
           <CardHeader>
@@ -462,7 +467,7 @@ function JobsSection({ jobs, onCreateJob, onViewApplications }: { jobs: any[], o
                     </div>
                   </div>
                   <div className="flex gap-2 ml-4">
-                    <Button size="sm" variant="outline" onClick={onViewApplications}>View Applications</Button>
+                    <Button size="sm" variant="outline" onClick={() => onViewApplications(job.id)}>View Applications</Button>
                   </div>
                 </div>
               </div>
@@ -474,7 +479,7 @@ function JobsSection({ jobs, onCreateJob, onViewApplications }: { jobs: any[], o
   )
 }
 
-function ApplicationsSection() {
+function ApplicationsSection({ initialSelectedJobId }: { initialSelectedJobId?: string }) {
   const [jobs, setJobs] = useState<any[]>([])
   const [selectedJobId, setSelectedJobId] = useState<string>('')
   const [applications, setApplications] = useState<any[]>([])
@@ -486,6 +491,12 @@ function ApplicationsSection() {
   useEffect(() => {
     loadJobs()
   }, [])
+
+  useEffect(() => {
+    if (initialSelectedJobId) {
+      setSelectedJobId(initialSelectedJobId)
+    }
+  }, [initialSelectedJobId])
 
   const loadJobs = async () => {
     setLoadingJobs(true)
