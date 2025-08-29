@@ -1431,19 +1431,149 @@ export default function DashboardPage() {
 
           {/* Right Column - Main Content */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            {/* Posts Section replacing removed cards */}
+            {/* Career Profile Overview */}
             <Card>
-              <CardHeader className="pb-3 sm:pb-4">
-                    <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg sm:text-xl">Posts</CardTitle>
-                  <Link href="/dashboard/posts"><Button variant="outline" size="sm">Open</Button></Link>
-                      </div>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg sm:text-xl">Career Profile Overview</CardTitle>
+                  <Link href="/dashboard/professional-career-profile"><Button variant="outline" size="sm">View Full Profile</Button></Link>
+                </div>
               </CardHeader>
               <CardContent>
-                <DashboardPosts />
+                {profile ? (
+                  <div className="space-y-3">
+                    {/* Header with profile picture and name */}
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={userProfile?.careerProfilePicture ? getFullImageUrl(userProfile.careerProfilePicture) : undefined} />
+                        <AvatarFallback>{(userProfile?.name?.[0] || 'U')}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-semibold text-sm sm:text-base">{userProfile?.name}</div>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-600">{profile.professionalSummary || 'I have about 5 years of experience in management...'}</p>
+                    {/* quick stats row */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Briefcase className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{profile.workExperiences?.length || 0}</span>
+                        <span className="text-gray-500">Experience</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <GraduationCap className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{Math.max(profile.higherEducations?.length || 0, profile.basicEducations?.length || 0)}</span>
+                        <span className="text-gray-500">Education</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Award className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{profile.trainingCertifications?.length || 0}</span>
+                        <span className="text-gray-500">Certifications</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <Users className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{profile.referenceDetails?.length || 0}</span>
+                        <span className="text-gray-500">References</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No profile data available</p>
+                )}
               </CardContent>
             </Card>
+
+            {/* Job Hunting Status */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg sm:text-xl">Job Hunting Status</CardTitle>
+                  <Link href="/dashboard/job-hunting-settings"><Button variant="outline" size="sm">Configure</Button></Link>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {jobSettings ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Career Category</span>
+                      <Badge variant="outline">{jobSettings.careerCategory || 'Not set'}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Job Types</span>
+                      <div className="flex gap-1">
+                        {jobSettings.jobTypes?.map((type: string) => (
+                          <Badge key={type} variant="outline" className="text-xs">{type}</Badge>
+                        )) || <span className="text-gray-500">Not set</span>}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Preferred Locations</span>
+                      <div className="flex gap-1">
+                        {jobSettings.preferredLocations?.slice(0, 2).map((location: string) => (
+                          <Badge key={location} variant="outline" className="text-xs">{location}</Badge>
+                        )) || <span className="text-gray-500">Not set</span>}
+                        {jobSettings.preferredLocations?.length > 2 && (
+                          <Badge variant="outline" className="text-xs">+{jobSettings.preferredLocations.length - 2} more</Badge>
+                        )}
+                      </div>
+                    </div>
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No job hunting settings available</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Premium Subscription */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg sm:text-xl">Premium Subscription</CardTitle>
+                  <Link href="/dashboard/subscription"><Button variant="outline" size="sm">View Subscriptions</Button></Link>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="text-sm text-yellow-700 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>No Active Subscription</span>
+                  </div>
+                  <p className="text-sm text-gray-500">You're eligible for subscription services</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Activity Statistics */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg sm:text-xl">Activity Statistics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Profile Complete</span>
+                    <span className="font-medium">{stats.profileComplete}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-blue-600 h-2 rounded-full transition-all duration-300" style={{ width: `${stats.profileComplete}%` }}></div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Job Applications</span>
+                    <span className="font-medium">{stats.jobApplications}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Interviews</span>
+                    <span className="font-medium">{stats.interviews}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-600">Offers</span>
+                    <span className="font-medium">{stats.offers}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
