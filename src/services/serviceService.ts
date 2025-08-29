@@ -44,6 +44,12 @@ export const serviceService = {
   async mine() {
     return apiClient.get('/services/mine', true);
   },
+  async getOverview() {
+    return apiClient.get('/services/overview/mine', true);
+  },
+  async saveOverview(payload: { description: string; availability: string[]; pricing: string | null; pricingType?: 'hourly' | 'daily' | 'monthly' | null; }) {
+    return apiClient.post('/services/overview/mine', payload, true);
+  },
   async getById(id: string) {
     return apiClient.get(`/services/${id}`);
   },

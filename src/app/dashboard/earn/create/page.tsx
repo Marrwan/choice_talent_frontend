@@ -10,6 +10,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { serviceService } from '@/services/serviceService';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Image as ImageIcon, X, Upload } from 'lucide-react';
+import { useAuth } from '@/lib/store';
+import { useToast } from '@/lib/useToast';
 
 type Category = {
   name: string;
@@ -62,6 +64,8 @@ const RAW_CATEGORIES: Category[] = [
 
 export default function EarnCreateServicesPage() {
   const router = useRouter();
+  const { user } = useAuth();
+  const toast = useToast();
   // Add services modal
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -134,6 +138,13 @@ export default function EarnCreateServicesPage() {
   };
 
   const onPublish = async () => {
+    // Check premium status for creating services
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to create services. Premium users can create services, manage requests, and monetize their expertise.', 'Premium Required');
+      router.push('/dashboard/subscription');
+      return;
+    }
+
     // Create/ensure draft entries for each selected service only.
     // Per-service details (about, pricing, location, media) are edited on each service page.
     for (const svc of selected) {

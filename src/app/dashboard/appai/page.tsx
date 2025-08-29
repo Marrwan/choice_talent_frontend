@@ -1,11 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowRight, Settings, Mail, Rocket, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/lib/store';
+import { useToast } from '@/lib/useToast';
 
 export default function AppAIIntroPage() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const toast = useToast();
+  
   const benefits = [
     'Dedicated tech support and assistance',
     'Real time applications for new openings',
@@ -64,12 +71,20 @@ export default function AppAIIntroPage() {
         </Card>
 
         <div className="flex justify-end">
-          <Link href="/dashboard/job-hunting-settings">
-            <Button className="h-12">
-              Proceed
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
+          <Button 
+            className="h-12"
+            onClick={() => {
+              if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+                toast.showError('AppAI subscription required. This premium AI-powered service helps optimize your job search and career profile. Please subscribe to continue.', 'Premium Required');
+                router.push('/dashboard/subscription');
+                return;
+              }
+              router.push('/dashboard/job-hunting-settings');
+            }}
+          >
+            Proceed
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>

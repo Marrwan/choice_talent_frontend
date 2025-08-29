@@ -2,13 +2,17 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { NavigationHeader } from '@/components/ui/navigation-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/store';
+import { useToast } from '@/lib/useToast';
 
 export default function EarnLandingPage() {
   const { user } = useAuth();
+  const router = useRouter();
+  const toast = useToast();
   const [showAll, setShowAll] = React.useState(false);
 
   return (
@@ -128,9 +132,19 @@ export default function EarnLandingPage() {
           </div>
 
           <div className="pt-2">
-            <Link href="/dashboard/earn/create" className="inline-block">
-              <Button size="lg">Proceed</Button>
-            </Link>
+            <Button 
+              size="lg"
+              onClick={() => {
+                if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+                  toast.showError('Upgrade to Premium to access Earn features. Premium users can create services, manage requests, and monetize their expertise.', 'Premium Required');
+                  router.push('/dashboard/subscription');
+                  return;
+                }
+                router.push('/dashboard/earn/create');
+              }}
+            >
+              Proceed
+            </Button>
           </div>
         </CardContent>
       </Card>

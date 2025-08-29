@@ -20,8 +20,13 @@ import {
   MapPin,
   Users,
   Edit,
-  Trash2
+  Trash2,
+  Save,
+  X
 } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/lib/useToast';
 
 export default function EarnMyServicesPage() {
   const [services, setServices] = useState<any[]>([]);
@@ -34,49 +39,91 @@ export default function EarnMyServicesPage() {
   const [location, setLocation] = useState<string>('');
   const [connectionsCount, setConnectionsCount] = useState<number>(0);
   const [activeSection, setActiveSection] = useState<string>('home');
+  const [isEditingOverview, setIsEditingOverview] = useState(false);
+  const [editOverview, setEditOverview] = useState('');
+  const [editAvailability, setEditAvailability] = useState<string[]>([]);
+  const [editPricing, setEditPricing] = useState('');
+  const toast = useToast();
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await serviceService.mine();
-        if (res.success && res.data) {
-          setServices(res.data || []);
-          if (res.data && res.data.length > 0) {
-            const first = res.data[0];
-            setOverview(first.description || '');
-            const avail: string[] = [];
-            if (first.remoteAvailable) avail.push('Remote');
-            if (first.location && first.location !== 'profile') avail.push('In person');
-            setAvailability(avail);
-            if (first.pricingAmount && first.pricingCurrency) {
-              setPricing(`Starting at ${first.pricingCurrency} ${Number(first.pricingAmount).toFixed(2)}/hr`);
-            }
-          }
+        // Load services
+        const servicesRes: any = await serviceService.mine();
+        if (servicesRes && servicesRes.success && servicesRes.data) {
+          setServices(servicesRes.data || []);
         }
+
+        // Load overview (persisted)
+        try {
+          const ovRes: any = await serviceService.getOverview();
+          if (ovRes && ovRes.success && ovRes.data && ovRes.data.overview) {
+            const ov = ovRes.data.overview;
+            setOverview(ov.description || '');
+            setAvailability(Array.isArray(ov.availability) ? ov.availability : []);
+            setPricing(ov.pricing || null);
+          }
+        } catch (e) {
+          console.error('Failed to load service overview', e);
+        }
+
         // Load professional profile for header
         try {
-          const prof = await professionalCareerProfileService.getProfile();
-          if (prof.success && prof.data && prof.data.profile) {
+          const prof: any = await professionalCareerProfileService.getProfile();
+          if (prof && prof.success && prof.data && prof.data.profile) {
             const profile = prof.data.profile;
             setFullName(profile.fullName || '');
             setProfilePicture(profile.profilePicture || undefined);
-            
-            // Get current position from work experience
+
             if (profile.workExperiences && profile.workExperiences.length > 0) {
               const mostRecent = profile.workExperiences[0];
               setCurrentPosition(`${mostRecent.designation || ''}${mostRecent.companyName ? ` at ${mostRecent.companyName}` : ''}`);
             }
-            
-            // Get location
             setLocation(profile.stateOfResidence || '');
-            
-            // Set connections count (placeholder for now)
             setConnectionsCount(0);
           }
         } catch {}
       } catch {}
     })();
   }, []);
+
+  const handleSaveOverview = async () => {
+    try {
+      const payload = {
+        description: editOverview,
+        availability: editAvailability,
+        pricing: editPricing || null,
+        pricingType: null as any
+      };
+      const res: any = await serviceService.saveOverview(payload);
+      if (res && res.success) {
+        setOverview(editOverview);
+        setAvailability(editAvailability);
+        setPricing(editPricing || null);
+        setIsEditingOverview(false);
+        toast.showSuccess('Overview updated successfully!', 'Success');
+      } else {
+        toast.showError('Failed to update overview', 'Error');
+      }
+    } catch (e) {
+      console.error('Error saving overview', e);
+      toast.showError('Failed to update overview', 'Error');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditOverview(overview);
+    setEditAvailability(availability);
+    setEditPricing(pricing || '');
+    setIsEditingOverview(false);
+  };
+
+  const startEditing = () => {
+    setEditOverview(overview);
+    setEditAvailability([...availability]);
+    setEditPricing(pricing || '');
+    setIsEditingOverview(true);
+  };
 
   return (
     <div className="container mx-auto p-4 sm:p-6">
@@ -184,18 +231,95 @@ export default function EarnMyServicesPage() {
               <>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Overview</CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle>Overview</CardTitle>
+                      {!isEditingOverview && (
+                        <Button variant="outline" size="sm" onClick={startEditing}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </Button>
+                      )}
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <p className="text-gray-800 whitespace-pre-line">{overview || 'Add a description in your service details.'}</p>
-                    <div className="space-y-2">
-                      <div className="font-medium">Availability</div>
-                      <div className="text-gray-700 text-sm">{availability.length > 0 ? availability.join(' or ') : 'Remote or in person (configure in services)'}</div>
-                    </div>
-                    <div className="space-y-1">
-                      <div className="font-medium">Pricing</div>
-                      <div className="text-gray-700 text-sm">{pricing || 'Contact for pricing'}</div>
-                    </div>
+                    {isEditingOverview ? (
+                      <>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Description</label>
+                          <Textarea
+                            value={editOverview}
+                            onChange={(e) => setEditOverview(e.target.value)}
+                            placeholder="Describe your services and expertise..."
+                            rows={4}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Availability</label>
+                          <div className="space-y-2">
+                            <label className="flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={editAvailability.includes('Remote')}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setEditAvailability([...editAvailability, 'Remote']);
+                                  } else {
+                                    setEditAvailability(editAvailability.filter(a => a !== 'Remote'));
+                                  }
+                                }}
+                                className="mr-2"
+                              />
+                              Remote
+                            </label>
+                            <label className="flex items-center">
+                              <input
+                                type="checkbox"
+                                checked={editAvailability.includes('In person')}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setEditAvailability([...editAvailability, 'In person']);
+                                  } else {
+                                    setEditAvailability(editAvailability.filter(a => a !== 'In person'));
+                                  }
+                                }}
+                                className="mr-2"
+                              />
+                              In person
+                            </label>
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Pricing</label>
+                          <Input
+                            value={editPricing}
+                            onChange={(e) => setEditPricing(e.target.value)}
+                            placeholder="e.g., Starting at $50/hr or Contact for pricing"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={handleSaveOverview}>
+                            <Save className="mr-2 h-4 w-4" />
+                            Save
+                          </Button>
+                          <Button variant="outline" onClick={handleCancelEdit}>
+                            <X className="mr-2 h-4 w-4" />
+                            Cancel
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-gray-800 whitespace-pre-line">{overview || 'Add a description in your service details.'}</p>
+                        <div className="space-y-2">
+                          <div className="font-medium">Availability</div>
+                          <div className="text-gray-700 text-sm">{availability.length > 0 ? availability.join(' or ') : 'Remote or in person (configure in services)'}</div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="font-medium">Pricing</div>
+                          <div className="text-gray-700 text-sm">{pricing || 'Contact for pricing'}</div>
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 

@@ -100,6 +100,12 @@ export default function MeetingsPage() {
 
   // Create meeting
   const handleCreateMeeting = async () => {
+    // Check premium status for creating meetings
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      showError('Upgrade to Premium to schedule meetings and send invitations. Free users can only accept or decline meeting invitations.', 'Premium Required');
+      return;
+    }
+
     if (!newMeeting.title.trim() || !newMeeting.startTime || !newMeeting.endTime) {
       showError("Please fill in all required fields", "Error");
       return;

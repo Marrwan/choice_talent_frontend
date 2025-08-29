@@ -148,6 +148,13 @@ export default function JobHuntingSettingsPage() {
   };
 
   const handleActivateAppAI = async () => {
+    // Check premium status for AppAI activation
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('AppAI subscription required. This premium AI-powered service helps optimize your job search and career profile. Please subscribe to continue.', 'Premium Required');
+      router.push('/dashboard/subscription');
+      return;
+    }
+
     try {
       setSaving(true);
       const response = await jobHuntingSettingsService.createOrUpdateSettings(settings);

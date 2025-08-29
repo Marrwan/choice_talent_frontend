@@ -1292,12 +1292,12 @@ export default function DashboardPage() {
                 </Link>
 
                 {/* Email */}
-                <Link href="/dashboard/email-campaigns" className="block">
+                {/* <Link href="/dashboard/email" className="block">
                   <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <Mail className="mr-2 h-4 w-4" />
                     Email
                   </Button>
-                </Link>
+                </Link> */}
 
                 {/* Messaging */}
                 <Link href="/dashboard/chat" className="block">
@@ -1372,12 +1372,12 @@ export default function DashboardPage() {
                     Talent Hunt
                   </Button>
                 </Link>
-                    <Link href="/dashboard/vendor" className="block">
+                    {/* <Link href="/dashboard/vendor" className="block">
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />
                         Vendor
                   </Button>
-                </Link>
+                </Link> */}
                     <Link href="/dashboard/advertise" className="block">
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />
