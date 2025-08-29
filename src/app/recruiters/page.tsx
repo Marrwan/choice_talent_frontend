@@ -15,12 +15,8 @@ export default function RecruitersLandingPage() {
     try {
       setLoading(true);
       const res = await recruiterService.getProfile();
-      // If profile exists go to company page; else go to profile form
-      if (res?.success && res.data?.profile) {
-        router.push('/recruiters/profile');
-      } else {
-        router.push('/recruiters/profile');
-      }
+      // Always go to company profile page first (whether it exists or not)
+      router.push('/recruiters/profile');
     } finally {
       setLoading(false);
     }

@@ -1360,18 +1360,18 @@ export default function DashboardPage() {
                 <div className="mt-2">
                   <div className="text-sm sm:text-base font-bold text-gray-900 mb-2">BUSINESS</div>
                   <div className="space-y-2">
-                    <Link href="/recruiters" className="block">
-                      <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
-                        <Briefcase className="mr-2 h-4 w-4" />
-                        Recruitment
+                                    <Link href="/recruiters/dashboard" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Recruitment
                   </Button>
                 </Link>
-                                        <Link href="/recruiters/talent-hunt" className="block">
-                      <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
-                        <Users className="mr-2 h-4 w-4" />
-                        Talent Hunt
-                      </Button>
-                    </Link>
+                <Link href="/recruiters/talent-hunt/dashboard" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
+                    <Users className="mr-2 h-4 w-4" />
+                    Talent Hunt
+                  </Button>
+                </Link>
                     <Link href="/dashboard/vendor" className="block">
                       <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                         <TrendingUp className="mr-2 h-4 w-4" />

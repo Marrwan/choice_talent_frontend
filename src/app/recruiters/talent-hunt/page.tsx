@@ -166,11 +166,14 @@ export default function TalentHuntPage() {
       )}
 
       {step === 'company' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Company Profile</CardTitle>
-            <CardDescription>Review your company page or create one to continue.</CardDescription>
-          </CardHeader>
+        <div className="max-w-3xl mx-auto px-4 pb-8">
+          <NavigationHeader title="Company Profile" />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Company Profile</CardTitle>
+              <CardDescription>Review your company page or create one to continue.</CardDescription>
+            </CardHeader>
           <CardContent className="space-y-6">
             {companyExists && company ? (
               <div className="space-y-3">
@@ -188,6 +191,7 @@ export default function TalentHuntPage() {
                   <div className="whitespace-pre-wrap">{company.about || '—'}</div>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="outline" onClick={()=>setStep('about')}>Back</Button>
                   <Button onClick={()=>setStep('job')}>Proceed to Job Details</Button>
                   <Button variant="outline" onClick={()=>router.push('/recruiters/profile')}>Edit Company Page</Button>
                 </div>
@@ -207,19 +211,24 @@ export default function TalentHuntPage() {
                   <input type="file" accept="image/*" onChange={(e)=> setLogoFile(e.target.files?.[0] || null)} className="block mt-1" />
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="outline" onClick={()=>setStep('about')}>Back</Button>
                   <Button onClick={saveCompany} disabled={loading || !companyName}>{loading ? 'Saving...' : 'Save & Continue'}</Button>
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
+        </div>
       )}
 
       {step === 'job' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Job details</CardTitle>
-          </CardHeader>
+        <div className="max-w-3xl mx-auto px-4 pb-8">
+          <NavigationHeader title="Job Details" />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Job details</CardTitle>
+            </CardHeader>
           <CardContent className="space-y-3 max-w-xl">
             <Input placeholder="Position" value={position} onChange={(e)=>setPosition(e.target.value)} />
             <label className="flex items-center gap-2 text-sm">
@@ -363,17 +372,24 @@ export default function TalentHuntPage() {
               <Input placeholder="Work Location - City" value={workCity} onChange={(e)=>setWorkCity(e.target.value)} />
               <Input placeholder="Work Location - Country" value={workCountry} onChange={(e)=>setWorkCountry(e.target.value)} />
             </div>
-            <Button onClick={getMatches} disabled={loading || !position || !description}>{loading ? 'Matching...' : 'Find Matches'}</Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={()=>setStep('company')}>Back</Button>
+              <Button onClick={getMatches} disabled={loading || !position || !description}>{loading ? 'Matching...' : 'Find Matches'}</Button>
+            </div>
           </CardContent>
         </Card>
+        </div>
       )}
 
       {step === 'results' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Matching Profiles</CardTitle>
-            <CardDescription>Refine results and shortlist candidates</CardDescription>
-          </CardHeader>
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <NavigationHeader title="Matching Profiles" />
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Matching Profiles</CardTitle>
+              <CardDescription>Refine results and shortlist candidates</CardDescription>
+            </CardHeader>
           <CardContent>
             <div className="space-y-3 mb-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -508,9 +524,11 @@ export default function TalentHuntPage() {
                 </select>
               </div>
               <div className="flex gap-2">
+                <Button variant="outline" onClick={()=>setStep('job')}>Back</Button>
                 <Button onClick={getMatches} disabled={loading}>{loading ? 'Searching...' : 'Apply Filters'}</Button>
                 <Button variant="outline" onClick={()=>{ setFilterLocation(''); setFilterJobType(''); setFilterMinExp(''); setFilterCareerCats([]); setFilterText(''); setFilterPosition(''); setFilterDescription(''); setFilterCategoryOfPosition(''); }}>Reset</Button>
                 <Button variant="outline" onClick={()=>setStep('shortlist')}>Manage Shortlist</Button>
+                <Button variant="outline" onClick={()=>router.push('/dashboard')}>Back to Dashboard</Button>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -533,10 +551,14 @@ export default function TalentHuntPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       )}
 
       {step === 'shortlist' && (
-        <ShortlistManager onBack={()=>setStep('results')} />
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <NavigationHeader title="Shortlisted Candidates" />
+          <ShortlistManager onBack={()=>setStep('results')} />
+        </div>
       )}
     </div>
   );
@@ -562,7 +584,10 @@ function ShortlistManager({ onBack }: { onBack: () => void }) {
           <CardTitle>Shortlisted</CardTitle>
           <CardDescription>Remove or schedule interviews</CardDescription>
         </div>
-        <Button variant="outline" onClick={onBack}>Back to Results</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={onBack}>Back to Results</Button>
+          <Button variant="outline" onClick={()=>window.location.href='/dashboard'}>Back to Dashboard</Button>
+        </div>
       </CardHeader>
       <CardContent>
         {loading ? (
