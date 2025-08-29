@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/lib/useToast';
 import { useAuth } from '@/lib/store';
-import { Building2, Copy, AlertCircle, Mail, Upload } from 'lucide-react';
+import { Building2, Copy, Upload, Mail } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 
@@ -19,6 +19,7 @@ export default function AppAIPaymentPage() {
   const [file, setFile] = useState<File | null>(null);
   const searchParams = useSearchParams();
   const subscriptionId = (searchParams ? searchParams.get('sid') : '') || '';
+  const price = 5400;
 
   useEffect(() => {
     const generatePaymentId = () => {
@@ -40,14 +41,21 @@ export default function AppAIPaymentPage() {
 
   const handleSendPaymentEmail = async () => {
     try {
+      if (!file) {
+        toast.showError('Please attach a payment screenshot', 'Error');
+        return;
+      }
+
       const formData = new FormData();
       formData.append('paymentId', paymentId);
       if (subscriptionId) formData.append('subscriptionId', subscriptionId);
       if (file) formData.append('proofOfPayment', file);
+      formData.append('userEmail', user?.email || '');
+      formData.append('userName', user?.name || '');
 
       const res = await apiClient.post('/job-subscription/appai/payment-email', formData, true);
       if ((res as any).success !== false) {
-        toast.showSuccess('Payment email sent to billing', 'Success');
+        toast.showSuccess('Payment email sent to billing@choicetalents.com.ng', 'Success');
       } else {
         toast.showError('Failed to send payment email', 'Error');
       }
@@ -72,13 +80,16 @@ export default function AppAIPaymentPage() {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="font-medium">Service:</span>
-              <span>AppAI (Automated Job Hunting & Application System)</span>
+              <span>AppAI (Job Hunting Made Easy)</span>
             </div>
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="font-medium">Duration:</span>
               <span>30 days</span>
             </div>
-
+            <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+              <span className="font-medium">Price:</span>
+              <span className="font-semibold text-green-700 text-lg">&#8358;{price.toLocaleString()}</span>
+            </div>
             <div className="p-4 bg-blue-50 rounded-lg">
               <div className="flex justify-between items-center mb-2">
                 <span className="font-medium text-blue-900">Unique Payment ID:</span>
@@ -105,22 +116,59 @@ export default function AppAIPaymentPage() {
                 <Badge variant="secondary">Recommended</Badge>
               </div>
               <div className="space-y-3 mb-4">
-                <div className="flex justify-between"><span className="text-gray-600">Account Number:</span><span className="font-mono">0055583458</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">Account Name:</span><span>Top Grade Project LTD</span></div>
-                <div className="flex justify-between"><span className="text-gray-600">Bank:</span><span>Access/Diamond Bank</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Account Name:</span><span>Choice Talents LTD</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Account Number:</span><span className="font-mono">0876 039 732</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Bank:</span><span>Guaranty Trust Bank (GTB)</span></div>
+                <div className="flex justify-between"><span className="text-gray-600">Amount:</span><span className="font-semibold text-green-700">&#8358;{price.toLocaleString()}</span></div>
               </div>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
-                <div className="flex items-start">
-                  <AlertCircle className="h-5 w-5 text-yellow-600 mr-2 mt-0.5" />
-                  <div className="text-sm text-yellow-800">
-                    <p className="font-medium mb-1">After payment:</p>
-                    <p>Click "I HAVE MADE PAYMENT" to email billing@myjobhunting.com with your Payment ID.</p>
+              <div className="space-y-4">
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
+                  <div className="flex flex-col items-center space-y-3">
+                    <Upload className="h-8 w-8 text-gray-400" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Attach Payment Screenshot</p>
+                      <p className="text-xs text-gray-500 mt-1">PNG, JPG, JPEG or PDF (Max 5MB)</p>
+                    </div>
+                    <Input
+                      type="file"
+                      accept="image/*,.pdf"
+                      onChange={(e) => setFile(e.target.files?.[0] || null)}
+                      className="hidden"
+                      id="payment-screenshot"
+                      aria-label="Attach payment screenshot"
+                    />
+                    <label htmlFor="payment-screenshot" className="cursor-pointer">
+                      <Button variant="outline" type="button">
+                        Choose File
+                      </Button>
+                    </label>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Input type="file" onChange={(e) => setFile(e.target.files?.[0] || null)} className="max-w-xs" />
-                <Button variant="outline" onClick={handleSendPaymentEmail}>
+                
+                {file && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Upload className="h-4 w-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-800">{file.name}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFile(null)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                <Button 
+                  onClick={handleSendPaymentEmail}
+                  disabled={!file}
+                  className="w-full"
+                >
                   <Mail className="mr-2 h-4 w-4" /> I HAVE MADE PAYMENT
                 </Button>
               </div>
@@ -137,5 +185,3 @@ export default function AppAIPaymentPage() {
     </div>
   );
 }
-
-

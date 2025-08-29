@@ -42,10 +42,13 @@ export default function JobHuntingSettingsPage() {
     totalYearsOfWorkExperience: '',
     preferredLocations: [],
     minimumSalaryExpectation: '',
-    workWithProposedPay: false,
+    workWithProposedPay: true,
     salaryExpectationNegotiable: '',
     searchScope: 'country_only'
   });
+  const [salaryCurrency, setSalaryCurrency] = useState<string>('NGN');
+  const [salaryAmount, setSalaryAmount] = useState<string>('');
+  const [salaryPeriod, setSalaryPeriod] = useState<string>('per annum');
 
   // Load existing settings and check profile completion
   useEffect(() => {
@@ -92,6 +95,16 @@ export default function JobHuntingSettingsPage() {
       
       if (response.success && response.data.settings) {
         const settingsData = response.data.settings;
+        // Parse minimum salary expectation into currency and amount if present
+        if (settingsData.minimumSalaryExpectation) {
+          const text = String(settingsData.minimumSalaryExpectation);
+          const match = text.match(/^([A-Z]{3})\s*([0-9.,]+)\s*(per\s+.+)?$/i);
+          if (match) {
+            setSalaryCurrency(match[1]);
+            setSalaryAmount((match[2] || '').trim());
+            if (match[3]) setSalaryPeriod(match[3].toLowerCase().trim());
+          }
+        }
         setSettings({
           jobTypes: settingsData.jobTypes || [],
           careerCategory: settingsData.careerCategory || '',
@@ -99,7 +112,7 @@ export default function JobHuntingSettingsPage() {
           totalYearsOfWorkExperience: settingsData.totalYearsOfWorkExperience || '',
           preferredLocations: settingsData.preferredLocations || [],
           minimumSalaryExpectation: settingsData.minimumSalaryExpectation || '',
-          workWithProposedPay: settingsData.workWithProposedPay || false,
+          workWithProposedPay: typeof settingsData.workWithProposedPay === 'boolean' ? settingsData.workWithProposedPay : true,
           salaryExpectationNegotiable: settingsData.salaryExpectationNegotiable || '',
           searchScope: settingsData.searchScope || 'country_only'
         });
@@ -115,7 +128,13 @@ export default function JobHuntingSettingsPage() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const response = await jobHuntingSettingsService.createOrUpdateSettings(settings);
+      const payload = {
+        ...settings,
+        minimumSalaryExpectation: settings.workWithProposedPay
+          ? ''
+          : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim()
+      };
+      const response = await jobHuntingSettingsService.createOrUpdateSettings(payload as CreateJobHuntingSettingsData);
       
       if (response.success) {
         toast.showSuccess('Job hunting settings saved successfully!', 'Success');
@@ -394,14 +413,57 @@ export default function JobHuntingSettingsPage() {
             <div className="space-y-4">
               <div>
                 <Label htmlFor="salaryExpectation" className="text-base font-medium">Minimum Salary Expectation</Label>
-                <Input
-                  id="salaryExpectation"
-                  value={settings.minimumSalaryExpectation}
-                  onChange={(e) => setSettings(prev => ({ ...prev, minimumSalaryExpectation: e.target.value }))}
-                  placeholder="e.g., ₦xxxx per month"
-                  className="mt-2"
-                  disabled={settings.workWithProposedPay}
-                />
+                <div className="mt-2 grid grid-cols-6 gap-2 max-w-2xl items-center">
+                  <Select
+                    value={salaryCurrency}
+                    onValueChange={(value) => {
+                      setSalaryCurrency(value);
+                      setSettings(prev => ({ ...prev, minimumSalaryExpectation: `${value} ${salaryAmount} ${salaryPeriod}`.trim() }));
+                    }}
+                    disabled={settings.workWithProposedPay}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[
+                        'AED','ARS','AUD','BDT','BGN','BRL','BYN','CAD','CHF','CLP','COP','CRC','CZK','DKK','EGP','EUR','GBP','GTQ','HKD','HNL','HUF','IDR','ILS','INR','JOD','JPY','KES','KRW','KWD','LBP','LKR','MAD','MXN','MYR','NGN','NOK','NZD','PEN','PHP','PKR','PLN','QAR','RON','RSD','RUB','SAR','SEK','SGD','THB','TRY','TWD','TZS','UAH','USD','UYU','VND','XOF','ZAR'
+                      ].map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="number"
+                    min="0"
+                    inputMode="decimal"
+                    value={salaryAmount}
+                    onChange={(e) => {
+                      setSalaryAmount(e.target.value);
+                      setSettings(prev => ({ ...prev, minimumSalaryExpectation: `${salaryCurrency} ${e.target.value} ${salaryPeriod}`.trim() }));
+                    }}
+                    placeholder="Amount"
+                    className="col-span-3"
+                    disabled={settings.workWithProposedPay}
+                  />
+                  <Select
+                    value={salaryPeriod}
+                    onValueChange={(value) => {
+                      setSalaryPeriod(value);
+                      setSettings(prev => ({ ...prev, minimumSalaryExpectation: `${salaryCurrency} ${salaryAmount} ${value}`.trim() }));
+                    }}
+                    disabled={settings.workWithProposedPay}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Period" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['per hour','per week','per month','per year','per annum'].map((p) => (
+                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -411,7 +473,7 @@ export default function JobHuntingSettingsPage() {
                   onCheckedChange={(checked) => setSettings(prev => ({ 
                     ...prev, 
                     workWithProposedPay: checked as boolean,
-                    minimumSalaryExpectation: checked ? '' : prev.minimumSalaryExpectation
+                    minimumSalaryExpectation: checked ? '' : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim()
                   }))}
                 />
                 <Label htmlFor="workWithProposedPay" className="text-sm font-normal cursor-pointer">

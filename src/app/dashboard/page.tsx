@@ -1348,7 +1348,7 @@ export default function DashboardPage() {
 
                 {/* Posts */}
                 <Link href="/dashboard/posts" className="block">
-                  <Button variant="outline" className="w-full justify-start h-12">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
                     <FileText className="mr-2 h-4 w-4" />
                     Posts
                   </Button>

@@ -7,14 +7,23 @@ import { CheckCircle, ArrowRight, Settings, Mail, Rocket, ArrowLeft } from 'luci
 
 export default function AppAIIntroPage() {
   const benefits = [
-    '24/7 assistance and support',
-    'Light speed applications for new openings',
+    'Dedicated tech support and assistance',
+    'Real time applications for new openings',
     'Profile matching with relevant opportunities',
     'Professional career profile forwarding',
-    'Automated reference information handling',
-    'Automated follow-up on applications',
+    'Secure reference information handling',
+    'Feedback and follow-up on applications',
     'Comprehensive activity reports',
-    'Users can be in charge without being online'
+    'Send applications without being online',
+    'Save time sieving from multiple job listings',
+    // '24/7 assistance and support',
+    // 'Light speed applications for new openings',
+    // 'Profile matching with relevant opportunities',
+    // 'Professional career profile forwarding',
+    // 'Automated reference information handling',
+    // 'Automated follow-up on applications',
+    // 'Comprehensive activity reports',
+    // 'Users can be in charge without being online'
   ];
 
   return (
@@ -34,13 +43,13 @@ export default function AppAIIntroPage() {
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100 mb-2">
             <Rocket className="w-7 h-7 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">AppAI — Automated Job Hunting & Applications</h1>
-          <p className="text-gray-600">Hire an AI Robot to job hunt and apply for you for 30 days.</p>
+          <h1 className="text-3xl font-bold text-gray-900">AppAI — Job Hunting Made Easy</h1>
+          <p className="text-gray-600">Use a robot to hunt and apply for opportunities.</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>What you get</CardTitle>
+            <CardTitle>AppAI Benefits</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">

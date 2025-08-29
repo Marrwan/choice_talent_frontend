@@ -278,7 +278,7 @@ export default function SubscriptionPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-center">
-                  <span className="text-3xl font-bold">₦3,000</span>
+                  <span className="text-3xl font-bold">₦3,300</span>
                   <span className="text-gray-600">/month</span>
                 </div>
                 <ul className="space-y-3">
@@ -343,7 +343,7 @@ export default function SubscriptionPage() {
             <CardContent>
               <div className="max-w-2xl mx-auto space-y-6">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">MONTHLY SUBSCRIPTION FEE: NGN 3,000</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">MONTHLY SUBSCRIPTION FEE: NGN 3,300</h3>
                 </div>
                 
                 <div className="bg-gray-50 p-6 rounded-lg">
@@ -376,7 +376,7 @@ export default function SubscriptionPage() {
               <div>
                 <h4 className="font-semibold mb-2">How does the subscription work?</h4>
                 <p className="text-gray-600 text-sm">
-                  Premium subscriptions are billed monthly at ₦3,000. You can cancel anytime and continue using the service until the end of your billing period.
+                  Premium subscriptions are billed monthly at ₦3,300. You can cancel anytime and continue using the service until the end of your billing period.
                 </p>
               </div>
               <div>
@@ -388,7 +388,7 @@ export default function SubscriptionPage() {
               <div>
                 <h4 className="font-semibold mb-2">What payment methods are accepted?</h4>
                 <p className="text-gray-600 text-sm">
-                  We accept all major Nigerian payment methods including debit cards, credit cards, and bank transfers through our secure payment partner Paystack.
+                  We accept all major payment methods including debit cards, credit cards, and bank transfers through our secure payment partner Paystack.
                 </p>
               </div>
             </CardContent>
