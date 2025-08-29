@@ -72,6 +72,12 @@ export default function NetworkingPage() {
   };
 
   const sendRequest = async (id: string) => {
+    // Check premium status for sending connection requests
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      showError('Upgrade to Premium to send connection requests. Free users can only accept or decline connection requests.', 'Premium Required');
+      return;
+    }
+
     try {
       await networkingService.sendRequest(id);
       showSuccess("Your connection request has been sent successfully. You'll be notified when they respond.", "Connection Request Sent!");

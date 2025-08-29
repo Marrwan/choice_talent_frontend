@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { useToast } from '@/lib/useToast'
+import { useAuth } from '@/lib/store'
 import { emailCampaignService, type EmailCampaign, type CreateCampaignRequest } from '@/services/emailCampaignService'
 import { ApiRequestError } from '@/lib/api'
 import { Plus, Play, Pause, RotateCcw, Eye, Users, Mail, CheckCircle, XCircle, AlertCircle } from 'lucide-react'
@@ -18,6 +19,7 @@ import { Plus, Play, Pause, RotateCcw, Eye, Users, Mail, CheckCircle, XCircle, A
 export default function EmailCampaignsPage() {
   const router = useRouter()
   const toast = useToast()
+  const { user } = useAuth()
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -58,6 +60,12 @@ export default function EmailCampaignsPage() {
   }
 
   const createCampaign = async () => {
+    // Check premium status for creating email campaigns
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to create email campaigns. This feature is only available for premium users.', 'Premium Required');
+      return;
+    }
+
     try {
       const campaignData = { ...formData }
       
@@ -95,6 +103,12 @@ export default function EmailCampaignsPage() {
   }
 
   const createDefaultCareerProfileCampaign = async () => {
+    // Check premium status for creating email campaigns
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to create email campaigns. This feature is only available for premium users.', 'Premium Required');
+      return;
+    }
+
     try {
       const response = await emailCampaignService.createDefaultCareerProfileCampaign()
       if (response.success) {
@@ -108,6 +122,12 @@ export default function EmailCampaignsPage() {
   }
 
   const startCampaign = async (id: string) => {
+    // Check premium status for managing email campaigns
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to manage email campaigns. This feature is only available for premium users.', 'Premium Required');
+      return;
+    }
+
     try {
       // Optimistic update - immediately update the campaign status
       setCampaigns(prevCampaigns => 
@@ -136,6 +156,12 @@ export default function EmailCampaignsPage() {
   }
 
   const pauseCampaign = async (id: string) => {
+    // Check premium status for managing email campaigns
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to manage email campaigns. This feature is only available for premium users.', 'Premium Required');
+      return;
+    }
+
     try {
       // Optimistic update - immediately update the campaign status
       setCampaigns(prevCampaigns => 
@@ -164,6 +190,12 @@ export default function EmailCampaignsPage() {
   }
 
   const resumeCampaign = async (id: string) => {
+    // Check premium status for managing email campaigns
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to manage email campaigns. This feature is only available for premium users.', 'Premium Required');
+      return;
+    }
+
     try {
       // Optimistic update - immediately update the campaign status
       setCampaigns(prevCampaigns => 

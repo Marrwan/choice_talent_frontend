@@ -74,6 +74,16 @@ export default function MeetingsPage() {
     participants: []
   });
 
+  // Handle opening create meeting dialog with premium check
+  const handleOpenCreateDialog = () => {
+    // Check premium status for creating meetings
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      showError('Upgrade to Premium to schedule meetings and send invitations. Free users can only accept or decline meeting invitations.', 'Premium Required');
+      return;
+    }
+    setShowCreateDialog(true);
+  };
+
   // Load meetings
   const loadMeetings = async () => {
     try {
@@ -100,12 +110,6 @@ export default function MeetingsPage() {
 
   // Create meeting
   const handleCreateMeeting = async () => {
-    // Check premium status for creating meetings
-    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
-      showError('Upgrade to Premium to schedule meetings and send invitations. Free users can only accept or decline meeting invitations.', 'Premium Required');
-      return;
-    }
-
     if (!newMeeting.title.trim() || !newMeeting.startTime || !newMeeting.endTime) {
       showError("Please fill in all required fields", "Error");
       return;
@@ -168,6 +172,12 @@ export default function MeetingsPage() {
 
   // Confirm delete meeting
   const confirmDeleteMeeting = async () => {
+    // Check premium status for deleting meetings
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      showError('Upgrade to Premium to delete meetings. Free users can only accept or decline meeting invitations.', 'Premium Required');
+      return;
+    }
+
     if (!meetingToDelete) return;
 
     try {
@@ -218,6 +228,11 @@ export default function MeetingsPage() {
 
   // Send invites
   const handleSendInvites = (meeting: Meeting) => {
+    // Check premium status for inviting participants
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      showError('Upgrade to Premium to send meeting invitations. Free users can only accept or decline meeting invitations.', 'Premium Required');
+      return;
+    }
     setInvitingMeeting(meeting);
     setNewParticipants(['']);
     setShowInviteDialog(true);
@@ -284,6 +299,12 @@ export default function MeetingsPage() {
 
   // Handle update meeting
   const handleUpdateMeeting = async () => {
+    // Check premium status for updating meetings
+    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
+      showError('Upgrade to Premium to edit meetings. Free users can only accept or decline meeting invitations.', 'Premium Required');
+      return;
+    }
+
     if (!editingMeeting) return;
     
     if (!editMeeting.title.trim() || !editMeeting.startTime || !editMeeting.endTime) {
@@ -413,7 +434,7 @@ export default function MeetingsPage() {
           
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
-              <Button>
+              <Button onClick={handleOpenCreateDialog}>
                 <Plus className="h-4 w-4 mr-2" />
                 Schedule Meeting
               </Button>
@@ -494,7 +515,7 @@ export default function MeetingsPage() {
                 <p className="text-gray-600 text-center mb-4">
                   Get started by scheduling your first meeting with candidates or team members.
                 </p>
-                <Button onClick={() => setShowCreateDialog(true)}>
+                <Button onClick={handleOpenCreateDialog}>
                   <Plus className="h-4 w-4 mr-2" />
                   Schedule Meeting
                 </Button>
@@ -616,7 +637,7 @@ export default function MeetingsPage() {
               
               {/* Additional Schedule Meeting Button */}
               <div className="text-center pt-4">
-                <Button onClick={() => setShowCreateDialog(true)} variant="outline">
+                <Button onClick={handleOpenCreateDialog} variant="outline">
                   <Plus className="h-4 w-4 mr-2" />
                   Schedule Another Meeting
                 </Button>

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar } from '@/components/ui/avatar'
 import { useAuth } from '@/lib/store'
+import { useToast } from '@/lib/useToast'
 import { chatService, User as ChatUser } from '@/services/chatService'
 import { ArrowLeft, Search, MessageCircle, Users, MapPin, Briefcase, Heart, User } from 'lucide-react'
 import { NavigationHeader } from '@/components/ui/navigation-header';
@@ -109,6 +110,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onStartChat }) => {
 export default function UsersPage() {
   const router = useRouter()
   const { user: currentUser, isAuthenticated } = useAuth()
+  const toast = useToast()
   const [users, setUsers] = useState<ChatUser[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -155,6 +157,12 @@ export default function UsersPage() {
   }
 
   const handleStartChat = async (userId: string) => {
+    // Check premium status for initiating new conversations
+    if ((currentUser as any)?.subscriptionStatus !== 'premium' && !(currentUser as any)?.isPremium) {
+      toast.showError('Upgrade to Premium to start new conversations. Free users can only reply to existing conversations.', 'Premium Required');
+      return;
+    }
+
     try {
       const response = await chatService.getOrCreateConversation(userId)
       router.push(`/dashboard/chat/${response.data.id}`)
