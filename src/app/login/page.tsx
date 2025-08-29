@@ -97,14 +97,10 @@ export default function LoginPage() {
           (profile.referenceDetails?.length || 0) > 0
         ];
         const isComplete = requiredFields.filter(Boolean).length === requiredFields.length;
-        if (isComplete) {
-          router.replace('/dashboard');
-        } else {
-          router.replace('/dashboard/professional-career-profile');
-        }
+        router.replace(isComplete ? '/dashboard' : '/dashboard/professional-career-profile/edit');
       } else {
         // If no profile, redirect to form
-        router.replace('/dashboard/professional-career-profile');
+        router.replace('/dashboard/professional-career-profile/edit');
       }
     } catch (error: unknown) {
       let errorMessage = 'Login failed. Please check your credentials and try again.'

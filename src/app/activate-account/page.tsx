@@ -8,6 +8,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { CheckCircle2, XCircle, ArrowLeft } from 'lucide-react'
 import { authService } from '@/services/authService'
+import { tokenManager } from '@/lib/api'
+import { useAuth } from '@/lib/store'
 import { ApiRequestError } from '@/lib/api'
 import { useToast } from '@/lib/useToast'
 
@@ -15,6 +17,7 @@ export default function ActivateAccountPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { showSuccess, showError } = useToast()
+  const { login } = useAuth()
   const [isActivating, setIsActivating] = useState(true)
   const [activationSuccess, setActivationSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,8 +38,21 @@ export default function ActivateAccountPage() {
 
   const activateAccount = async (activationToken: string) => {
     try {
-      await authService.activateAccount(activationToken)
+      const res = await authService.activateAccount(activationToken)
       setActivationSuccess(true)
+      // Try auto-login if backend also returned a token via normal login flow
+      // If not, redirect to login page as before
+      try {
+        // Attempt login right away using token endpoint is not available; fall back to directing to login
+        // If server sets a token cookie on activation, fetch profile to initialize store
+        const profile = await authService.getProfile().catch(()=>null)
+        if (profile) {
+          // If token already set by cookie/session, set a placeholder in store
+          login(profile, tokenManager.get() || '')
+          router.replace('/dashboard/professional-career-profile/edit')
+          return
+        }
+      } catch {}
     } catch (error: unknown) {
       let errorMessage = 'Failed to activate account. Please try again.'
       
@@ -122,10 +138,8 @@ export default function ActivateAccountPage() {
                   You can now sign in to your account and start using MyJobHunting.
                 </p>
                 
-                <Button asChild className="w-full h-12">
-                  <Link href="/login">
-                    Sign In to Your Account
-                  </Link>
+                <Button className="w-full h-12" onClick={() => router.replace('/login')}>
+                  Sign In to Your Account
                 </Button>
               </div>
             </CardContent>

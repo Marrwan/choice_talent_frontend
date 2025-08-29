@@ -78,7 +78,7 @@ export default function RecruiterDashboardPage() {
   }
 
   const handleCreateJob = () => {
-    router.push('/recruiters/jobs/new')
+    setActiveSection('create-job')
   }
 
   const handleTalentHunt = () => {
@@ -379,7 +379,7 @@ export default function RecruiterDashboardPage() {
                 )}
 
             {activeSection === 'jobs' && (
-              <JobsSection jobs={jobs} onCreateJob={handleCreateJob} />
+              <JobsSection jobs={jobs} onCreateJob={handleCreateJob} onViewApplications={() => setActiveSection('applications')} />
             )}
 
             {activeSection === 'applications' && (
@@ -429,7 +429,7 @@ export default function RecruiterDashboardPage() {
 }
 
 // Section Components
-function JobsSection({ jobs, onCreateJob }: { jobs: any[], onCreateJob: () => void }) {
+function JobsSection({ jobs, onCreateJob, onViewApplications }: { jobs: any[], onCreateJob: () => void, onViewApplications: () => void }) {
   return (
         <Card>
           <CardHeader>
@@ -462,9 +462,7 @@ function JobsSection({ jobs, onCreateJob }: { jobs: any[], onCreateJob: () => vo
                     </div>
                   </div>
                   <div className="flex gap-2 ml-4">
-                    <Link href="/recruiters/applications">
-                      <Button size="sm" variant="outline">View Applications</Button>
-                    </Link>
+                    <Button size="sm" variant="outline" onClick={onViewApplications}>View Applications</Button>
                   </div>
                 </div>
               </div>

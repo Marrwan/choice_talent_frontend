@@ -79,7 +79,7 @@ export default function TalentHuntDashboardPage() {
   };
 
   const handleCreateJob = () => {
-    router.push('/recruiters/talent-hunt');
+    setActiveSection('create-job');
   };
 
   const handleViewMatches = (jobId: string) => {
@@ -394,9 +394,7 @@ export default function TalentHuntDashboardPage() {
               <InterviewsSection />
             )}
 
-            {activeSection === 'about' && (
-              <AboutSection />
-            )}
+            
 
             {activeSection === 'settings' && (
               <SettingsSection />
