@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { NavigationHeader } from '@/components/ui/navigation-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { useAuth } from '@/lib/store';
 
 export default function EarnLandingPage() {
   const { user } = useAuth();
+  const [showAll, setShowAll] = React.useState(false);
 
   return (
     <div className="max-w-3xl mx-auto px-4 pb-8">
@@ -80,39 +82,47 @@ export default function EarnLandingPage() {
                   Enlist your special talent for events and ceremonies, with pictures highlighting your experience.
                 </p>
               </div>
-              <div className="rounded-lg border p-3 sm:p-4 bg-white">
-                <div className="font-medium">Quantity Surveyor</div>
-                <p className="text-sm text-gray-700 leading-relaxed mt-1">
-                  Share details of your expertise to unlock new opportunities from people undertaking personal building projects.
-                </p>
-              </div>
-              <div className="rounded-lg border p-3 sm:p-4 bg-white">
-                <div className="font-medium">Creative Writer</div>
-                <p className="text-sm text-gray-700 leading-relaxed mt-1">
-                  Showcase your niche writing experience and professionalism; offer your expertise to individuals undertaking personal projects.
-                </p>
-              </div>
-              <div className="rounded-lg border p-3 sm:p-4 bg-white">
-                <div className="font-medium">Professional Recruiter</div>
-                <p className="text-sm text-gray-700 leading-relaxed mt-1">
-                  Help small businesses find and assess the right talents they need for team building and growth.
-                </p>
-              </div>
-              <div className="rounded-lg border p-3 sm:p-4 bg-white">
-                <div className="font-medium">Interior Designer</div>
-                <p className="text-sm text-gray-700 leading-relaxed mt-1">
-                  Offer your expertise to individuals looking to redesign their homes or personal spaces.
-                </p>
-              </div>
-              <div className="rounded-lg border p-3 sm:p-4 bg-white">
-                <div className="font-medium">Business Growth Specialist</div>
-                <p className="text-sm text-gray-700 leading-relaxed mt-1">
-                  Enlist your expertise in service to micro, small and medium scale businesses.
-                </p>
-              </div>
+              {showAll && (
+                <>
+                  <div className="rounded-lg border p-3 sm:p-4 bg-white">
+                    <div className="font-medium">Quantity Surveyor</div>
+                    <p className="text-sm text-gray-700 leading-relaxed mt-1">
+                      Share details of your expertise to unlock new opportunities from people undertaking personal building projects.
+                    </p>
+                  </div>
+                  <div className="rounded-lg border p-3 sm:p-4 bg-white">
+                    <div className="font-medium">Creative Writer</div>
+                    <p className="text-sm text-gray-700 leading-relaxed mt-1">
+                      Showcase your niche writing experience and professionalism; offer your expertise to individuals undertaking personal projects.
+                    </p>
+                  </div>
+                  <div className="rounded-lg border p-3 sm:p-4 bg-white">
+                    <div className="font-medium">Professional Recruiter</div>
+                    <p className="text-sm text-gray-700 leading-relaxed mt-1">
+                      Help small businesses find and assess the right talents they need for team building and growth.
+                    </p>
+                  </div>
+                  <div className="rounded-lg border p-3 sm:p-4 bg-white">
+                    <div className="font-medium">Interior Designer</div>
+                    <p className="text-sm text-gray-700 leading-relaxed mt-1">
+                      Offer your expertise to individuals looking to redesign their homes or personal spaces.
+                    </p>
+                  </div>
+                  <div className="rounded-lg border p-3 sm:p-4 bg-white">
+                    <div className="font-medium">Business Growth Specialist</div>
+                    <p className="text-sm text-gray-700 leading-relaxed mt-1">
+                      Enlist your expertise in service to micro, small and medium scale businesses.
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
-
-            <div className="text-xs text-gray-500">
+            <div className="pt-1">
+              <button className="text-sm text-[#0044CC] hover:underline" onClick={() => setShowAll((v)=>!v)}>
+                {showAll ? 'Show fewer examples' : 'See more examples'}
+              </button>
+            </div>
+            <div className="text-sm font-bold text-gray-900">
               PS: Most global businesses started by selling small services or products.
             </div>
           </div>
