@@ -275,35 +275,27 @@ export default function ActivityLogPage() {
                 <Crown className="mr-2 h-5 w-5" />
                 Premium Subscription
               </CardTitle>
-              {subscriptionEligibility && (
-                <Button
-                  variant={subscriptionEligibility.isEligible ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => router.push('/dashboard/subscription')}
-                >
-                  {subscriptionEligibility.isEligible ? 'Upgrade' : 'Manage'}
-                </Button>
-              )}
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => router.push('/dashboard/subscription')}
+              >
+                Upgrade
+              </Button>
             </div>
           </CardHeader>
           <CardContent>
-            {subscriptionEligibility ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Status</span>
-                  <Badge variant={subscriptionEligibility.isEligible ? 'default' : 'secondary'}>
-                    {subscriptionEligibility.isEligible ? 'Eligible' : 'Not Eligible'}
-                  </Badge>
-                </div>
-                {subscriptionEligibility.isEligible && (
-                  <p className="text-sm text-gray-600">
-                    Upgrade to Premium to access advanced features and priority support.
-                  </p>
-                )}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Status</span>
+                <Badge variant="default">
+                  Available
+                </Badge>
               </div>
-            ) : (
-              <p className="text-sm text-gray-500">Subscription status unavailable</p>
-            )}
+              <p className="text-sm text-gray-600">
+                Upgrade to Premium to access advanced features and priority support.
+              </p>
+            </div>
           </CardContent>
         </Card>
 

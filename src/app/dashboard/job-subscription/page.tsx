@@ -121,60 +121,7 @@ export default function JobSubscriptionPage() {
     );
   }
 
-  // If not eligible, show requirements
-  if (!eligibility?.isEligible) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <XCircle className="h-5 w-5 text-red-500" />
-              Job Subscription Not Available
-            </CardTitle>
-            <CardDescription>
-              You need to complete certain requirements before accessing job subscription features.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  <strong>Requirements to access job subscription:</strong>
-                </AlertDescription>
-              </Alert>
-              
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span>Complete your career profile</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => router.push('/dashboard/professional-career-profile')}
-                  >
-                    Complete Profile
-                  </Button>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span>Set your job hunting preferences</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => router.push('/dashboard/job-hunting-settings')}
-                  >
-                    Set Preferences
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+
 
   // If has active subscription, show subscription details
   if (eligibility.hasActiveSubscription && eligibility.activeSubscription) {

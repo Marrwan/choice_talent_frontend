@@ -238,7 +238,7 @@ export default function JobHuntingSettingsPage() {
         </div>
 
         {/* Profile Completion Check */}
-        {profileCompletion < 50 && (
+        {/* {profileCompletion < 50 && (
           <Card className="mb-6 border-yellow-200 bg-yellow-50">
             <CardContent className="pt-6">
               <div className="flex items-start gap-3">
@@ -257,7 +257,7 @@ export default function JobHuntingSettingsPage() {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
         <Card>
           <CardHeader>

@@ -33,7 +33,7 @@ export function ToastContextProvider({ children }: { children: React.ReactNode }
     setToasts(prev => [...prev, newToast])
     
     // Auto remove after duration
-    const duration = toast.duration || (toast.variant === 'destructive' ? 5000 : 3000)
+    const duration = toast.duration || (toast.variant === 'destructive' ? 8000 : 6000)
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id))
     }, duration)
@@ -75,11 +75,11 @@ export function useToast() {
   
   return {
     showToast: context.addToast,
-    showError: (message: string, title?: string) => 
-      context.addToast({ description: message, title, variant: 'destructive' }),
-    showSuccess: (message: string, title?: string) => 
-      context.addToast({ description: message, title, variant: 'success' }),
-    showInfo: (message: string, title?: string) => 
-      context.addToast({ description: message, title })
+    showError: (message: string, title?: string, duration?: number) => 
+      context.addToast({ description: message, title, variant: 'destructive', duration }),
+    showSuccess: (message: string, title?: string, duration?: number) => 
+      context.addToast({ description: message, title, variant: 'success', duration }),
+    showInfo: (message: string, title?: string, duration?: number) => 
+      context.addToast({ description: message, title, duration })
   }
 } 

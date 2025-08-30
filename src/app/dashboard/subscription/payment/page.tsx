@@ -33,7 +33,7 @@ export default function SubscriptionPaymentPage() {
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      toast.showSuccess('Copied to clipboard!', 'Success');
+      toast.showSuccess('Copied to clipboard!', 'Success', 5000);
     } catch {
       toast.showError('Failed to copy', 'Error');
     }
@@ -58,7 +58,7 @@ export default function SubscriptionPaymentPage() {
         const message = (res as any).note 
           ? `${(res as any).message}. ${(res as any).note}`
           : 'Payment email sent to billing@choicetalents.com.ng. You will receive a confirmation once your payment is verified.';
-        toast.showSuccess(message, 'Success');
+        toast.showSuccess(message, 'Success', 10000);
       } else {
         toast.showError('Failed to send payment email', 'Error');
       }

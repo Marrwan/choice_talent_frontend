@@ -604,14 +604,12 @@ export default function CareerDashboardPage() {
                     <Crown className="mr-2 h-5 w-5" />
                     Subscription Status
                   </CardTitle>
-                  {subscriptionEligibility && (
-                    <Link href="/dashboard/job-subscription">
-                      <Button variant="outline" size="sm">
-                        <Eye className="mr-2 h-4 w-4" />
-                        View Subscriptions
-                      </Button>
-                    </Link>
-                  )}
+                  <Link href="/dashboard/job-subscription">
+                    <Button variant="outline" size="sm">
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Subscriptions
+                    </Button>
+                  </Link>
                 </div>
               </CardHeader>
               <CardContent>
@@ -683,14 +681,14 @@ export default function CareerDashboardPage() {
                       </Link>
                     </div>
                   </div>
-                ) : subscriptionEligibility?.isEligible ? (
+                ) : (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <AlertTriangle className="h-5 w-5 text-yellow-500" />
                       <div>
                         <h3 className="font-semibold text-yellow-700">No Active Subscription</h3>
                         <p className="text-sm text-gray-600">
-                          You're eligible for subscription services
+                          Upgrade to access premium subscription services
                         </p>
                       </div>
                     </div>
@@ -727,63 +725,6 @@ export default function CareerDashboardPage() {
                         Get Job Subscription
                       </Button>
                     </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <XCircle className="h-5 w-5 text-red-500" />
-                      <div>
-                        <h3 className="font-semibold text-red-700">Not Eligible</h3>
-                        <p className="text-sm text-gray-600">
-                          Complete requirements to access job subscription
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-3 border-t">
-                      <h4 className="font-medium text-gray-900 mb-2">Requirements:</h4>
-                      <ul className="space-y-2 text-sm">
-                        <li className="flex items-center gap-2">
-                          {profile ? (
-                            <CheckCircle className="h-3 w-3 text-green-500" />
-                          ) : (
-                            <XCircle className="h-3 w-3 text-red-500" />
-                          )}
-                          <span className={profile ? 'text-gray-600' : 'text-red-600'}>
-                            Complete career profile
-                          </span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          {jobSettings ? (
-                            <CheckCircle className="h-3 w-3 text-green-500" />
-                          ) : (
-                            <XCircle className="h-3 w-3 text-red-500" />
-                          )}
-                          <span className={jobSettings ? 'text-gray-600' : 'text-red-600'}>
-                            Set job hunting preferences
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      {!profile && (
-                        <Link href="/dashboard/professional-career-profile/edit">
-                          <Button variant="outline" size="sm">
-                            <FileText className="mr-2 h-4 w-4" />
-                            Complete Profile
-                          </Button>
-                        </Link>
-                      )}
-                      {!jobSettings && (
-                        <Link href="/dashboard/job-hunting-settings">
-                          <Button variant="outline" size="sm">
-                            <Settings className="mr-2 h-4 w-4" />
-                            Set Preferences
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
                   </div>
                 )}
               </CardContent>
