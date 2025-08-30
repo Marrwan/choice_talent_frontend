@@ -61,7 +61,9 @@ export interface ProfessionalCareerProfile {
   id?: string;
   userId?: string;
   profilePicture?: string;
-  fullName: string;
+  firstName: string;
+  otherName?: string;
+  lastName: string;
   gender?: 'male' | 'female' | 'other';
   dateOfBirth?: string;
   phoneNumber?: string;
@@ -69,6 +71,7 @@ export interface ProfessionalCareerProfile {
   address?: string;
   lgaOfResidence?: string;
   stateOfResidence?: string;
+  country?: string;
   professionalSummary?: string;
   persona?: string;
   expertiseCompetencies?: string[];

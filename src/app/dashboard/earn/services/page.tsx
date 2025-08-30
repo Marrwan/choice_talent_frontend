@@ -72,7 +72,7 @@ export default function EarnMyServicesPage() {
           const prof: any = await professionalCareerProfileService.getProfile();
           if (prof && prof.success && prof.data && prof.data.profile) {
             const profile = prof.data.profile;
-            setFullName(profile.fullName || '');
+            setFullName(profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : '');
             setProfilePicture(profile.profilePicture || undefined);
 
             if (profile.workExperiences && profile.workExperiences.length > 0) {

@@ -74,7 +74,7 @@ export default function ActivityLogPage() {
       if (profileResponse.success && profileResponse.data.profile) {
         const profileData = profileResponse.data.profile;
         const fields = [
-          profileData.fullName,
+          profileData.firstName && profileData.lastName ? `${profileData.firstName} ${profileData.lastName}` : null,
           profileData.gender,
           profileData.dateOfBirth,
           profileData.phoneNumber,

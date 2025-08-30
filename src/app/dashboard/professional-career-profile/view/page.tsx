@@ -96,9 +96,9 @@ export default function ProfessionalCareerProfileViewPage() {
       
       await PDFService.generateCareerProfilePDF(
         profileElement,
-        profile?.fullName || 'Career Profile',
+        profile?.firstName && profile?.lastName ? `${profile.firstName} ${profile.lastName}` : 'Career Profile',
         {
-          filename: `${profile?.fullName?.replace(/\s+/g, '-').toLowerCase() || 'career'}-profile.pdf`,
+          filename: `${profile?.firstName && profile?.lastName ? `${profile.firstName} ${profile.lastName}`.replace(/\s+/g, '-').toLowerCase() : 'career'}-profile.pdf`,
           format: 'a4',
           orientation: 'portrait',
           quality: 1.0
@@ -215,7 +215,7 @@ export default function ProfessionalCareerProfileViewPage() {
             {/* Profile Header - Name centered at top, clean image, consistent contact typography */}
             <div className="profile-header profile-header-regular pt-3 sm:pt-4 pb-1 sm:pb-2 px-3 sm:px-6">
               <div className="text-center mb-1">
-                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-tight">{profile.fullName}</h1>
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-black leading-tight">{profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : 'Professional'}</h1>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
                 {profile.profilePicture ? (

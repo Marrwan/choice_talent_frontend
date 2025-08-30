@@ -76,7 +76,7 @@ export default function LoginPage() {
         const profile = profileRes.data.profile;
         // Check required fields (adjust as needed)
         const requiredFields = [
-          profile.fullName,
+          profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : null,
           profile.gender,
           profile.dateOfBirth,
           profile.phoneNumber,

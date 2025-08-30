@@ -8,24 +8,24 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/lib/useToast';
 import { useAuth } from '@/lib/store';
-import { Building2, Copy, Upload, Mail } from 'lucide-react';
+import { Building2, Copy, Upload, Mail, Crown } from 'lucide-react';
 import { apiClient } from '@/lib/api';
 import { useSearchParams } from 'next/navigation';
 
-export default function AppAIPaymentPage() {
+export default function SubscriptionPaymentPage() {
   const toast = useToast();
   const { user } = useAuth();
   const [paymentId, setPaymentId] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const searchParams = useSearchParams();
   const subscriptionId = (searchParams ? searchParams.get('sid') : '') || '';
-  const price = 5400;
+  const price = 3300;
 
   useEffect(() => {
     const generatePaymentId = () => {
       const timestamp = Date.now().toString(36);
       const randomStr = Math.random().toString(36).substring(2, 8);
-      return `APPAI-${timestamp}-${randomStr}`.toUpperCase();
+      return `SUB-${timestamp}-${randomStr}`.toUpperCase();
     };
     setPaymentId(generatePaymentId());
   }, []);
@@ -53,7 +53,7 @@ export default function AppAIPaymentPage() {
       formData.append('userEmail', user?.email || '');
       formData.append('userName', user?.name || '');
 
-      const res = await apiClient.post('/job-subscription/appai/payment-email', formData, true);
+      const res = await apiClient.post('/subscription-verification/payment-email', formData, true);
       if ((res as any).success !== false) {
         toast.showSuccess('Payment email sent to billing@choicetalents.com.ng', 'Success');
       } else {
@@ -69,8 +69,8 @@ export default function AppAIPaymentPage() {
     <div className="container mx-auto p-6">
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">AppAI Payment</h1>
-          <p className="text-gray-600 mt-2">Complete payment to activate AppAI (30 days).</p>
+          <h1 className="text-3xl font-bold text-gray-900">Premium Subscription Payment</h1>
+          <p className="text-gray-600 mt-2">Complete payment to upgrade to Premium subscription.</p>
         </div>
 
         <Card>
@@ -80,7 +80,10 @@ export default function AppAIPaymentPage() {
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="font-medium">Service:</span>
-              <span>AppAI (Job Hunting Made Easy)</span>
+              <span className="flex items-center">
+                <Crown className="h-5 w-5 text-yellow-600 mr-2" />
+                Premium Subscription
+              </span>
             </div>
             <div className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
               <span className="font-medium">Duration:</span>
@@ -125,7 +128,7 @@ export default function AppAIPaymentPage() {
                 <div 
                   className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => {
-                    const fileInput = document.getElementById('payment-screenshot') as HTMLInputElement;
+                    const fileInput = document.getElementById('subscription-payment-screenshot') as HTMLInputElement;
                     if (fileInput) {
                       fileInput.click();
                     }
@@ -146,16 +149,16 @@ export default function AppAIPaymentPage() {
                         setFile(selectedFile);
                       }}
                       className="hidden"
-                      id="payment-screenshot"
+                      id="subscription-payment-screenshot"
                       aria-label="Attach payment screenshot"
                     />
-                    <label htmlFor="payment-screenshot" className="cursor-pointer">
+                    <label htmlFor="subscription-payment-screenshot" className="cursor-pointer">
                       <Button 
                         variant="outline" 
                         type="button" 
                         onClick={(e) => {
                           e.stopPropagation();
-                          const fileInput = document.getElementById('payment-screenshot') as HTMLInputElement;
+                          const fileInput = document.getElementById('subscription-payment-screenshot') as HTMLInputElement;
                           if (fileInput) {
                             fileInput.click();
                           }
@@ -182,8 +185,8 @@ export default function AppAIPaymentPage() {
                       >
                         Remove
                       </Button>
-                </div>
-              </div>
+                    </div>
+                  </div>
                 )}
                 
                 <Button 

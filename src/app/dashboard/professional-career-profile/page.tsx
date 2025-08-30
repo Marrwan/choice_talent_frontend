@@ -37,7 +37,7 @@ export default function ProfessionalCareerProfilePage() {
     if (!profile) return 0;
     
     const fields = [
-      profile.fullName,
+              profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : null,
       profile.gender,
       profile.dateOfBirth,
       profile.phoneNumber,
@@ -123,7 +123,7 @@ export default function ProfessionalCareerProfilePage() {
                     </div>
                   )}
                   <div className="flex-1 text-center sm:text-left">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{profile.fullName}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : 'Professional'}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
                       <div className="flex items-center justify-center sm:justify-start">
                         <Briefcase className="mr-2 h-4 w-4" />
@@ -172,7 +172,7 @@ export default function ProfessionalCareerProfilePage() {
                 <CardContent className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Basic Details</span>
-                    {profile.fullName && profile.gender && profile.dateOfBirth ? (
+                    {profile.firstName && profile.lastName && profile.gender && profile.dateOfBirth ? (
                       <CheckCircle className="h-4 w-4 text-green-500" />
                     ) : (
                       <AlertCircle className="h-4 w-4 text-yellow-500" />

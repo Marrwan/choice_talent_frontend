@@ -26,7 +26,7 @@ import {
   NIGERIAN_STATES,
   SALARY_NEGOTIABLE_OPTIONS
 } from '@/services/jobHuntingSettingsService';
-import { ArrowLeft, AlertTriangle, Crown } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, Crown, ShieldCheck } from 'lucide-react';
 
 export default function JobHuntingSettingsPage() {
   const router = useRouter();
@@ -64,7 +64,7 @@ export default function JobHuntingSettingsPage() {
       if (profileResponse.success && profileResponse.data.profile) {
         const profileData = profileResponse.data.profile;
         const fields = [
-          profileData.fullName,
+          profileData.firstName && profileData.lastName ? `${profileData.firstName} ${profileData.lastName}` : null,
           profileData.gender,
           profileData.dateOfBirth,
           profileData.phoneNumber,
@@ -132,7 +132,10 @@ export default function JobHuntingSettingsPage() {
         ...settings,
         minimumSalaryExpectation: settings.workWithProposedPay
           ? ''
-          : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim()
+          : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim(),
+        salaryExpectationNegotiable: settings.workWithProposedPay 
+          ? 'Yes' 
+          : (settings.salaryExpectationNegotiable || 'No')
       };
       const response = await jobHuntingSettingsService.createOrUpdateSettings(payload as CreateJobHuntingSettingsData);
       
@@ -148,16 +151,18 @@ export default function JobHuntingSettingsPage() {
   };
 
   const handleActivateAppAI = async () => {
-    // Check premium status for AppAI activation
-    if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
-      toast.showError('AppAI subscription required. This premium AI-powered service helps optimize your job search and career profile. Please subscribe to continue.', 'Premium Required');
-      router.push('/dashboard/subscription');
-      return;
-    }
-
     try {
       setSaving(true);
-      const response = await jobHuntingSettingsService.createOrUpdateSettings(settings);
+      const payload = {
+        ...settings,
+        minimumSalaryExpectation: settings.workWithProposedPay
+          ? ''
+          : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim(),
+        salaryExpectationNegotiable: settings.workWithProposedPay 
+          ? 'Yes' 
+          : (settings.salaryExpectationNegotiable || 'No')
+      };
+      const response = await jobHuntingSettingsService.createOrUpdateSettings(payload);
       
       if (response.success) {
         toast.showSuccess('Settings saved! Redirecting to AppAI activation...', 'Success');
@@ -275,7 +280,11 @@ export default function JobHuntingSettingsPage() {
                   type="button"
                   variant={settings.searchScope === 'global' ? 'default' : 'outline'}
                   className="justify-start"
-                  onClick={() => setSettings(prev => ({ ...prev, searchScope: 'global' }))}
+                  onClick={() => setSettings(prev => ({ 
+                    ...prev, 
+                    searchScope: 'global',
+                    preferredLocations: [] // Clear preferred locations for global search
+                  }))}
                 >
                   Global opportunities
                 </Button>
@@ -381,7 +390,9 @@ export default function JobHuntingSettingsPage() {
 
             <Separator />
 
-            {/* Preferred Locations */}
+            {/* Preferred Locations - Only show for country-only search */}
+            {settings.searchScope === 'country_only' && (
+              <>
             <div>
               <Label className="text-base font-medium">Preferred Location (Multi-select)</Label>
               <div className="mt-2 max-h-60 overflow-y-auto border rounded-md p-3">
@@ -415,6 +426,8 @@ export default function JobHuntingSettingsPage() {
             </div>
 
             <Separator />
+              </>
+            )}
 
             {/* Salary Expectations */}
             <div className="space-y-4">
@@ -440,7 +453,7 @@ export default function JobHuntingSettingsPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input
+                <Input
                     type="number"
                     min="0"
                     inputMode="decimal"
@@ -451,8 +464,8 @@ export default function JobHuntingSettingsPage() {
                     }}
                     placeholder="Amount"
                     className="col-span-3"
-                    disabled={settings.workWithProposedPay}
-                  />
+                  disabled={settings.workWithProposedPay}
+                />
                   <Select
                     value={salaryPeriod}
                     onValueChange={(value) => {
@@ -480,7 +493,8 @@ export default function JobHuntingSettingsPage() {
                   onCheckedChange={(checked) => setSettings(prev => ({ 
                     ...prev, 
                     workWithProposedPay: checked as boolean,
-                    minimumSalaryExpectation: checked ? '' : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim()
+                    minimumSalaryExpectation: checked ? '' : `${salaryCurrency} ${salaryAmount} ${salaryPeriod}`.trim(),
+                    salaryExpectationNegotiable: checked ? 'Yes' : prev.salaryExpectationNegotiable
                   }))}
                 />
                 <Label htmlFor="workWithProposedPay" className="text-sm font-normal cursor-pointer">
@@ -511,22 +525,20 @@ export default function JobHuntingSettingsPage() {
 
             <Separator />
 
-            {/* Subscription Notice */}
-            {(!user?.subscriptionStatus || user.subscriptionStatus === 'free') && (
-              <Card className="border-blue-200 bg-blue-50">
+            {/* AppAI Subscription Notice */}
+            <Card className="border-orange-200 bg-orange-50">
                 <CardContent className="pt-6">
                   <div className="flex items-start gap-3">
-                    <Crown className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <ShieldCheck className="h-5 w-5 text-orange-600 mt-0.5" />
                     <div>
-                      <h3 className="font-semibold text-blue-800 mb-2">Subscription Required</h3>
-                      <p className="text-blue-700 text-sm mb-3">
-                        After saving your job hunting settings, you'll need a premium subscription to access job hunting features like profile forwarding and employer matching.
+                    <h3 className="font-semibold text-orange-800 mb-2">AppAI Subscription Required</h3>
+                    <p className="text-orange-700 text-sm mb-3">
+                      After saving your job hunting settings, you'll need the AppAI subscription to activate it.
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            )}
 
             {/* Save & Activate */}
             <div className="flex justify-between items-center">

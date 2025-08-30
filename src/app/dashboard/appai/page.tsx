@@ -74,11 +74,6 @@ export default function AppAIIntroPage() {
           <Button 
             className="h-12"
             onClick={() => {
-              if ((user as any)?.subscriptionStatus !== 'premium' && !(user as any)?.isPremium) {
-                toast.showError('AppAI subscription required. This premium AI-powered service helps optimize your job search and career profile. Please subscribe to continue.', 'Premium Required');
-                router.push('/dashboard/subscription');
-                return;
-              }
               router.push('/dashboard/job-hunting-settings');
             }}
           >

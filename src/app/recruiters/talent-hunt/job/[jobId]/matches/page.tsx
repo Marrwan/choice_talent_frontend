@@ -155,12 +155,12 @@ export default function JobMatchesPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {results
-              .filter(r => !filterText || (r.fullName || r.user?.name || '').toLowerCase().includes(filterText.toLowerCase()))
+              .filter(r => !filterText || ((r.firstName && r.lastName ? `${r.firstName} ${r.lastName}` : r.user?.name) || '').toLowerCase().includes(filterText.toLowerCase()))
               .filter(r => !filterLocation || (r.stateOfResidence || r.jobHuntingSettings?.preferredLocations?.[0] || '').toLowerCase().includes(filterLocation.toLowerCase()))
               .map((r:any) => (
                 <Card key={r.id}>
                   <CardHeader>
-                    <CardTitle className="text-base">{r.fullName || r.user?.name || 'Professional'}</CardTitle>
+                    <CardTitle className="text-base">{r.firstName && r.lastName ? `${r.firstName} ${r.lastName}` : r.user?.name || 'Professional'}</CardTitle>
                     <CardDescription>{r.persona || r.professionalSummary?.slice(0, 100) || ''}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">

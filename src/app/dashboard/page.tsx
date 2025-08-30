@@ -966,7 +966,7 @@ export default function DashboardPage() {
       if (profileResponse.success && profileResponse.data.profile) {
         const profileData = profileResponse.data.profile;
         const fields = [
-          profileData.fullName,
+          profileData.firstName && profileData.lastName ? `${profileData.firstName} ${profileData.lastName}` : null,
           profileData.gender,
           profileData.dateOfBirth,
           profileData.phoneNumber,
@@ -1137,7 +1137,7 @@ export default function DashboardPage() {
     if (!profile) return 0;
     
     const fields = [
-      profile.fullName,
+              profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : null,
       profile.gender,
       profile.dateOfBirth,
       profile.phoneNumber,
@@ -1167,7 +1167,7 @@ export default function DashboardPage() {
     
     const missingFields = [];
     
-    if (!profile.fullName) missingFields.push({ field: 'Full Name', section: 'Personal Information' });
+          if (!profile.firstName || !profile.lastName) missingFields.push({ field: 'First Name and Last Name', section: 'Personal Information' });
     if (!profile.gender) missingFields.push({ field: 'Gender', section: 'Personal Information' });
     if (!profile.dateOfBirth) missingFields.push({ field: 'Date of Birth', section: 'Personal Information' });
     if (!profile.phoneNumber) missingFields.push({ field: 'Phone Number', section: 'Contact Information' });
@@ -1282,7 +1282,13 @@ export default function DashboardPage() {
               <CardContent className="space-y-3">
                 {/* Career Profile */}
                 {/* trimmed per spec: removed Career Profile & Download Profile */}
-
+                
+                <Link href="" className="block">
+                  <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    Jobs
+                  </Button>
+                </Link>
                 {/* AppAI */}
                 <Link href="/dashboard/appai" className="block">
                   <Button variant="outline" className="w-full justify-start h-12 border-[#d3d3d3] hover:bg-gray-50">

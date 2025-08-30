@@ -106,7 +106,7 @@ export default function CareerDashboardPage() {
       if (profileResponse.success && profileResponse.data.profile) {
         const profileData = profileResponse.data.profile;
         const fields = [
-          profileData.fullName,
+          profileData.firstName && profileData.lastName ? `${profileData.firstName} ${profileData.lastName}` : null,
           profileData.gender,
           profileData.dateOfBirth,
           profileData.phoneNumber,
@@ -211,7 +211,7 @@ export default function CareerDashboardPage() {
     if (!profile) return 0;
     
     const fields = [
-      profile.fullName,
+              profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : null,
       profile.gender,
       profile.dateOfBirth,
       profile.phoneNumber,
@@ -241,7 +241,7 @@ export default function CareerDashboardPage() {
     
     const missingFields = [];
     
-    if (!profile.fullName) missingFields.push({ field: 'Full Name', section: 'Personal Information' });
+          if (!profile.firstName || !profile.lastName) missingFields.push({ field: 'First Name and Last Name', section: 'Personal Information' });
     if (!profile.gender) missingFields.push({ field: 'Gender', section: 'Personal Information' });
     if (!profile.dateOfBirth) missingFields.push({ field: 'Date of Birth', section: 'Personal Information' });
     if (!profile.phoneNumber) missingFields.push({ field: 'Phone Number', section: 'Contact Information' });
@@ -480,7 +480,7 @@ export default function CareerDashboardPage() {
                         </div>
                       )}
                       <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{profile.fullName}</h3>
+                        <h3 className="text-xl font-semibold text-gray-900 mb-2">{profile.firstName && profile.lastName ? `${profile.firstName} ${profile.lastName}` : 'Professional'}</h3>
                         <p className="text-gray-600 mb-3">{profile.professionalSummary}</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div className="flex items-center">

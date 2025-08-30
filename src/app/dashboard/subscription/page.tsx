@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/lib/store'
 import { paymentService, type Plan } from '@/services/paymentService'
+import { apiClient } from '@/lib/api'
 import { 
   ArrowLeft, 
   CheckCircle, 
@@ -49,7 +50,7 @@ export default function SubscriptionPage() {
 
   useEffect(() => {
     // Check for payment verification
-    const reference = searchParams.get('reference')
+    const reference = searchParams?.get('reference')
     if (reference) {
       verifyPayment(reference)
     }
@@ -112,18 +113,23 @@ export default function SubscriptionPage() {
       setIsProcessing(true)
       setMessage('')
       
-      const result = await paymentService.initializePayment(planId)
+      // Create subscription record first
+      const result = await apiClient.post('/subscriptions', {
+        subscriptionType: 'premium',
+        duration: 30
+      }, true);
       
-      if (result.status && result.data?.authorization_url) {
-        // Redirect to Paystack payment page
-        window.location.href = result.data.authorization_url
+      if ((result as any).success) {
+        const subscriptionId = (result as any).data?.id;
+        // Redirect to manual payment page
+        router.push(`/dashboard/subscription/payment?sid=${subscriptionId}`);
       } else {
-        setMessage('Failed to initialize payment. Please try again.')
+        setMessage('Failed to create subscription. Please try again.')
         setMessageType('error')
       }
     } catch (error) {
-      console.error('Payment initialization error:', error)
-      setMessage('Failed to initialize payment. Please try again.')
+      console.error('Subscription creation error:', error)
+      setMessage('Failed to create subscription. Please try again.')
       setMessageType('error')
     } finally {
       setIsProcessing(false)
@@ -161,7 +167,7 @@ export default function SubscriptionPage() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
                 <Crown className="h-8 w-8 text-yellow-600" />
-                Subscription Plans
+                Premium Subscription
               </h1>
               <p className="text-gray-600 mt-2">
                 Choose the perfect plan for your career journey
@@ -225,46 +231,11 @@ export default function SubscriptionPage() {
         {/* Plans */}
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose Your Plan</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Choose Plan</h2>
             <p className="text-gray-600">Select a plan that best fits your career needs</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* FREE BASIC */}
-            <Card className={`relative ${user.subscriptionStatus === 'free' ? 'ring-2 ring-blue-500' : ''}`}>
-              <CardHeader>
-                <CardTitle className="text-center">FREE BASIC</CardTitle>
-                <CardDescription className="text-center">Get started for free</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center">
-                  <span className="text-3xl font-bold">₦0</span>
-                  <span className="text-gray-600">/month</span>
-                </div>
-                <ul className="space-y-3">
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Basic profile features</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                    <span className="text-sm">Limited job search</span>
-                  </li>
-                  <li className="flex items-center">
-                    <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
-                    <span className="text-sm">No advanced features</span>
-                  </li>
-                </ul>
-                <Button 
-                  variant="outline" 
-                  className="w-full" 
-                  disabled={user.subscriptionStatus === 'free'}
-                >
-                  {user.subscriptionStatus === 'free' ? 'Current Plan' : 'Free Plan'}
-                </Button>
-              </CardContent>
-            </Card>
-
+          <div className="max-w-xl mx-auto">
             {/* PREMIUM */}
             <Card className={`relative border-blue-200 ${user.subscriptionStatus === 'premium' ? 'ring-2 ring-blue-500' : ''}`}>
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -279,7 +250,7 @@ export default function SubscriptionPage() {
               <CardContent className="space-y-4">
                 <div className="text-center">
                   <span className="text-3xl font-bold">₦3,300</span>
-                  <span className="text-gray-600">/month</span>
+                  <span className="text-gray-600">/30 days</span>
                 </div>
                 <ul className="space-y-3">
                   <li className="flex items-center">
@@ -330,13 +301,13 @@ export default function SubscriptionPage() {
                   ) : (
                     'Upgrade to Premium'
                   )}
-              </Button>
+                </Button>
               </CardContent>
             </Card>
           </div>
 
           {/* Payment Details */}
-          <Card className="mt-8">
+          {/* <Card className="mt-8">
             <CardHeader>
               <CardTitle className="text-center">Payment Details</CardTitle>
             </CardHeader>
@@ -365,7 +336,7 @@ export default function SubscriptionPage() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           {/* FAQ */}
           <Card className="mt-8">

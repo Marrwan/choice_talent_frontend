@@ -31,7 +31,9 @@ export default function ProfessionalCareerProfilePage() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<ProfessionalCareerProfile>({
-    fullName: '',
+    firstName: '',
+    otherName: '',
+    lastName: '',
     gender: undefined,
     dateOfBirth: '',
     phoneNumber: '',
@@ -39,6 +41,7 @@ export default function ProfessionalCareerProfilePage() {
     address: '',
     lgaOfResidence: '',
     stateOfResidence: '',
+    country: '',
     professionalSummary: '',
     persona: '',
     expertiseCompetencies: [],
@@ -74,12 +77,15 @@ export default function ProfessionalCareerProfilePage() {
         const profileData = {
           ...response.data.profile,
           // Convert null values to empty strings for text fields
-          fullName: response.data.profile.fullName || '',
+          firstName: response.data.profile.firstName || '',
+          otherName: response.data.profile.otherName || '',
+          lastName: response.data.profile.lastName || '',
           phoneNumber: response.data.profile.phoneNumber || '',
           emailAddress: response.data.profile.emailAddress || '',
           address: response.data.profile.address || '',
           lgaOfResidence: response.data.profile.lgaOfResidence || '',
           stateOfResidence: response.data.profile.stateOfResidence || '',
+          country: response.data.profile.country || '',
           professionalSummary: response.data.profile.professionalSummary || '',
           persona: response.data.profile.persona || '',
           dateOfBirth: response.data.profile.dateOfBirth || '',
@@ -429,16 +435,37 @@ export default function ProfessionalCareerProfilePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Label htmlFor="firstName">First Name *</Label>
                   <Input
-                    id="fullName"
-                    value={profile.fullName || ''}
-                    onChange={(e) => setProfile(prev => ({ ...prev, fullName: e.target.value }))}
+                    id="firstName"
+                    value={profile.firstName || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
                     required
                   />
                 </div>
+                <div>
+                  <Label htmlFor="otherName">Other Name</Label>
+                  <Input
+                    id="otherName"
+                    value={profile.otherName || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, otherName: e.target.value }))}
+                    placeholder="Middle name, etc."
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    value={profile.lastName || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="gender">Gender</Label>
                   <Select value={profile.gender} onValueChange={(value) => setProfile(prev => ({ ...prev, gender: value as any }))}>
@@ -494,7 +521,7 @@ export default function ProfessionalCareerProfilePage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="lgaOfResidence">LGA of Residence</Label>
                   <Input
@@ -509,6 +536,15 @@ export default function ProfessionalCareerProfilePage() {
                     id="stateOfResidence"
                     value={profile.stateOfResidence || ''}
                     onChange={(e) => setProfile(prev => ({ ...prev, stateOfResidence: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="country">Country</Label>
+                  <Input
+                    id="country"
+                    value={profile.country || ''}
+                    onChange={(e) => setProfile(prev => ({ ...prev, country: e.target.value }))}
+                    placeholder="e.g., Nigeria"
                   />
                 </div>
               </div>
