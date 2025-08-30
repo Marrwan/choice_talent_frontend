@@ -55,7 +55,10 @@ export default function SubscriptionPaymentPage() {
 
       const res = await apiClient.post('/subscription-verification/payment-email', formData, true);
       if ((res as any).success !== false) {
-        toast.showSuccess('Payment email sent to billing@choicetalents.com.ng', 'Success');
+        const message = (res as any).note 
+          ? `${(res as any).message}. ${(res as any).note}`
+          : 'Payment email sent to billing@choicetalents.com.ng. You will receive a confirmation once your payment is verified.';
+        toast.showSuccess(message, 'Success');
       } else {
         toast.showError('Failed to send payment email', 'Error');
       }
